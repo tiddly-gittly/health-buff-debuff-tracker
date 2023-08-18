@@ -1,0 +1,15 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Health Record User Manual
+
+\whitespace trim
+<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
+	<$list filter="[<lang>search[zh]]">
+
+  ! 健康记录用户手册
+
+  </$list>
+	<$list filter="[<lang>!search[zh]]">
+
+  ! Health Record User Manual
+
+  </$list>
+</$list>

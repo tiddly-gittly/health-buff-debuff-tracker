@@ -1,0 +1,15 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Health Record Summary
+
+\whitespace trim
+<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
+	<$list filter="[<lang>search[zh]]">
+
+  !! 健康记录摘要
+
+  </$list>
+	<$list filter="[<lang>!search[zh]]">
+
+  !! Health Record Summary
+
+  </$list>
+</$list>

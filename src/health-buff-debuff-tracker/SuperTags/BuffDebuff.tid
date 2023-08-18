@@ -1,0 +1,4 @@
+title: BuffDebuff
+tags: $:/TraitTag/OPMI/Status
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Data Fields}}

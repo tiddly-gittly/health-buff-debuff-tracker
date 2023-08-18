@@ -1,0 +1,17 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/i18n/About Buff Debuff
+
+\whitespace trim
+<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
+	<$list filter="[<lang>search[zh]]">
+
+  这是一个用于表明条目记录了症状或健康情况的标签。
+
+  你可以通过给任意条目添加 [[$:/TraitTag/OPMI/Status]] 标签来制作你自己的[ext[超级标签|https://github.com/tiddly-gittly/super-tag/]]。
+
+  </$list>
+	<$list filter="[<lang>!search[zh]]">
+
+  You can make your own [ext[SuperTag|https://github.com/tiddly-gittly/super-tag/]] by adding [[$:/TraitTag/OPMI/Status]] tags to any tiddler.
+
+  </$list>
+</$list>

@@ -1,0 +1,57 @@
+opmi_medicalConditionStatus: contributoryCauseOfDeath
+tags: BuffDebuff
+title: opmi_medicalConditionStatus
+type: text/vnd.tiddlywiki
+
+<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
+	<$list filter="[<lang>search[zh]]">
+
+属性 `opmi_medicalConditionStatus` 来自[ext[OPMI_0000533|http://purl.obolibrary.org/obo/OPMI_0000533]]。这个属性描述了在医学诊断过程中，疾病或健康状况的状态或阶段。
+
+下面是此字段可选的各个值的中文解释：
+
+# ''admissionDiagnosis'': 入院诊断 - 患者入院时做出的初步诊断。
+# ''causeOfDeath'': 死因 - 导致患者死亡的疾病或状况。
+# ''conditionToBeDiagnosedByProcedure'': 待手术诊断的疾病或状况 - 需要手术或特定医疗程序来确认的疾病或状况。
+# ''confirmedDiagnosis'': 已确认诊断 - 经过检查和分析后确认的诊断。
+# ''contributoryCauseOfDeath'': 死亡的次要原因 - 虽然不是直接导致死亡的原因，但对死亡有所贡献的疾病或状况。
+# ''deathDiagnosis'': 死亡诊断 - 死后确定的疾病或状况。
+# ''dischargeDiagnosis'': 出院诊断 - 患者出院时做出的诊断。
+# ''postoperativeDiagnosis'': 术后诊断 - 手术后做出的诊断。
+# ''preliminaryDiagnosis'': 初步诊断 - 第一次就诊时的临时诊断，可能需要进一步的检查和分析来确认。
+# ''preoperativeDiagnosis'': 术前诊断 - 手术前做出的诊断。
+# ''primaryDiagnosis'': 主要诊断 - 患者主要的健康问题或疾病。
+# ''referralDiagnosis'': 转诊诊断 - 由其他医生或医疗机构转诊时给出的诊断。
+# ''resolvedCondition'': 已解决的状况 - 曾经存在但现已解决的疾病或状况。
+# ''secondaryDiagnosis'': 次要诊断 - 除了主要诊断外的其他健康问题或疾病。
+
+这些诊断状态帮助医生、护士和其他医疗人员了解患者的健康状况，以便提供合适的医疗护理和建议。
+
+你可以在条目下方尝试使用这个字段。
+
+  </$list>
+	<$list filter="[<lang>!search[zh]]">
+
+Attribute `opmi_medicalConditionStatus` from [ext[OPMI_0000533|http://purl.obolibrary.org/obo/OPMI_0000533]]. This attribute describes the status or stage of a disease or health condition during the medical diagnostic process.
+
+The following is the Chinese explanation for each of the optional values of this field:
+
+# ''admissionDiagnosis'': admissionDiagnosis - The initial diagnosis made when the patient was admitted to the hospital.
+# ''causeOfDeath'': cause of death - the disease or condition that caused the patient's death.
+# ''conditionToBeDiagnosedByProcedure'': Disease or Condition to be Diagnosed by Procedure - A disease or condition that requires surgery or a specific medical procedure to confirm.
+# ''confirmedDiagnosis'': Confirmed Diagnosis - A diagnosis that has been confirmed after examination and analysis.
+# ''contributoryCauseOfDeath'': Secondary Cause of Death - A disease or condition that contributes to death, although it is not the direct cause of death.
+# ''deathDiagnosis'': Death Diagnosis - A disease or condition determined after death.
+# ''dischargeDiagnosis'': Discharge Diagnosis - A diagnosis made at the time the patient was discharged from the hospital.
+# ''postoperativeDiagnosis'': Postoperative Diagnosis - A diagnosis made after surgery.
+# ''preliminaryDiagnosis'': Preliminary Diagnosis - A provisional diagnosis made at the time of the first visit, which may need to be confirmed by further tests and analysis.
+# ''preoperativeDiagnosis'': Preoperative Diagnosis - Diagnosis made before surgery.
+# ''primaryDiagnosis'': Primary diagnosis - the patient's main health problem or disease.
+# ''referralDiagnosis'': Referral Diagnosis - A diagnosis given when a patient is referred by another doctor or healthcare organization.
+# ''resolvedCondition'': Resolved Condition - A pre-existing disease or condition that has now been resolved.
+# ''secondaryDiagnosis'': Secondary Diagnosis - A health problem or disease other than the primary diagnosis.
+
+These diagnostic statuses help doctors, nurses, and other healthcare professionals understand a patient's health condition so they can provide appropriate medical care and recommendations.
+
+  </$list>
+</$list>

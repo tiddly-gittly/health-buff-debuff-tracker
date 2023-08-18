@@ -1,0 +1,7 @@
+title: Index
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Health Record User Manual}}
+
+!!! {{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Data Fields}}
+
+[[opmi:medicalConditionStatus|opmi_medicalConditionStatus]]

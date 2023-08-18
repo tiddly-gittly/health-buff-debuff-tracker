@@ -1,0 +1,15 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Data Fields
+
+\whitespace trim
+<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
+	<$list filter="[<lang>search[zh]]">
+
+  数据字段
+
+  </$list>
+	<$list filter="[<lang>!search[zh]]">
+
+  Data Fields
+
+  </$list>
+</$list>
