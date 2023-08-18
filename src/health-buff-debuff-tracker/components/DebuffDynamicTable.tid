@@ -1,7 +1,7 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicTable
 
-\import [[$:/plugins/linonetwo/intention-tower-knowledge-graph/filters/leaf-task]]
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
 
 \define caption() Debuff <$count filter=<<get-all-debuff>> />
 
-<$macrocall $name=aggregation caption=<<caption>> filter=<<get-all-debuff>> defaultFields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}} class="w-100" state="health-buff-debuff-tracker-DebuffDynamicTable-state" />
+<$macrocall $name=table-dynamic caption=<<caption>> filter=<<get-all-debuff>> fields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}} class="w-100" state="health-buff-debuff-tracker-DebuffDynamicTable-state" />

@@ -1,0 +1,10 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/EditTime
+
+<div>
+  <$edit-date showTime use24hour field="startDate"/>
+  <span>
+    <$text text=" -| " />
+    <$text text=" |-> " />
+  </span>
+  <$edit-date showTime use24hour field="endDate"/>
+</div>

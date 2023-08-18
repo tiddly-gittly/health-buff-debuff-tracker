@@ -4,17 +4,17 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	<legend>{{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Add New Item}}</legend>
 
 	<$button>
-		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}} />
+		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}} opmi_medicalConditionStatus="confirmedDiagnosis" />
   DeBuff
 	</$button>
 	
 	<$button>
-		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}} />
+		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}} opmi_medicalConditionStatus="confirmedDiagnosis" />
   Buff
 	</$button>
 
 	<$button>
-		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}} />
+		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}} opmi_medicalConditionStatus="confirmedDiagnosis" />
   {{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Body Condition}}
 	</$button>
 
