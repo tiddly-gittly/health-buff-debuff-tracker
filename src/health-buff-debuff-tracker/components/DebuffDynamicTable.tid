@@ -2,6 +2,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 
 \import [[$:/plugins/linonetwo/intention-tower-knowledge-graph/filters/leaf-task]]
 
-\define caption() 优先待办列表 <$count filter=<<get-non-completed-leaf-tasks>> />
+\define caption() Debuff <$count filter=<<get-all-debuff>> />
 
-<$macrocall $name=aggregation caption=<<caption>> filter=<<get-non-completed-leaf-tasks>> defaultFields={{$:/plugins/linonetwo/intention-tower-knowledge-graph/Config/defaultFields-TaskDynamicTable}} class="w-100" state="ITKG-TaskDynamicTable-state" />
+<$macrocall $name=aggregation caption=<<caption>> filter=<<get-all-debuff>> defaultFields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}} class="w-100" state="health-buff-debuff-tracker-DebuffDynamicTable-state" />

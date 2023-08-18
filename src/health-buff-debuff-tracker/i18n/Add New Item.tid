@@ -1,0 +1,15 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Add New Item
+
+\whitespace trim
+<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
+	<$list filter="[<lang>search[zh]]">
+
+  添加新项目
+
+  </$list>
+	<$list filter="[<lang>!search[zh]]">
+
+  Add New Item
+
+  </$list>
+</$list>

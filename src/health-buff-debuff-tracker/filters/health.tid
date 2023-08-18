@@ -1,5 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/filters/health
 
-\define filter-is-active() [<currentTiddler>field:opmi_medicalConditionStatus[Archived]]
+\define filter-is-active() [<currentTiddler>has[opmi_medicalConditionStatus]!field:opmi_medicalConditionStatus[resolvedCondition]]
 
-\define get-all-debuff() [all[tiddlers]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}filter<filter-is-new-task>] :map:flat[all[tiddlers]in-tagtree-of<currentTiddler>!filter<filter-is-not-leaf>filter<filter-is-new-task>] :and[filter<has-length>unique[]!sortsub:integer<compareByPriority>]
+\define get-all-debuff() [all[tiddlers]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}filter<filter-is-active>]

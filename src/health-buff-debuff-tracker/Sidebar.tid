@@ -1,4 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/Sidebar
-tags: $:/tags/Sidebar
+tags: $:/tags/SideBar
+caption: {{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Health Tracker}}
 
-{{$:/plugins/linonetwo/health-buff-debuff-tracker/HomePage}}
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage}}
