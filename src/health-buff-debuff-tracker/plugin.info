@@ -4,7 +4,7 @@
   "description": "Record your life issues, medication usage, and the process of recovery, in TiddlyWiki",
   "core-version": ">=5.1.22",
   "plugin-type": "plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependents": ["$:/plugins/kookma/shiraz", "$:/plugins/xp/aggregation", "$:/plugins/linonetwo/super-tag", "$:/plugins/kixam/datepicker", "$:/plugins/kixam/moment"],
   "list": "readme Sidebar tree"
 }
