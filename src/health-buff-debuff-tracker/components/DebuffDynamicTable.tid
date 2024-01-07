@@ -4,4 +4,4 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 
 \define caption() Debuff <$count filter=<<get-all-debuff>> />
 
-<$macrocall $name=table-dynamic caption=<<caption>> filter=<<get-all-debuff>> fields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}} class="w-100" state="health-buff-debuff-tracker-DebuffDynamicTable-state" />
+<$transclude $variable=aggregation caption=<<caption>> filter=<<get-all-debuff>> defaultFields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}} class="w-100" state="health-buff-debuff-tracker-DebuffDynamicTable-state" />
