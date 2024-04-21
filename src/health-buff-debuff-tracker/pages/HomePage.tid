@@ -1,7 +1,17 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage
 
+<nav class="health-buff-debuff-tracker-layout-top-area">
+
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem}}
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/components/Navigation}}
+
+</nav>
 
 <<lingo HealthRecordSummary>>
 
+<article class="health-buff-debuff-tracker-layout-body-area">
+
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicTable}}
+
+</article>

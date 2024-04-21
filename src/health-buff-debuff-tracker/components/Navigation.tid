@@ -1,0 +1,14 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/Navigation
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+<fieldset>
+	<legend><<lingo Navigation>></legend>
+
+	<$button>
+		<$action-setfield $tiddler="$:/layout" text="" />
+		{{$:/core/images/default-layout}}
+  	<<lingo BackToDefaultLayout>>
+	</$button>
+
+</fieldset>
