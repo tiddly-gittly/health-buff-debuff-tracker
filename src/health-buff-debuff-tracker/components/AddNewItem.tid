@@ -6,21 +6,25 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	<legend><<lingo AddNewItem>></legend>
 
 	<$button>
+		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage $message="tm-new-tiddler" title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}} opmi_medicalConditionStatus="confirmedDiagnosis" caption={{$:/language/DefaultNewTiddlerTitle}} />
   	<<lingo DeBuff>>
 	</$button>
 	
 	<$button>
+		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage $message="tm-new-tiddler" title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}} opmi_medicalConditionStatus="confirmedDiagnosis" caption={{$:/language/DefaultNewTiddlerTitle}} />
   	<<lingo Buff>>
 	</$button>
 
 	<$button>
+		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage $message="tm-new-tiddler" startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}} opmi_medicalConditionStatus="confirmedDiagnosis" />
 		<<lingo BodyCondition>>
 	</$button>
 
 	<$button>
+		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage $message="tm-new-tiddler" tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/medicine}} />
 		<<lingo Medicine>>
 	</$button>

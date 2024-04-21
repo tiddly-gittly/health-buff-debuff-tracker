@@ -1,7 +1,23 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicTable
 
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
+\whitespace trim
 
-\define caption() Debuff <$count filter=<<get-all-debuff>> />
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+\procedure caption() <<lingo Debuff>> <$count filter=<<get-all-debuff>> />
 
-<$transclude $variable=aggregation caption=<<caption>> filter=<<get-all-debuff>> defaultFields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}} class="w-100" state="health-buff-debuff-tracker-DebuffDynamicTable-state" />
+\procedure redirected-navigate-actions()
+  <$action-setfield $tiddler="$:/layout" text="" />
+  <$action-navigate $to=<<event-navigateTo>> />
+\end
+
+<$messagecatcher $tm-navigate=<<redirected-navigate-actions>>>
+  <$transclude
+    $variable=aggregation
+    caption=<<caption>>
+    filter=<<get-all-debuff>>
+    defaultFields={{$:/plugins/linonetwo/health-buff-debuff-tracker/Config/defaultFields-DebuffDynamicTable}}
+    class="w-100"
+    state="health-buff-debuff-tracker-DebuffDynamicTable-state"
+  />
+</$messagecatcher>

@@ -11,25 +11,13 @@ tc-page-container tc-page-view-$(storyviewTitle)$ tc-language-$(languageTitle)$ 
 \import [subfilter{$:/core/config/GlobalImportFilter}]
 \procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
 
-<$vars
-	tv-config-toolbar-icons={{$:/config/Toolbar/Icons}}
-	tv-config-toolbar-text={{$:/config/Toolbar/Text}}
-	tv-config-toolbar-class={{$:/config/Toolbar/ButtonClass}}
-	tv-show-missing-links={{$:/config/MissingLinks}}
-	storyviewTitle={{$:/view}}
-	languageTitle={{{ [{$:/language}get[name]] }}}>
-
-<div class=<<containerClasses>>>
-
 <$navigator story="$:/StoryList" history="$:/HistoryList" openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}} openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}} relinkOnRename={{$:/config/RelinkOnRename}}>
-
-<main class="health-buff-debuff-tracker-layout-main-area">
-	
-  {{$:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage}}
-
-</main>
+  <div class=<<containerClasses>>>
+    <main class="health-buff-debuff-tracker-layout-main-area">
+      <$transclude
+        $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage"
+        $mode="block"
+      />
+    </main>
+  </div>
 </$navigator>
-
-</div>
-
-</$vars>
