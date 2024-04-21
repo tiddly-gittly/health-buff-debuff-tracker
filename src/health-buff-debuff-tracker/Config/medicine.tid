@@ -1,5 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/tags/medicine
 description: <<lingo Medicine/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
-caption: <<lingo Medicine $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+caption: {{$:/plugins/linonetwo/health-buff-debuff-tracker/icons/Medicine}} <<lingo Medicine $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
 
 $:/tags/HealthTracker/Medicine

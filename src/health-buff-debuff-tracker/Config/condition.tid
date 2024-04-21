@@ -1,5 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition
 description: <<lingo BodyCondition/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
-caption: <<lingo BodyCondition $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+caption: {{$:/plugins/linonetwo/health-buff-debuff-tracker/icons/HealthCondition}} <<lingo BodyCondition $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
 
 $:/tags/HealthTracker/Condition
