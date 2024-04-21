@@ -19,7 +19,7 @@ The following tags are used in this entry to indicate that the entry records a s
 
 <$list filter="[[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff]] [[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff]] [[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/medicine]] [[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition]]">
 
-  <$macrocall $name="tag" tag={{!!text}} /> {{!!description}}
+  <$macrocall $name="tag" tag={{!!text}} /> {{!!caption}} - {{!!description}}
 
 </$list>
 
