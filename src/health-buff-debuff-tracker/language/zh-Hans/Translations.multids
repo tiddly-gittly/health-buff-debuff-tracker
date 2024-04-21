@@ -1,0 +1,13 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/zh-Hans/
+
+Name: 健康增益和减益追踪器
+ShortName: 健康记录
+Description: 记录各种健康问题、药物使用情况和恢复过程，满足日益增长的个人健康存档需求。
+Configs/Description: 通过这些设置，您可以自定义「健康增益和减益追踪器」插件的行为。
+SetEnded: 设为结束
+Medicine: 药物
+BodyCondition: 身体状态
+AddNewItem: 添加新项目
+Buff: 增益
+DeBuff: 减益
+HealthRecordSummary: 健康记录摘要

@@ -1,7 +1,9 @@
 title: Index
 
-{{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Health Record User Manual}}
+\procedure lingo-base() language/
 
-!!! {{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Data Fields}}
+!! <<lingo HealthRecordUserManual>>
+
+!!! <<lingo DataFields>>
 
 [[opmi:medicalConditionStatus|opmi_medicalConditionStatus]]

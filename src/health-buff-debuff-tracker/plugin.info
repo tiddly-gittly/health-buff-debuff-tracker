@@ -6,5 +6,5 @@
   "plugin-type": "plugin",
   "version": "0.0.3",
   "dependents": ["$:/plugins/xp/aggregation", "$:/plugins/linonetwo/super-tag", "$:/plugins/kixam/datepicker"],
-  "list": "readme Sidebar tree"
+  "list": "readme usage tree"
 }

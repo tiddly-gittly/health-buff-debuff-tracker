@@ -1,0 +1,6 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/usage
+type: text/vnd.tiddlywiki
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+<<lingo Usage>>

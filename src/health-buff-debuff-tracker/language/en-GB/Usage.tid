@@ -1,0 +1,6 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/en-GB/Usage
+type: text/vnd.tiddlywiki
+
+# Provides a whiteboard layout, use `ctrl+shift+L` to switch to this layout, you can choose a tiddler with type `application/vnd.tldraw+json`, and edit it in full screen.
+
+You can make your own [ext[SuperTag|https://github.com/tiddly-gittly/super-tag/]] by adding [[$:/TraitTag/OPMI/Status]] tags to any tiddler.

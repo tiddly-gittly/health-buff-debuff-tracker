@@ -1,0 +1,13 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/en-GB/
+
+Name: Health Buff Debuff Tracker
+ShortName: Health Tracker
+Description: Record various health issues, medication usage, and the process of recovery, addressing the growing demand for personal health archiving.
+Configs/Description: These settings let you customise the behaviour of "Health Buff Debuff Tracker" plugin.
+SetEnded: Set Ended
+Medicine: Medicine
+BodyCondition: Body Condition
+AddNewItem: Add New Item
+Buff: Buff
+DeBuff: DeBuff
+HealthRecordSummary: Health Record Summary

@@ -1,24 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/readme
-type: text/vnd.tiddlywiki
 
-\whitespace trim
-<$list filter="[[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]]" variable="lang">
-	<$list filter="[<lang>search[zh]]">
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
 
-!! 健康 Buff 和 Debuff 追踪器
-
-本健康状况记录应用程序旨在为用户提供一个简单方便的工具，用于记录各种健康问题、药物使用情况和恢复过程，满足日益增长的个人健康监测需求。
-
-用户数据将以本地优先的方式保存，以保护隐私，界面也将非常友好，未来还可能增加数据分析功能，以进一步提高用户对自身健康状况的了解。
-
-  </$list>
-	<$list filter="[<lang>!search[zh]]">
-
-!! Health Buff & Debuff Tracker
-
-This Health Status Recording App aims to provide a simple and convenient tool for users to document various health issues, medication usage, and the process of recovery, addressing the growing demand for personal health monitoring.
-
-User data will be saved in the local-first way for privacy, the interface will be user-friendly, and potential future additions include data analysis features to further enhance users' understanding of their health conditions.
-
-  </$list>
-</$list>
+<<lingo Readme>>

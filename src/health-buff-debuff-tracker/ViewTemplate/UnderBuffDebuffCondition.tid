@@ -1,11 +1,13 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/UnderBuffDebuffCondition
 tags: $:/tags/ViewTemplate
 
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
 <$list filter="[all[current]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}] [all[current]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}] [all[current]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}]">
 
 	<$button>
 		<$action-setfield $tiddler=<<currentTiddler>> endDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">> opmi_medicalConditionStatus="resolvedCondition" />
-  {{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Set Ended}}
+  	<<lingo SetEnded>>
 	</$button>
 
   {{||$:/plugins/linonetwo/health-buff-debuff-tracker/components/EditTime}}

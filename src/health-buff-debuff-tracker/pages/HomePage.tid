@@ -2,6 +2,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage
 
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem}}
 
-{{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Health Record Summary}}
+<<lingo HealthRecordSummary>>
 
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicTable}}

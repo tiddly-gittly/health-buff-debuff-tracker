@@ -1,0 +1,8 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/zh-Hans/Usage
+type: text/vnd.tiddlywiki
+
+# 提供白板布局，使用 `ctrl+shift+L` 切换到该视图，你可以选择类型为 `application/vnd.tldraw+json` 的条目，并全屏编辑。
+
+这是一个用于表明条目记录了症状或健康情况的标签。
+
+你可以通过给任意条目添加 [[$:/TraitTag/OPMI/Status]] 标签来制作你自己的[ext[超级标签|https://github.com/tiddly-gittly/super-tag/]]。
