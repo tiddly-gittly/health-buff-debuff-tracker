@@ -1,4 +1,4 @@
 title: $:/SiteTitle
 type: text/vnd.tiddlywiki
 
-<$text text="Health Buff & Debuff Tracker" />
+<<lingo Name $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>

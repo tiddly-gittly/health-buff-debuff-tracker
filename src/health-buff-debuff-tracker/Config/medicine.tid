@@ -1,4 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/tags/medicine
-description: Drugs you are taking, related to one of your buff/debuff/condition.
+description: <<lingo Medicine/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+caption: <<lingo Medicine $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
 
 $:/tags/HealthTracker/Medicine

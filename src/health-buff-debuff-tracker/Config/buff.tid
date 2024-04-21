@@ -1,4 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff
-description: Good things that added to your body or health, like "Regular exercise", "Cyborg legs", "laser myopia surgery" or "encouraged by friends"
+description: <<lingo Buff/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+caption: <<lingo Buff $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
 
 $:/tags/HealthTracker/Buff

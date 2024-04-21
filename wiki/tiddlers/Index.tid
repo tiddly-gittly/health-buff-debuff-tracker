@@ -7,8 +7,10 @@ type: text/vnd.tiddlywiki
 
 <<simple-layout-launcher>>
 
-!! <<lingo HealthRecordUserManual>>
+! <<lingo HealthRecordUserManual>>
 
-!!! <<lingo DataFields>>
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/usage}}
+
+!! <<lingo DataFields>>
 
 [[opmi:medicalConditionStatus|opmi_medicalConditionStatus]]

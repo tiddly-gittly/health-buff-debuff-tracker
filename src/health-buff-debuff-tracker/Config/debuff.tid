@@ -1,4 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff
-description: bad things like "flu", "hair loss", "broken leg", etc.
+description: <<lingo DeBuff/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+caption: <<lingo DeBuff $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
 
 $:/tags/HealthTracker/DeBuff

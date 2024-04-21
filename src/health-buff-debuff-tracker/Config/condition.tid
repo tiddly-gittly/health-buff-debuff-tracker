@@ -1,4 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition
-description: Normal conditions like "blood pressure" or "weight"
+description: <<lingo BodyCondition/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+caption: <<lingo BodyCondition $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
 
 $:/tags/HealthTracker/Condition

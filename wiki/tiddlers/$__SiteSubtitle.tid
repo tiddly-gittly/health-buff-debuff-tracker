@@ -1,4 +1,4 @@
 title: $:/SiteSubtitle
 type: text/vnd.tiddlywiki
 
-{{$:/plugins/linonetwo/health-buff-debuff-tracker/i18n/Plugin Description}}
+<<lingo Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
