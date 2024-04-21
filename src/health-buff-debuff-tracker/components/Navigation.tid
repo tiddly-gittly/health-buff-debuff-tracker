@@ -3,7 +3,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/Navigation
 \procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
 
 <fieldset>
-	<legend><<lingo Navigation>></legend>
+	<legend>{{$:/core/images/home-button}} <<lingo Navigation>></legend>
 
 	<$button>
 		<$action-setfield $tiddler="$:/layout" text="" />

@@ -3,6 +3,9 @@
   flex-direction: row;
   width: 100%;
 }
+.health-buff-debuff-tracker-layout-top-area > p:first-child {
+  flex: 2;
+}
 .health-buff-debuff-tracker-layout-top-area > p {
   flex: 1;
 }
