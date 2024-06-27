@@ -10,15 +10,21 @@ tc-page-container tc-page-view-$(storyviewTitle)$ tc-language-$(languageTitle)$ 
 \end
 \import [subfilter{$:/core/config/GlobalImportFilter}]
 \procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+\procedure redirected-navigate-actions()
+  <$action-setfield $tiddler="$:/layout" text="" />
+  <$action-navigate $to=<<event-navigateTo>> />
+\end
 
 <$navigator story="$:/StoryList" history="$:/HistoryList" openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}} openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}} relinkOnRename={{$:/config/RelinkOnRename}}>
-  {{$:/core/ui/CommandPaletteTemplate}}
-  <div class=<<containerClasses>>>
-    <main class="health-buff-debuff-tracker-layout-main-area">
-      <$transclude
-        $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage"
-        $mode="block"
-      />
-    </main>
-  </div>
+  <$messagecatcher $tm-navigate=<<redirected-navigate-actions>>>
+    {{$:/core/ui/CommandPaletteTemplate}}
+    <div class=<<containerClasses>>>
+      <main class="health-buff-debuff-tracker-layout-main-area">
+        <$transclude
+          $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage"
+          $mode="block"
+        />
+      </main>
+    </div>
+  </$messagecatcher>
 </$navigator>

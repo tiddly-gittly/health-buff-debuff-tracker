@@ -6,7 +6,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	<legend>{{$:/core/images/new-button}} <<lingo AddNewItem>></legend>
 
 	<$button>
-		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage
 			$message="tm-new-tiddler"
 			title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
@@ -21,7 +20,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	</$button>
 	
 	<$button>
-		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage
 			$message="tm-new-tiddler"
 			title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
@@ -36,7 +34,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	</$button>
 
 	<$button>
-		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage
 			$message="tm-new-tiddler"
 			startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
@@ -49,7 +46,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	</$button>
 
 	<$button>
-		<$action-setfield $tiddler="$:/layout" text="" />
 		<$action-sendmessage
 			$message="tm-new-tiddler"
 			tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/medicine}}

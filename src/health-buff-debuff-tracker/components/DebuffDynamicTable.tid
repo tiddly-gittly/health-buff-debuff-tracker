@@ -4,16 +4,10 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 \whitespace trim
 
 \procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
-\procedure redirected-navigate-actions()
-  <$action-setfield $tiddler="$:/layout" text="" />
-  <$action-navigate $to=<<event-navigateTo>> />
-\end
 
 !!! <$count filter=<<get-all-debuff>> /> <<lingo DeBuff>>
 
-<$messagecatcher $tm-navigate=<<redirected-navigate-actions>>>
-  <$basic-table
-    filter=<<get-all-debuff>>
-    columns="title|startDate"
-  />
-</$messagecatcher>
+<$basic-table
+  filter=<<get-all-debuff>>
+  columns="title|startDate"
+/>
