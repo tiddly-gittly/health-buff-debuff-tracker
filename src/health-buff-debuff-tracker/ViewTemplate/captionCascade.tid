@@ -1,6 +1,0 @@
-title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/captionCascade
-tags: $:/tags/ViewTemplateTitleFilter
-list-before: $:/config/ViewTemplateTitleFilters/system
-
-[tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}then[$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/caption]]
-[tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}then[$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/caption]]

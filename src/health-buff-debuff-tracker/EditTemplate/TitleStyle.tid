@@ -1,7 +1,0 @@
-title: $:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/TitleStyle.css
-type: text/vnd.tiddlywiki
-tags: $:/tags/Stylesheet
-
-div[data-tags~="$:/tags/HealthTracker/DeBuff"] input.tc-titlebar.tc-edit-texteditor:nth-of-type(1), div[data-tags~="$:/tags/HealthTracker/Buff"] input.tc-titlebar.tc-edit-texteditor:nth-of-type(1) {
-  font-size: unset;
-}
