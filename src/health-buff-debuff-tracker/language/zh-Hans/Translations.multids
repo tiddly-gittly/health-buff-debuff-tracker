@@ -15,5 +15,5 @@ Buff/Description: 对你的身体或健康有益的事情，如「经常锻炼�
 DeBuff: 减益
 DeBuff/Description: 诸如「感冒」、「脱发」、「断腿」等不好的事情。
 HealthRecordSummary: 健康记录摘要
-BackToDefaultLayout: 返回默认布局
+BackToStandardLayout: 返回标准布局
 Navigation: 导航

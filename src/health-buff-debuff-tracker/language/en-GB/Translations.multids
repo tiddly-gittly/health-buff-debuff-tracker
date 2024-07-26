@@ -15,5 +15,5 @@ Buff/Description: Good things that added to your body or health, like "Regular e
 DeBuff: DeBuff
 DeBuff/Description: Bad things like "flu", "hair loss", "broken leg", etc.
 HealthRecordSummary: Health Record Summary
-BackToDefaultLayout: Back To Default Layout
+BackToStandardLayout: Back To Standard Layout
 Navigation: Navigation

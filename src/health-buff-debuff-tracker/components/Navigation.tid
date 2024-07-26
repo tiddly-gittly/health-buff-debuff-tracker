@@ -7,8 +7,8 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/Navigation
 
 	<$button>
 		<$action-setfield $tiddler="$:/layout" text="" />
-		{{$:/core/images/default-layout}}
-  	<<lingo BackToDefaultLayout>>
+		{{$:/core/images/standard-layout}}
+  	<<lingo BackToStandardLayout>>
 	</$button>
 
 </fieldset>
