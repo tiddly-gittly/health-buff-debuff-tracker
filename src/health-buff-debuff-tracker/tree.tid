@@ -3,3 +3,5 @@ creator: LinOnetwo
 type: text/vnd.tiddlywiki
 
 <<tree prefix:"$:/plugins/linonetwo/health-buff-debuff-tracker/">>
+
+<<tree prefix:"$:/TraitTag/OPMI/">>

@@ -1,0 +1,9 @@
+created: 20241022161139142
+description: Super tag schema
+icon: {{$:/core/images/spiral}}
+modified: 20241022161154566
+tags: $:/tags/wikilabs/fieldswitcher
+title: $:/config/wikilabs/field-editor/schema
+type: text/vnd.tiddlywiki
+
+schema

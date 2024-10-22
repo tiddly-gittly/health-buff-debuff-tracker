@@ -1,0 +1,18 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/en-GB/
+
+TraitTag/MedicalConditionStatus/Title: Medical Condition Status
+TraitTag/MedicalConditionStatus/Description: The state or status at the point during the visit the diagnosis was given.
+TraitTag/MedicalConditionStatus/AdmissionDiagnosis: Admission Diagnosis
+TraitTag/MedicalConditionStatus/CauseOfDeath: Cause of Death
+TraitTag/MedicalConditionStatus/ConditionToBeDiagnosedByProcedure: Condition to Be Diagnosed by Procedure
+TraitTag/MedicalConditionStatus/ConfirmedDiagnosis: Confirmed Diagnosis
+TraitTag/MedicalConditionStatus/ContributoryCauseOfDeath: Contributory Cause of Death
+TraitTag/MedicalConditionStatus/DeathDiagnosis: Death Diagnosis
+TraitTag/MedicalConditionStatus/DischargeDiagnosis: Discharge Diagnosis
+TraitTag/MedicalConditionStatus/PostoperativeDiagnosis: Postoperative Diagnosis
+TraitTag/MedicalConditionStatus/PreliminaryDiagnosis: Preliminary Diagnosis
+TraitTag/MedicalConditionStatus/PreoperativeDiagnosis: Preoperative Diagnosis
+TraitTag/MedicalConditionStatus/PrimaryDiagnosis: Primary Diagnosis
+TraitTag/MedicalConditionStatus/ReferralDiagnosis: Referral Diagnosis
+TraitTag/MedicalConditionStatus/ResolvedCondition: Resolved Condition
+TraitTag/MedicalConditionStatus/SecondaryDiagnosis: Secondary Diagnosis

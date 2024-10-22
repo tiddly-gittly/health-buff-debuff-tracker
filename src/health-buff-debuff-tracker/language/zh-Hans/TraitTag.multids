@@ -1,0 +1,18 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/zh-Hans/
+
+TraitTag/MedicalConditionStatus/Title: 病情状态
+TraitTag/MedicalConditionStatus/Description: 在就诊过程中给出诊断时的状态（入院诊断、最终诊断等），包括诊断是否基于实验室结果确定，是否是排除性诊断，或者是否为初步诊断等。
+TraitTag/MedicalConditionStatus/AdmissionDiagnosis: 入院诊断
+TraitTag/MedicalConditionStatus/CauseOfDeath: 死亡原因
+TraitTag/MedicalConditionStatus/ConditionToBeDiagnosedByProcedure: 通过程序诊断的状况
+TraitTag/MedicalConditionStatus/ConfirmedDiagnosis: 确诊诊断
+TraitTag/MedicalConditionStatus/ContributoryCauseOfDeath: 促成死亡的原因
+TraitTag/MedicalConditionStatus/DeathDiagnosis: 死亡诊断
+TraitTag/MedicalConditionStatus/DischargeDiagnosis: 出院诊断
+TraitTag/MedicalConditionStatus/PostoperativeDiagnosis: 术后诊断
+TraitTag/MedicalConditionStatus/PreliminaryDiagnosis: 初步诊断
+TraitTag/MedicalConditionStatus/PreoperativeDiagnosis: 术前诊断
+TraitTag/MedicalConditionStatus/PrimaryDiagnosis: 主要诊断
+TraitTag/MedicalConditionStatus/ReferralDiagnosis: 转诊诊断
+TraitTag/MedicalConditionStatus/ResolvedCondition: 已解决的病情
+TraitTag/MedicalConditionStatus/SecondaryDiagnosis: 次要诊断

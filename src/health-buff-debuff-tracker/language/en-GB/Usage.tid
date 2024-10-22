@@ -24,3 +24,5 @@ The following tags are used in this entry to indicate that the entry records a s
 </$list>
 
 You can make your own [ext[SuperTag|https://github.com/tiddly-gittly/super-tag/]] by adding [[$:/TraitTag/OPMI/Status]] tags to any tiddler.
+
+Medical Condition Status: The state or status at the point during the visit the diagnosis was given (admitting diagnosis, final diagnosis), whether the diagnosis was determined due to laboratory findings, if the diagnosis was exclusionary, or if it was a preliminary diagnosis, among others.

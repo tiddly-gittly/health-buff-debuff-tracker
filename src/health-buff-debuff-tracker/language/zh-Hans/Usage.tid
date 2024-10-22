@@ -24,3 +24,5 @@ type: text/vnd.tiddlywiki
 </$list>
 
 你可以通过给任意条目添加 [[$:/TraitTag/OPMI/Status]] 标签来制作你自己的[ext[超级标签|https://github.com/tiddly-gittly/super-tag/]]。
+
+病情状态：在就诊过程中给出诊断时的状态（入院诊断、最终诊断等），包括诊断是否基于实验室结果确定，是否是排除性诊断，或者是否为初步诊断等。
