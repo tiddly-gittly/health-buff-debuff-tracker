@@ -7,8 +7,8 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 
 	<$button>
 		<$action-createtiddler
-			$message="tm-new-tiddler"
-			title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
+			$basetitle=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
+			_is_titleless="yes"
 			startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
 			tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}}
 			opmi_medicalConditionStatus="confirmedDiagnosis"
@@ -24,8 +24,8 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	
 	<$button>
 		<$action-createtiddler
-			$message="tm-new-tiddler"
-			title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
+			$basetitle=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
+			_is_titleless="yes"
 			startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
 			tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}}
 			opmi_medicalConditionStatus="confirmedDiagnosis"
@@ -41,8 +41,8 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 
 	<$button>
 		<$action-createtiddler
-			$message="tm-new-tiddler"
-			title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
+			$basetitle=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
+			_is_titleless="yes"
 			startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
 			tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}}
 			opmi_medicalConditionStatus="confirmedDiagnosis"
@@ -57,7 +57,6 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 
 	<$button>
 		<$action-createtiddler
-			$message="tm-new-tiddler"
 			tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/medicine}}
 			icon="$:/plugins/linonetwo/health-buff-debuff-tracker/icons/Medicine"
 		>
