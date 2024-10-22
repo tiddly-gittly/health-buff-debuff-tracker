@@ -42,6 +42,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AddNewItem
 	<$button>
 		<$action-createtiddler
 			$message="tm-new-tiddler"
+			title=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
 			startDate=<<now "[UTC]YYYY0MM0DD0hh0mm0ssXXX">>
 			tags={{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}}
 			opmi_medicalConditionStatus="confirmedDiagnosis"
