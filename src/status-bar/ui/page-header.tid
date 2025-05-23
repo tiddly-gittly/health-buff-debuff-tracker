@@ -1,0 +1,11 @@
+title: $:/plugins/linonetwo/status-bar/ui/page-header
+tags: $:/tags/PageTemplate
+list-before: $:/core/ui/PageTemplate/sidebar
+
+\import [[$:/plugins/linonetwo/status-bar/ui/status-bar]]
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+\procedure config-base() $:/plugins/linonetwo/status-bar/config/
+
+<%if [<config-base>addsuffix[position]get[text]match[top]] :else[<config-base>addsuffix[position]get[text]match[both]] %>
+<$macrocall $name="status-bar"/>
+<%endif%>

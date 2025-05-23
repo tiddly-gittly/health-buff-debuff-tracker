@@ -1,0 +1,10 @@
+{
+  "title": "$:/plugins/linonetwo/status-bar",
+  "name": "status-bar",
+  "author": "linonetwo",
+  "description": "RPG style status for important notes like health condition, pomodoro and gamification reward.",
+  "plugin-type": "plugin",
+  "version": "0.0.2",
+  "list": "readme",
+  "dependents": ["$:/plugins/linonetwo/super-tag"]
+}

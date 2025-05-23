@@ -1,0 +1,11 @@
+title: $:/plugins/linonetwo/status-bar/docs
+caption: 文档
+tags: 
+
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+
+! <<lingo Name>> 文档
+
+<div class="tc-table-of-contents">
+<<toc-selective-expandable "$:/plugins/linonetwo/status-bar/docs" "sort[title]">>
+</div>

@@ -1,0 +1,8 @@
+title: $:/plugins/linonetwo/status-bar/icons/status-bar-icon
+
+<svg width="22pt" height="22pt" class="tc-image-home-button tc-image-button" viewBox="0 0 128 128">
+  <path fill="currentColor" d="M64 16a48 48 0 1 0 48 48A48 48 0 0 0 64 16zm0 84a36 36 0 1 1 36-36 36 36 0 0 1-36 36z"/>
+  <path fill="currentColor" d="M64 48a16 16 0 1 0 16 16 16 16 0 0 0-16-16zm0 24a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+  <path fill="currentColor" d="M120 64h8v8h-8zM0 64h8v8H0zM64 0h8v8h-8zM64 120h8v8h-8z"/>
+  <path fill="currentColor" d="m108.49 19.51 5.66 5.66-5.66 5.66-5.66-5.66 5.66-5.66M19.51 19.51l5.66 5.66-5.66 5.66-5.66-5.66 5.66-5.66M108.49 108.49l5.66 5.66-5.66 5.66-5.66-5.66 5.66-5.66M19.51 108.49l5.66 5.66-5.66 5.66-5.66-5.66 5.66-5.66"/>
+</svg>

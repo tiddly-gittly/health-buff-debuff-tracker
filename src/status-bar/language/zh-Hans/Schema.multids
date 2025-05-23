@@ -1,0 +1,25 @@
+title: $:/plugins/linonetwo/status-bar/language/zh-Hans/Schema
+type: application/x-tiddler-dictionary
+
+StatusBar/Schema/Icon/Title: 图标
+StatusBar/Schema/Icon/Description: 图标维基文本，可以使用嵌入来引用其它图片条目，或直接使用 Emoji
+StatusBar/Schema/Description/Title: 描述
+StatusBar/Schema/Description/Description: 鼠标悬浮时的提示文本
+StatusBar/Schema/Badge/Title: 徽章
+StatusBar/Schema/Badge/Description: 图标右上角的徽章文本，可以用来放置数字等
+StatusBar/Schema/BadgeBgColor/Title: 徽章背景颜色
+StatusBar/Schema/BadgeBgColor/Description: 徽章的背景颜色，支持 CSS 颜色值
+StatusBar/Schema/Click/Title: 点击动作
+StatusBar/Schema/Click/Description: 用户左键点击图标的行为。可以是动作微件或条目名称。如果未指定但项目本身是条目，则打开该条目。
+
+StatusBar/Schema/ShiftClick/Title: Shift 点击动作
+StatusBar/Schema/ShiftClick/Description: 用户按下 Shift 键点击图标的行为。可以是动作微件或条目名称。如果未指定但点击动作是条目，则打开该条目。
+
+StatusBar/Schema/CtrlClick/Title: Ctrl 点击动作
+StatusBar/Schema/CtrlClick/Description: 用户按下 Ctrl 键点击图标的行为。默认会从状态栏移除。可以用动作微件覆盖。
+
+StatusBar/Schema/AltClick/Title: Alt 点击动作
+StatusBar/Schema/AltClick/Description: 用户按下 Alt 键点击图标的行为。可以是动作微件或条目名称。如果未指定但点击动作是条目，则打开该条目。
+
+StatusBar/Schema/Priority/Title: 优先级
+StatusBar/Schema/Priority/Description: 条目在状态栏中的排序优先级，数字越小越靠前

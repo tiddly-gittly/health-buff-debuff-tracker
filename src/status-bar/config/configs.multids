@@ -1,0 +1,15 @@
+title: $:/plugins/linonetwo/status-bar/config/
+
+showInSidebar: yes
+autoHideEmpty: yes
+position: sidebar
+customStyles: no
+orderByField: list-order
+
+# 自定义样式值
+customStyleValues/icon-size: 32px
+customStyleValues/icon-gap: 0.5em
+customStyleValues/background-opacity: 1
+customStyleValues/background-blur: 0px
+customStyleValues/border-radius: 4px
+customStyleValues/animation: yes

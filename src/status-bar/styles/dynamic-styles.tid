@@ -1,0 +1,39 @@
+title: $:/plugins/linonetwo/status-bar/styles/dynamic-styles
+tags: $:/tags/Stylesheet
+
+\procedure config-base() $:/plugins/linonetwo/status-bar/config/
+
+<$let customStylesEnabled={{{ [<config-base>addsuffix[customStyles]get[text]] }}}>
+
+<$list filter="[<customStylesEnabled>match[yes]]" variable="ignore">
+/* 自定义样式配置启用 */
+.tc-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: {{{ [{<config-base>addsuffix[customStyleValues/icon-gap]}get[text]] ~[0.5em] }}};
+  background-color: rgba(
+    {{$:/palette##tiddler-background-color/rgb/r}}, 
+    {{$:/palette##tiddler-background-color/rgb/g}}, 
+    {{$:/palette##tiddler-background-color/rgb/b}}, 
+    {{{ [{<config-base>addsuffix[customStyleValues/background-opacity]}get[text]] ~[1] }}}
+  );
+  backdrop-filter: blur({{{ [{<config-base>addsuffix[customStyleValues/background-blur]}get[text]] ~[0px] }}});
+  border-radius: {{{ [{<config-base>addsuffix[customStyleValues/border-radius]}get[text]] ~[4px] }}};
+}
+
+.tc-status-bar-item {
+  width: {{{ [{<config-base>addsuffix[customStyleValues/icon-size]}get[text]] ~[32px] }}};
+  height: {{{ [{<config-base>addsuffix[customStyleValues/icon-size]}get[text]] ~[32px] }}};
+  <%if [{<config-base>addsuffix[customStyleValues/animation]}get[text]match[yes]] %>
+  transition: background-color 0.2s, transform 0.1s;
+  <%endif%>
+}
+
+.tc-status-bar-item:hover {
+  <%if [{<config-base>addsuffix[customStyleValues/animation]}get[text]match[yes]] %>
+  transform: translateY(-2px);
+  <%endif%>
+}
+</$list>
+
+</$let>

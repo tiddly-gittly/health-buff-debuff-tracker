@@ -1,0 +1,12 @@
+title: $:/plugins/linonetwo/status-bar/examples/health
+tags: $:/Tags/StatusBar/Item
+icon: 🤒
+description: 感冒中，多喝热水
+@status-bar/badge: 2
+@status-bar/badgeBgColor: #ff5555
+
+这是一个健康状态的示例。当你生病时，可以将类似的条目添加到状态栏，提醒自己注意健康和修改生活习惯。
+
+徽章上的数字 "2" 表示预计还需要2天才能康复。
+
+点击此图标会导航到"感冒记录"条目（如果它存在的话）。

@@ -1,0 +1,24 @@
+title: $:/plugins/linonetwo/status-bar/language/en-GB/Schema
+type: application/x-tiddler-dictionary
+
+StatusBar/Schema/Icon/Title: Icon
+StatusBar/Schema/Icon/Description: Icon wikitext, can use embeds to reference other image tiddlers, or directly use Emoji
+StatusBar/Schema/Description/Title: Description
+StatusBar/Schema/Description/Description: Tooltip text when hovering over the icon
+StatusBar/Schema/Badge/Title: Badge
+StatusBar/Schema/Badge/Description: Badge text for the top-right of the icon, can be used for numbers etc.
+StatusBar/Schema/BadgeBgColor/Title: Badge Background Color
+StatusBar/Schema/BadgeBgColor/Description: Badge background color, supports CSS color values
+StatusBar/Schema/Click/Title: Click Action
+StatusBar/Schema/Click/Description: User left-click behavior on the icon. Can be an action widget or a tiddler title. If not specified but the item itself is a tiddler, will open that tiddler.
+
+StatusBar/Schema/ShiftClick/Title: Shift+Click Action
+StatusBar/Schema/ShiftClick/Description: User behavior when clicking the icon while pressing the Shift key. Can be an action widget or a tiddler title. If not specified but click action is a tiddler, will open that tiddler.
+
+StatusBar/Schema/CtrlClick/Title: Ctrl+Click Action
+StatusBar/Schema/CtrlClick/Description: User behavior when clicking the icon while pressing the Ctrl key. Default is to remove from status bar. Can be overridden with an action widget.
+
+StatusBar/Schema/AltClick/Title: Alt+Click Action
+StatusBar/Schema/AltClick/Description: User behavior when clicking the icon while pressing the Alt key. Can be an action widget or a tiddler title. If not specified but click action is a tiddler, will open that tiddler.
+StatusBar/Schema/Priority/Title: Priority
+StatusBar/Schema/Priority/Description: Sort priority of the item in the status bar. Lower numbers are displayed first.

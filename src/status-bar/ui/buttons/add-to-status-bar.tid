@@ -1,0 +1,36 @@
+title: $:/plugins/linonetwo/status-bar/ui/buttons/add-to-status-bar
+tags: $:/tags/ViewToolbar
+caption: {{$:/plugins/linonetwo/status-bar/icons/add-to-status-bar}} <<lingo Button/AddToStatusBar>>
+description: <<lingo Button/AddToStatusBar/Tooltip $:/plugins/linonetwo/status-bar/language/>>
+list-before: $:/core/ui/Buttons/info
+
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+
+\whitespace trim
+<$fieldmangler>
+  <%if [<currentTiddler>!tag[$:/Tags/StatusBar/Item]] %>
+    <$wikify name="tooltip" text="<<lingo Button/AddToStatusBar/Tooltip>>" mode="inline">
+      <$button tooltip=<<tooltip>> aria-label=<<tooltip>> class=<<tv-config-toolbar-class>>>
+        <$action-sendmessage $message="tm-add-tag" $param="$:/Tags/StatusBar/Item"/>
+        <%if [<tv-config-toolbar-icons>match[yes]]%>
+          {{$:/plugins/linonetwo/status-bar/icons/add-to-status-bar}}
+        <%endif%>
+        <%if [<tv-config-toolbar-text>match[yes]]%>
+          <span class="tc-btn-text"><<lingo Button/AddToStatusBar>></span>
+        <%endif%>
+      </$button>
+    </$wikify>
+  <%else%>
+    <$wikify name="tooltip" text="<<lingo Button/RemoveFromStatusBar/Tooltip>>" mode="inline">
+      <$button tooltip=<<tooltip>> aria-label=<<tooltip>> class=<<tv-config-toolbar-class>>>
+        <$action-sendmessage $message="tm-remove-tag" $param="$:/Tags/StatusBar/Item"/>
+        <%if [<tv-config-toolbar-icons>match[yes]]%>
+          {{$:/plugins/linonetwo/status-bar/icons/remove-from-status-bar}}
+        <%endif%>
+        <%if [<tv-config-toolbar-text>match[yes]]%>
+          <span class="tc-btn-text"><<lingo Button/RemoveFromStatusBar>></span>
+        <%endif%>
+      </$button>
+    </$wikify>
+  <%endif%>
+</$fieldmangler>
