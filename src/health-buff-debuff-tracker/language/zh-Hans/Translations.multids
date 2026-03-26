@@ -1,4 +1,4 @@
-title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/zh-Hans/
+﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/zh-Hans/
 
 Name: 健康增益和减益追踪器
 ShortName: 健康记录
@@ -17,3 +17,21 @@ DeBuff/Description: 诸如「感冒」、「脱发」、「断腿」等不好的
 HealthRecordSummary: 健康记录摘要
 BackToStandardLayout: 返回标准布局
 Navigation: 导航
+
+MedicineCheckin: 药物打卡
+MedicineCheckinHeatmap: 最近一周药物打卡趋势
+MedicineCheckinDetails: 打卡详情
+TodayMedicineCheckinDetails: 今日打卡详情
+MedicineCheckinHistoryHint: 点击折线或下方按钮可查看对应药物历史
+MedicineCheckinHistory: 打卡历史明细
+OpenHistory: 打开历史记录
+CloseHistory: 收起历史记录
+TotalCheckins: 总打卡次数
+ActiveDays: 活跃天数
+LastCheckin: 最近一次打卡
+NoMedicineCheckinHistory: 还没有打卡历史记录
+ShowDetails: 显示详情
+EmptyDeBuff: 暂无相关减益
+EmptyBuff: 暂无相关增益
+EmptyBodyCondition: 暂无身体状态
+EmptyMedicine: 暂无药物记录

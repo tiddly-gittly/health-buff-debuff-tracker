@@ -1,0 +1,52 @@
+﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
+
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin]]
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
+\whitespace trim
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+<div class="health-buff-debuff-tracker-checkin-container">
+
+!! <<lingo MedicineCheckin>>
+
+<div class="health-buff-debuff-tracker-checkin-buttons">
+<$list filter=<<get-all-medicine>> variable="currentMedicine" emptyMessage="<em>请先在「添加新项目」中添加药物</em>">
+<$let logTitle={{{ [<currentMedicine>addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
+<$button class="health-buff-debuff-tracker-checkin-btn">
+<$action-add-medicine-checkin-log $logTitle=<<logTitle>>/>
+<$transclude $tiddler={{{ [<currentMedicine>get[icon]] }}} $mode="inline"/> <$text text={{{ [<currentMedicine>get[caption]] :else[<currentMedicine>] }}}/>
+</$button>
+</$let>
+</$list>
+</div>
+
+!!! <<lingo MedicineCheckinHeatmap>>
+
+<div class="health-buff-debuff-tracker-heatmap-container">
+<$medicine-checkin-weekly-chart/>
+<div class="health-buff-debuff-tracker-heatmap-hint"><<lingo MedicineCheckinHistoryHint>></div>
+</div>
+
+!!! <<lingo TodayMedicineCheckinDetails>>
+
+<div class="health-buff-debuff-tracker-checkin-details">
+<$list filter=<<get-all-checkin-logs>> variable="logTitle" emptyMessage="<em>暂无打卡记录</em>">
+<$let medicineTitle={{{ [<logTitle>removeprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
+<$let todayCount={{{ [<logTitle>medicinecheckinstat[today]] }}}>
+<$list filter={{{ [<todayCount>!match[0]!is[blank]] }}}>
+<div class="health-buff-debuff-tracker-medicine-log-item">
+<strong><$text text={{{ [<medicineTitle>get[caption]] :else[<medicineTitle>] }}}/></strong>
+<span class="health-buff-debuff-tracker-checkin-count"><$text text=<<todayCount>>/> 次</span>
+<$button class="health-buff-debuff-tracker-btn-small">
+<$action-navigate $to=<<logTitle>>/>
+ <<lingo OpenHistory>>
+</$button>
+</div>
+</$list>
+</$let>
+</$let>
+</$list>
+</div>
+
+</div>

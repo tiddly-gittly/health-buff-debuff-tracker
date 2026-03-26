@@ -3,3 +3,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/filters/health
 \define filter-is-active() [<currentTiddler>has[opmi_medicalConditionStatus]!field:opmi_medicalConditionStatus[resolvedCondition]]
 
 \define get-all-debuff() [all[tiddlers]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}filter<filter-is-active>]
+
+\define get-all-buff() [all[tiddlers]tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}]
+
+\define get-all-condition() [all[tiddlers]tag[$:/tags/HealthTracker/Condition]]

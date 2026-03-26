@@ -15,3 +15,13 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicTable}}
 
 </article>
+
+<div class="health-buff-debuff-tracker-summary-tables">
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineSection}}
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/components/ConditionTable}}
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/components/BuffTable}}
+
+</div>

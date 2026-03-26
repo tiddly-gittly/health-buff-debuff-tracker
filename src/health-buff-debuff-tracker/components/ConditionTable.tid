@@ -1,4 +1,4 @@
-title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicTable
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/ConditionTable
 
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
 \whitespace trim
@@ -23,21 +23,21 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 \end
 
 <div class="health-buff-debuff-tracker-summary-section">
-<$let count={{{ [subfilter<get-all-debuff>count[]] }}}>
+<$let count={{{ [subfilter<get-all-condition>count[]] }}}>
 
-!!! <<count>> <<lingo DeBuff>>
+!!! <<count>> <<lingo BodyCondition>>
 
 <$list filter="[<count>match[0]]" variable="ignore">
 <div class="health-buff-debuff-tracker-empty-state">
   <$transclude $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/icons/EmptyBox" size="3em"/>
-  <span><<lingo EmptyDeBuff>></span>
+  <span><<lingo EmptyBodyCondition>></span>
 </div>
 </$list>
 
 <$list filter="[<count>!match[0]]" variable="ignore">
 <div class="health-buff-debuff-tracker-dynamic-table">
 <$basic-table
-	filter=<<get-all-debuff>>
+	filter=<<get-all-condition>>
 	columns=<<columns>>
 	width="100%"
 	height="110px"

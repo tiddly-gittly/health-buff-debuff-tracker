@@ -1,0 +1,7 @@
+﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin
+
+\define get-all-medicine() [all[tiddlers]tag[$:/tags/HealthTracker/Medicine]]
+
+\define get-medicine-checkin-log-title(medicineName) $:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/$(medicineName)$
+
+\define get-all-checkin-logs() [all[tiddlers]prefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]]

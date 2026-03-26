@@ -1,0 +1,49 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineSection
+
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin]]
+\whitespace trim
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+\procedure medicine-columns()
+[
+  {
+    field: 'title',
+    title: 'title',
+    width: 'auto',
+    sort: true,
+  },
+]
+\end
+
+<div class="health-buff-debuff-tracker-summary-section">
+<$let count={{{ [subfilter<get-all-medicine>count[]] }}}>
+
+!!! <<count>> <<lingo Medicine>>
+
+<div class="health-buff-debuff-tracker-medicine-section">
+
+<$list filter="[<count>match[0]]" variable="ignore">
+<div class="health-buff-debuff-tracker-empty-state">
+  <$transclude $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/icons/EmptyBox" size="3em"/>
+  <span><<lingo EmptyMedicine>></span>
+</div>
+</$list>
+
+<$list filter="[<count>!match[0]]" variable="ignore">
+<div class="health-buff-debuff-tracker-dynamic-table">
+<$basic-table
+  filter=<<get-all-medicine>>
+  columns=<<medicine-columns>>
+  width="100%"
+  height="110px"
+  search="search-bar-top"
+  sort="title"
+/>
+</div>
+</$list>
+
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel}}
+</div>
+</$let>
+</div>
