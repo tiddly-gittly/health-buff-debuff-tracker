@@ -26,14 +26,12 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/BuffTable
 <$let count={{{ [subfilter<get-all-buff>count[]] }}}>
 
 !!! <<count>> <<lingo Buff>>
-
 <$list filter="[<count>match[0]]" variable="ignore">
 <div class="health-buff-debuff-tracker-empty-state">
   <$transclude $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/icons/EmptyBox" size="3em"/>
   <span><<lingo EmptyBuff>></span>
 </div>
 </$list>
-
 <$list filter="[<count>!match[0]]" variable="ignore">
 <div class="health-buff-debuff-tracker-dynamic-table">
 <$basic-table

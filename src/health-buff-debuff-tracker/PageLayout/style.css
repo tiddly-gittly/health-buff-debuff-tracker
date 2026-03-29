@@ -322,3 +322,18 @@
 .health-buff-debuff-tracker-empty-state svg {
   fill: currentColor;
 }
+
+.health-buff-debuff-tracker-dynamic-table .hyper-table-container {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+
+
+.health-buff-debuff-tracker-summary-section p, .health-buff-debuff-tracker-medicine-section p, .health-buff-debuff-tracker-checkin-details p {
+  margin: 0;
+  padding: 0;
+}
+
+.health-buff-debuff-tracker-medicine-section p, .health-buff-debuff-tracker-checkin-details p { margin: 0; padding: 0; }
+

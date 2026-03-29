@@ -1,4 +1,4 @@
-﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
 
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin]]
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
@@ -8,45 +8,51 @@
 
 <div class="health-buff-debuff-tracker-checkin-container">
 
-!! <<lingo MedicineCheckin>>
-
+!!! <<lingo MedicineCheckin>>
 <div class="health-buff-debuff-tracker-checkin-buttons">
-<$list filter=<<get-all-medicine>> variable="currentMedicine" emptyMessage="<em>请先在「添加新项目」中添加药物</em>">
-<$let logTitle={{{ [<currentMedicine>addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
-<$button class="health-buff-debuff-tracker-checkin-btn">
-<$action-add-medicine-checkin-log $logTitle=<<logTitle>>/>
-<$transclude $tiddler={{{ [<currentMedicine>get[icon]] }}} $mode="inline"/> <$text text={{{ [<currentMedicine>get[caption]] :else[<currentMedicine>] }}}/>
-</$button>
-</$let>
-</$list>
-</div>
-
-!!! <<lingo MedicineCheckinHeatmap>>
-
-<div class="health-buff-debuff-tracker-heatmap-container">
-<$medicine-checkin-weekly-chart/>
-<div class="health-buff-debuff-tracker-heatmap-hint"><<lingo MedicineCheckinHistoryHint>></div>
+  <$list filter=<<get-all-medicine>> variable="currentMedicine">
+    <$let logTitle={{{ [<currentMedicine>addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
+      <$button class="health-buff-debuff-tracker-checkin-btn">
+        <$action-create-activity-log $logTitle=<<logTitle>> $logType="daily-count" />
+        <$action-add-activity-to-log $logTitle=<<logTitle>> $logType="daily-count" />
+        <$transclude $tiddler={{{ [<currentMedicine>get[icon]] }}} $mode="inline"/> <$text text={{{ [<currentMedicine>get[caption]] :else[<currentMedicine>] }}}/>
+      </$button>
+    </$let>
+  </$list>
 </div>
 
 !!! <<lingo TodayMedicineCheckinDetails>>
-
 <div class="health-buff-debuff-tracker-checkin-details">
-<$list filter=<<get-all-checkin-logs>> variable="logTitle" emptyMessage="<em>暂无打卡记录</em>">
-<$let medicineTitle={{{ [<logTitle>removeprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
-<$let todayCount={{{ [<logTitle>medicinecheckinstat[today]] }}}>
-<$list filter={{{ [<todayCount>!match[0]!is[blank]] }}}>
-<div class="health-buff-debuff-tracker-medicine-log-item">
-<strong><$text text={{{ [<medicineTitle>get[caption]] :else[<medicineTitle>] }}}/></strong>
-<span class="health-buff-debuff-tracker-checkin-count"><$text text=<<todayCount>>/> 次</span>
-<$button class="health-buff-debuff-tracker-btn-small">
-<$action-navigate $to=<<logTitle>>/>
- <<lingo OpenHistory>>
-</$button>
-</div>
-</$list>
-</$let>
-</$let>
-</$list>
+  <$let activeCheckinCount={{{ [subfilter<get-all-checkin-logs>medicinecheckinstat[today]sum[]] }}}>
+    <$list filter="[<activeCheckinCount>match[0]]" variable="ignore">
+      <div class="health-buff-debuff-tracker-empty-state">
+        <$transclude $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/icons/EmptyBox" size="3rem"/>
+        <span><<lingo NoMedicineCheckinHistory>></span>
+      </div>
+    </$list>
+    <$list filter="[<activeCheckinCount>!match[0]]" variable="ignore">
+      <$list filter=<<get-all-checkin-logs>> variable="logTitle">
+        <$let medicineTitle={{{ [<logTitle>removeprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
+          <$let todayCount={{{ [<logTitle>medicinecheckinstat[today]] }}}>
+            <$list filter={{{ [<todayCount>!match[0]!is[blank]] }}}>
+              <div class="health-buff-debuff-tracker-medicine-log-item">
+                <strong>
+                  <$text text={{{ [<medicineTitle>get[caption]] :else[<medicineTitle>] }}}/>
+                </strong>
+                <span class="health-buff-debuff-tracker-checkin-count">
+                  <$text text=<<todayCount>>/> 次
+                </span>
+                <$button class="health-buff-debuff-tracker-btn-small">
+                  <$action-navigate $to=<<logTitle>>/>
+                  <<lingo OpenHistory>>
+                </$button>
+              </div>
+            </$list>
+          </$let>
+        </$let>
+      </$list>
+    </$list>
+  </$let>
 </div>
 
 </div>
