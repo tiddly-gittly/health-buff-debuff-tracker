@@ -1,0 +1,5 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineBodyFilter
+tags: $:/tags/ViewTemplateBodyFilter
+list-before: $:/core/ui/ViewTemplate/body/default
+
+[[$:/tags/HealthTracker/Medicine]] :intersect[all[current]tags[]] +[limit[1]then[$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineBody]]

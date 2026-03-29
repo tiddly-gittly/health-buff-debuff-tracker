@@ -1,0 +1,55 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineBody
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin]]
+\whitespace trim
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+\procedure activity-log-columns()
+[
+  {
+    field: "title",
+    title: "时间戳/键",
+    width: 220,
+    sort: "number"
+  },
+  {
+    field: "value",
+    title: "数据（逗号分隔）",
+    width: "auto"
+  }
+]
+\end
+
+<$let logTitle={{{ [<currentTiddler>addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
+
+<div class="health-buff-debuff-tracker-medicine-view-body">
+
+<$transclude $tiddler="$:/core/ui/ViewTemplate/body/default"/>
+
+<div class="health-buff-debuff-tracker-medicine-chart-section">
+
+!!! <<lingo MedicineCheckinHeatmap>>
+
+<div class="health-buff-debuff-tracker-heatmap-chart">
+<$echarts $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineBodyChart" logTitle=<<logTitle>> $height="200px" $width="100%"/>
+</div>
+
+</div>
+
+<div class="health-buff-debuff-tracker-medicine-history-section">
+
+!!! <<lingo MedicineCheckinHistory>>
+
+<$basic-table
+  filter="[<logTitle>indexes[]]"
+  columns=<<activity-log-columns>>
+  width="100%"
+  height="320px"
+  sort="-title"
+/>
+
+</div>
+
+</div>
+
+</$let>

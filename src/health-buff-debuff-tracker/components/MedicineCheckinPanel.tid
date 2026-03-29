@@ -1,4 +1,4 @@
-title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
+﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
 
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin]]
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
@@ -12,11 +12,16 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineChecki
 <div class="health-buff-debuff-tracker-checkin-buttons">
   <$list filter=<<get-all-medicine>> variable="currentMedicine">
     <$let logTitle={{{ [<currentMedicine>addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
-      <$button class="health-buff-debuff-tracker-checkin-btn">
-        <$action-create-activity-log $logTitle=<<logTitle>> $logType="daily-count" />
-        <$action-add-activity-to-log $logTitle=<<logTitle>> $logType="daily-count" />
-        <$transclude $tiddler={{{ [<currentMedicine>get[icon]] }}} $mode="inline"/> <$text text={{{ [<currentMedicine>get[caption]] :else[<currentMedicine>] }}}/>
-      </$button>
+      <div class="health-buff-debuff-tracker-checkin-card">
+        <$button class="health-buff-debuff-tracker-checkin-btn">
+          <$action-create-activity-log $logTitle=<<logTitle>> $logType="daily-count" />
+          <$action-add-activity-to-log $logTitle=<<logTitle>> $logType="daily-count" />
+          <$transclude $tiddler={{{ [<currentMedicine>get[icon]] }}} $mode="inline"/> <$text text={{{ [<currentMedicine>get[caption]] :else[<currentMedicine>] }}}/>
+        </$button>
+        <div class="health-buff-debuff-tracker-checkin-minichart">
+          <$echarts $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinMiniChart" logTitle=<<logTitle>> $height="60px" $width="100%"/>
+        </div>
+      </div>
     </$let>
   </$list>
 </div>

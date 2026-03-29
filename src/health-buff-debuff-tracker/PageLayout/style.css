@@ -23,9 +23,30 @@
 
 .health-buff-debuff-tracker-checkin-buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1em;
   margin: 1.5em 0;
+}
+
+.health-buff-debuff-tracker-checkin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.health-buff-debuff-tracker-checkin-card .health-buff-debuff-tracker-checkin-btn {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+
+.health-buff-debuff-tracker-checkin-minichart {
+  border: 2px solid currentColor;
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  overflow: hidden;
+  opacity: 0.7;
 }
 
 .health-buff-debuff-tracker-checkin-btn {
