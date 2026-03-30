@@ -1,0 +1,49 @@
+title: $:/plugins/linonetwo/status-bar/readme
+
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+
+! <<lingo Name>>
+
+<<lingo Description>>
+
+!! 如何使用
+
+添加 `$:/Tags/StatusBar/Item` 标签到你想要在状态栏中显示的条目上，它就会使用 icon 字段展示图片，并用 description 或 caption 字段作为鼠标悬浮时展示的工具提示。
+
+常见用途：
+
+# 健康状况：对比较需要关注治疗的症状，将它添加到状态栏上提醒自己修改生活习惯以便提早康复；
+#* 对于需要定期服药的症状、对于需要定期复查的症状，通过定时器定期添加 `$:/Tags/StatusBar/Item` 标签，从而让它定期展示到状态栏上。
+# 番茄钟：提示进行中的倒计时、正计时，左键点击打开计时器。
+# 游戏化奖励：提示运行中的奖励，一般也是倒计时，例如表示「玩一小时游戏」的进行时。
+
+`Ctrl` 键加左键点击一个图标，可以去掉它在状态栏中的显示（通过去掉条目上的 `$:/Tags/StatusBar/Item` 标签）。
+
+!! 示例
+
+要添加预置的示例条目，请访问控制面板（齿轮图标）中的"RPG风格状态栏"设置页面。
+
+!! 配置
+
+在控制面板中的"RPG风格状态栏"部分可以进行以下配置：
+
+* 选择状态栏显示位置（顶部、侧边栏或两者）
+* 设置是否自动隐藏空状态栏
+* 添加预置的示例条目
+
+!! 开发者高级设置
+
+!!! 字段
+
+* `icon`：图标维基文本，可以使用嵌入来引用其它图片条目，或直接使用 Emoji
+* `description`：鼠标悬浮时的提示文本，如果未填则会使用 `caption` 字段
+* `@status-bar/badge`：图标右上角的徽章文本，可以用来放置数字等
+* `@status-bar/badgeBgColor`：徽章的背景颜色，支持 CSS 颜色值
+* `@status-bar/click`：用户左键点击图标的行为。应该放动作微件。
+* `@status-bar/shiftClick`：用户按下 `Shift` 键时，点击图标的行为。应该放动作微件。
+* `@status-bar/ctrlClick`：用户按下 `Ctrl` 键时，点击图标的行为。应该放动作微件。
+* `@status-bar/altClick`：用户按下 `Alt` 键时，点击图标的行为。应该放动作微件。
+
+!!! 更多帮助
+
+有关更多使用信息，请参阅 [[状态栏使用帮助|$:/plugins/linonetwo/status-bar/help]]。

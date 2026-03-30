@@ -1,0 +1,62 @@
+title: $:/plugins/linonetwo/status-bar/styles
+tags: $:/tags/Stylesheet
+
+\procedure config-base() $:/plugins/linonetwo/status-bar/config/
+
+/* 只应用基础样式，高级样式由 dynamic-styles.tid 控制 */
+.tc-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  padding: 5px;
+  background-color: <<colour page-background>>;
+  border-radius: 4px;
+  border: 1px solid <<colour tiddler-border>>;
+  margin-bottom: 10px;
+}
+
+.tc-status-bar-item {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: <<colour background>>;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.tc-status-bar-item:hover {
+  background-color: <<colour primary>>;
+  transform: translateY(-2px);
+}
+
+.tc-status-bar-item img {
+  max-width: 24px;
+  max-height: 24px;
+}
+
+.tc-status-bar-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background-color: #ff5555;
+  color: white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* 当无内容区域时收起状态栏 */
+.tc-status-bar:empty {
+  display: none;
+}

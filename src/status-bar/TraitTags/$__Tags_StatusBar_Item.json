@@ -1,0 +1,61 @@
+[
+  {
+    "title": "$:/Tags/StatusBar/Item",
+    "color": "#bf8dfa",
+    "icon": "$:/plugins/linonetwo/status-bar/icons/status-bar-icon",
+    "description": "标记要在状态栏中显示的条目",
+    "tags": "$:/SuperTag/TraitTag",
+    "schema": {
+      "type": "object",
+      "lingo-base": "$:/plugins/linonetwo/status-bar/language/",
+      "properties": {
+        "icon": {
+          "type": "string",
+          "title": "StatusBar/Schema/Icon/Title",
+          "description": "StatusBar/Schema/Icon/Description"
+        },
+        "description": {
+          "type": "string",
+          "title": "StatusBar/Schema/Description/Title",
+          "description": "StatusBar/Schema/Description/Description"
+        },
+        "@status-bar/badge": {
+          "type": "string",
+          "title": "StatusBar/Schema/Badge/Title",
+          "description": "StatusBar/Schema/Badge/Description"
+        },
+        "@status-bar/badgeBgColor": {
+          "type": "string",
+          "title": "StatusBar/Schema/BadgeBgColor/Title",
+          "description": "StatusBar/Schema/BadgeBgColor/Description",
+          "default": "#ff5555"
+        },
+        "@status-bar/click": {
+          "type": "string",
+          "title": "StatusBar/Schema/Click/Title",
+          "description": "StatusBar/Schema/Click/Description"
+        },
+        "@status-bar/shiftClick": {
+          "type": "string",
+          "title": "StatusBar/Schema/ShiftClick/Title",
+          "description": "StatusBar/Schema/ShiftClick/Description"
+        },
+        "@status-bar/ctrlClick": {
+          "type": "string",
+          "title": "StatusBar/Schema/CtrlClick/Title",
+          "description": "StatusBar/Schema/CtrlClick/Description"
+        },
+        "@status-bar/altClick": {
+          "type": "string",
+          "title": "StatusBar/Schema/AltClick/Title",
+          "description": "StatusBar/Schema/AltClick/Description"
+        },
+        "@status-bar/priority": {
+          "type": "number",
+          "title": "StatusBar/Schema/Priority/Title",
+          "description": "StatusBar/Schema/Priority/Description"
+        }
+      }
+    }
+  }
+]

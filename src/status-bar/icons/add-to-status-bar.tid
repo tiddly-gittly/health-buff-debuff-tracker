@@ -1,0 +1,8 @@
+title: $:/plugins/linonetwo/status-bar/icons/add-to-status-bar
+tags: $:/tags/Image
+
+<svg width="22pt" height="22pt" class="tc-image-add-to-statusbar tc-image-button" viewBox="0 0 24 24">
+<path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h14V5H5z"/>
+<path d="M14 9a1 1 0 0 1 0 2h-3v3a1 1 0 0 1-2 0v-3H6a1 1 0 0 1 0-2h3V6a1 1 0 0 1 2 0v3h3z"/>
+<path d="M18 15a1 1 0 0 1 0 2h-4a1 1 0 0 1 0-2h4z"/>
+</svg>

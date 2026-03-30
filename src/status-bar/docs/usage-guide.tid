@@ -1,0 +1,55 @@
+title: $:/plugins/linonetwo/status-bar/docs/usage-guide
+tags: $:/plugins/linonetwo/status-bar/docs
+caption: 使用指南
+
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+
+! <<lingo Name>> 使用指南
+
+!! 基本使用方法
+
+要使用状态栏功能，你需要：
+
+1. 创建一个条目
+2. 添加 `$:/Tags/StatusBar/Item` 标签
+3. 设置必要的字段
+4. 也可以通过阅读视图中的状态栏按钮快速添加/移除条目
+
+!! 必要字段介绍
+
+|!字段名|!描述|!示例值|
+|icon|显示在状态栏的图标|🏆 或 $:/core/images/star-filled|
+|description|鼠标悬停时显示的提示文本|当前健康状态: 良好|
+|@status-bar/badge|徽章上显示的文本/数字|5 或 ⚠️|
+|@status-bar/badgeBgColor|徽章的背景颜色|#ff5555 或 green|
+|@status-bar/click|点击图标时执行的操作|<$action-navigate $to='我的健康记录'/>|
+|@status-bar/shiftClick|按住Shift点击时执行的操作|<$action-sendmessage $message="tm-new-tiddler" title="健康日志" tags="健康"/>|
+|@status-bar/ctrlClick|按住Ctrl点击时执行的操作|<$action-sendmessage $message="tm-close-tiddler"/>|
+|@status-bar/altClick|按住Alt点击时执行的操作|<$action-setfield $tiddler="$:/temp/healthState" $value="优秀"/>|
+
+!! 高级使用技巧
+
+* '''动态徽章''': 你可以使用筛选器表达式来动态设置徽章内容，例如：`{{{ [tag[Task]!has[draft.of]!tag[done]count[]] }}}`
+* '''条件显示''': 创建一个widget并使用条件判断来决定是否添加标签
+* '''排序控制''': 使用 `list-before` 或 `list-after` 字段控制状态项在状态栏中的顺序
+
+!! 应用场景
+
+* '''健康状态跟踪''': 显示当前健康状况，如体温、情绪等
+* '''番茄钟计时''': 显示当前工作/休息时间状态
+* '''任务完成情况''': 显示今日待办任务数量
+* '''习惯培养''': 显示今日习惯完成度
+* '''游戏化奖励''': 显示当前获得的成就或积分
+
+!! 与其他插件集成
+
+* '''super-tag插件''': 提供表单化的字段编辑界面
+* '''任务管理插件''': 显示任务统计信息
+* '''番茄钟插件''': 显示计时状态
+
+!! 视频演示
+
+<div class="tc-image-caption">
+[img width=100% [https://example.com/statusbar-demo.gif]]
+<div class="tc-image-caption-text">状态栏使用演示</div>
+</div>

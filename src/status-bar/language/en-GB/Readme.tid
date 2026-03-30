@@ -1,0 +1,31 @@
+title: $:/plugins/linonetwo/status-bar/language/en-GB/Readme
+
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+
+! <<lingo Name>>
+
+<<lingo Description>>
+
+!! Example usage for end users
+
+Add the `$:/Tags/StatusBar/Item` tag to any tiddler that you want to display in the status bar. It will show the image using the icon field and use the description or caption field as a tooltip when hovering.
+
+# Health status: For symptoms that need attention, add them to the status bar to remind yourself to modify your lifestyle for early recovery;
+#* For symptoms requiring regular medication or periodic review, use a timer to periodically add the `$:/Tags/StatusBar/Item` tag to display them in the status bar.
+# Pomodoro timer: Shows ongoing countdown or count-up timers, left-click to open the timer.
+# Gamification rewards: Indicates running rewards, typically countdown timers, such as representing "playing games for one hour" in progress.
+
+`Ctrl` key plus left-click on an icon will remove it from the status bar (by removing the `$:/Tags/StatusBar/Item` tag from the tiddler).
+
+!! Advanced settings for developers
+
+!!! Fields
+
+* `icon`: Icon wikitext, can use embeds to reference other image tiddlers, or directly use Emoji
+* `description`: Tooltip text when hovering, if not filled in, the `caption` field will be used
+* `@status-bar/badge`: Badge text for the top-right of the icon, can be used for numbers etc.
+* `@status-bar/badgeBgColor`: Badge background color, supports CSS color values
+* `@status-bar/click`: User left-click behavior on the icon. Should contain an action widget.
+* `@status-bar/shiftClick`: User behavior when clicking the icon while pressing the `Shift` key. Should contain an action widget.
+* `@status-bar/ctrlClick`: User behavior when clicking the icon while pressing the `Ctrl` key. Should contain an action widget.
+* `@status-bar/altClick`: User behavior when clicking the icon while pressing the `Alt` key. Should contain an action widget.

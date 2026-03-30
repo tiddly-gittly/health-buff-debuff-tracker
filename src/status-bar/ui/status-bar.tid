@@ -1,0 +1,92 @@
+title: $:/plugins/linonetwo/status-bar/ui/status-bar
+
+\procedure config-base() $:/plugins/linonetwo/status-bar/config/
+
+\procedure handle-status-bar-click(itemTiddler, clickAction, shiftClickAction, ctrlClickAction, altClickAction)
+  <$log />
+  <%if [<modifier>match[normal]] %>
+    <%if [<clickAction>!is[blank]] %>
+      <<clickAction>>
+    <%else%>
+      <$log itemTiddler=<<itemTiddler>>/>
+      <$action-navigate $to=<<itemTiddler>>/>
+    <%endif%>
+  <%elseif [<modifier>match[shift]] %>
+    <%if [<shiftClickAction>!is[blank]] %>
+      <<shiftClickAction>>
+    <%endif%>
+  <%elseif [<modifier>match[ctrl]] %>
+    <%if [<ctrlClickAction>!is[blank]] %>
+      <<ctrlClickAction>>
+    <%else%>
+      <$transclude $variable="tagmangler-remove-tag" tag="$:/Tags/StatusBar/Item"/>
+    <%endif%>
+  <%elseif [<modifier>match[alt]] %>
+    <%if [<altClickAction>!is[blank]] %>
+      <<altClickAction>>
+    <%endif%>
+  <%endif%>
+\end
+
+\procedure status-bar-item(tiddler)
+<$fieldmangler tiddler=<<tiddler>>>
+  <$let
+    tooltipText={{{ [<tiddler>get[description]] :else[<tiddler>get[caption]] :else[<tiddler>] }}}
+    badgeText={{{ [<tiddler>get[@status-bar/badge]] }}}
+    badgeBgColor={{{ [<tiddler>get[@status-bar/badgeBgColor]] :else[[#ff5555]] }}}
+    clickAction={{{ [<tiddler>get[@status-bar/click]] }}}
+    shiftClickAction={{{ [<tiddler>get[@status-bar/shiftClick]] }}}
+    ctrlClickAction={{{ [<tiddler>get[@status-bar/ctrlClick]] }}}
+    altClickAction={{{ [<tiddler>get[@status-bar/altClick]] }}}
+  >
+    <$button class="tc-status-bar-item" tooltip=<<tooltipText>> actions="""
+      <$transclude $variable="handle-status-bar-click" itemTiddler=<<tiddler>> clickAction=<<clickAction>> shiftClickAction=<<shiftClickAction>> ctrlClickAction=<<ctrlClickAction>> altClickAction=<<altClickAction>>/>
+    """>
+      <%if [<tiddler>get[icon]is[tiddler]] :else[<tiddler>get[icon]is[shadow]] %>
+        <$transclude tiddler={{{ [<tiddler>get[icon]] }}} mode="inline"/>
+      <%else%>
+        <$transclude tiddler=<<tiddler>> field="icon" mode="inline">
+          <span>{{$:/core/images/help}}</span>
+        </$transclude>
+      <%endif%>
+      <$reveal type="nomatch" tiddler=<<tiddler>> field="@status-bar/badge" text="">
+        <$set name="currentBadgeStyle" value="background-color: $(badgeBgColor)$;">
+          <div class="tc-status-bar-badge" style=<<currentBadgeStyle>>><<badgeText>></div>
+        </$set>
+      </$reveal>
+    </$button>
+  </$let>
+</$fieldmangler>
+\end
+
+\procedure render-status-bar-items()
+  <$let orderField={{{ [<config-base>addsuffix[orderByField]get[text]] ~[list-order] }}}>
+    <$list filter="[all[tiddlers+shadows]tag[$:/Tags/StatusBar/Item]sort<orderField>]" variable="currentItem">
+      <$transclude $variable="status-bar-item" tiddler=<<currentItem>> />
+    </$list>
+  </$let>
+\end
+
+\procedure status-bar()
+  <!-- 如果自动隐藏空状态栏且有状态项，则显示 -->
+  <%if [<config-base>addsuffix[autoHideEmpty]get[text]match[yes]] %>
+    <%if [all[tiddlers+shadows]tag[$:/Tags/StatusBar/Item]count[]compare:number:gt[0]] +[count[]!match[2]] %>
+      <div class="tc-status-bar">
+        <<render-status-bar-items>>
+      </div>
+    <%endif%>
+  <%else%>
+    <!-- 如果不自动隐藏空状态栏，则无论如何都显示 -->
+    <div class="tc-status-bar">
+      <<render-status-bar-items>>
+    </div>
+  <%endif%>
+\end
+
+\procedure tagmangler-remove-tag(tag)
+  <$action-sendmessage $message="tm-remove-tag" $param=<<tag>>/>
+\end
+
+\procedure open-tiddler()
+  <$action-navigate $to=<<currentTiddler>>/>
+\end

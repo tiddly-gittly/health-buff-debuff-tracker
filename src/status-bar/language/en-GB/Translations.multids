@@ -1,0 +1,23 @@
+title: $:/plugins/linonetwo/status-bar/language/en-GB/
+
+Name: RPG style status bar
+ShortName: Status Bar
+Description: RPG style status for important notes like health condition, pomodoro and gamification reward.
+Configs/Description: These settings let you customise the behaviour of "RPG style status bar" plugin.
+Button/AddToStatusBar: Add to status bar
+Button/RemoveFromStatusBar: Remove from status bar
+Button/AddToStatusBar/Tooltip: Add to status bar
+Button/RemoveFromStatusBar/Tooltip: Remove from status bar
+Config/ShowInSidebar: Show in sidebar
+Config/AutoHideEmpty: Auto hide empty status bar
+Config/Position/Top: Show at top of page
+Config/Position/Sidebar: Show in sidebar
+Config/Position/Both: Show in both locations
+Config/CustomStyles: Custom Styles
+Config/CustomStyles/IconSize: Icon Size
+Config/CustomStyles/IconGap: Icon Spacing
+Config/CustomStyles/BgOpacity: Background Opacity
+Config/CustomStyles/BgBlur: Background Blur
+Config/CustomStyles/BorderRadius: Border Radius
+Config/CustomStyles/Animation: Animation Effects
+Config/OrderByField: Item Sort Field

@@ -1,0 +1,24 @@
+title: $:/plugins/linonetwo/status-bar/language/zh-Hans/
+
+Name: RPG风格状态栏
+ShortName: 状态栏
+Description: RPG风格状态栏，用于重要笔记的状态显示，如健康状况、番茄钟和游戏化奖励。
+Configs/Description: 这些设置让你自定义「RPG风格状态栏」插件的行为。
+Button/AddToStatusBar: 添加到状态栏
+Button/RemoveFromStatusBar: 从状态栏移除
+Button/AddToStatusBar/Tooltip: 添加到状态栏
+Button/RemoveFromStatusBar/Tooltip: 从状态栏移除
+Config/ShowInSidebar: 在侧边栏中显示
+Config/AutoHideEmpty: 自动隐藏空的状态栏
+Config/Position/Top: 在页面顶部显示
+Config/Position/Sidebar: 在侧边栏中显示
+Config/Position/Both: 同时在顶部和侧边栏中显示
+Config/CustomStyles: 自定义样式
+Config/CustomStyles/IconSize: 图标大小
+Config/CustomStyles/IconGap: 图标间距
+Config/CustomStyles/BgOpacity: 背景透明度
+Config/CustomStyles/BgBlur: 背景模糊
+Config/CustomStyles/BorderRadius: 圆角大小
+Config/CustomStyles/Animation: 动画效果
+Config/OrderByField: 项目排序字段
+Button/AddNewItem: 添加新状态项

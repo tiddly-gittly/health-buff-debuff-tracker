@@ -1,0 +1,9 @@
+title: $:/plugins/linonetwo/status-bar/ui/SideBarSegment
+tags: $:/tags/SideBarSegment
+list-before: $:/core/ui/SideBarSegments/site-title
+caption: <<lingo Name $:/plugins/linonetwo/status-bar/language/>>
+
+\import [[$:/plugins/linonetwo/status-bar/ui/status-bar]]
+\whitespace trim
+
+<<status-bar>>

@@ -1,0 +1,8 @@
+title: $:/plugins/linonetwo/status-bar/tree
+creator: LinOnetwo
+
+<<tree prefix:"$:/plugins/linonetwo/status-bar/">>
+
+<<tree prefix:"$:/Tags/StatusBar/">>
+
+<<tree prefix:"$:/TraitTag/OPMI/">>

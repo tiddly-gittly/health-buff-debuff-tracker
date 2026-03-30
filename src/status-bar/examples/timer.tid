@@ -1,0 +1,13 @@
+title: $:/plugins/linonetwo/status-bar/examples/timer
+tags: $:/Tags/StatusBar/Item
+icon: ⏱️
+description: 番茄钟 - 25:00
+@status-bar/badge: 25
+@status-bar/badgeBgColor: #55aa55
+@status-bar/click: <$action-navigate $to='番茄钟'/>
+
+这是一个番茄钟示例。这个状态项可以帮助你跟踪当前的番茄钟会话。
+
+徽章上的数字 "25" 表示还剩25分钟。在实际使用中，你可能需要配合定时器插件来更新这个数字。
+
+点击此图标会导航到"番茄钟"条目（如果它存在的话）。

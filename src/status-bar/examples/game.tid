@@ -1,0 +1,13 @@
+title: $:/plugins/linonetwo/status-bar/examples/game
+tags: $:/Tags/StatusBar/Item
+icon: 🎮
+description: 游戏时间 - 剩余30分钟
+@status-bar/badge: 30
+@status-bar/badgeBgColor: #5555aa
+@status-bar/click: <$action-navigate $to='游戏奖励'/>
+
+这是一个游戏化奖励示例。你可以使用这个状态项来跟踪你的游戏时间奖励。
+
+徽章上的数字 "30" 表示还剩30分钟的游戏时间奖励。在实际使用中，你可能需要配合定时器插件来更新这个数字。
+
+点击此图标会导航到"游戏奖励"条目（如果它存在的话）。

@@ -1,0 +1,74 @@
+title: $:/plugins/linonetwo/status-bar/help
+tags: $:/tags/StatusBar/Help
+caption: 状态栏使用帮助
+
+\procedure lingo-base() $:/plugins/linonetwo/status-bar/language/
+
+! <<lingo Name>> 使用帮助
+
+!! 基本用法
+
+1. 浏览任何条目时，点击查看工具栏中的"添加到状态栏"按钮（或使用视图工具栏上的按钮）将其添加到状态栏。
+2. 添加 `$:/Tags/StatusBar/Item` 标签后，会自动显示超级标签编辑表单（需要安装 super-tag 插件），可以设置以下字段：
+   * `icon`：图标（可以使用 Emoji 或嵌入其他图片条目）
+   * `description`：鼠标悬浮时的提示文本
+   * `@status-bar/badge`（可选）：图标右上角的徽章文本，通常是数字
+   * `@status-bar/badgeBgColor`（可选）：徽章的背景颜色，默认是红色
+   * `@status-bar/click`（可选）：点击图标时的动作微件
+   * `@status-bar/shiftClick`（可选）：按住 Shift 键点击时的动作
+   * `@status-bar/altClick`（可选）：按住 Alt 键点击时的动作
+
+条目会自动显示在状态栏中。按住 Ctrl 键并点击图标可以将其从状态栏中移除。
+
+!! 高级用法
+
+!!! 健康状态跟踪
+
+可以创建一个条目用于跟踪健康状态，例如：
+
+```
+tags: $:/Tags/StatusBar/Item
+icon: 🤒
+description: 感冒中，需要多喝水、多休息
+@status-bar/badge: 3
+@status-bar/badgeBgColor: #ff5555
+@status-bar/click: <$action-navigate $to="感冒记录"/>
+```
+
+徽章中的数字可以表示剩余天数或严重程度等。
+
+!!! 番茄钟
+
+可以配合定时器插件使用，创建一个番茄钟状态：
+
+```
+tags: $:/Tags/StatusBar/Item
+icon: ⏱️
+description: 番茄钟 - 25:00
+@status-bar/badge: 25
+@status-bar/badgeBgColor: #55aa55
+@status-bar/click: <$action-navigate $to="番茄钟"/>
+```
+
+然后在定时器代码中定期更新徽章数字。
+
+!!! 游戏化奖励
+
+可以创建一个游戏时间奖励状态：
+
+```
+tags: $:/Tags/StatusBar/Item
+icon: 🎮
+description: 游戏时间 - 剩余30分钟
+@status-bar/badge: 30
+@status-bar/badgeBgColor: #5555aa
+@status-bar/click: <$action-navigate $to="游戏奖励"/>
+```
+
+!! 配置选项
+
+可以在控制面板中配置状态栏的显示位置和其他选项：
+
+1. 打开控制面板（齿轮图标）
+2. 找到"RPG风格状态栏"选项
+3. 根据需要调整设置
