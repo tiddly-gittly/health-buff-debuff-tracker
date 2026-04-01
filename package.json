@@ -8,17 +8,20 @@
     "dev:wiki": "tiddlywiki-plugin-dev dev --write-wiki",
     "test": "tiddlywiki-plugin-dev test",
     "build": "npm run clean && tiddlywiki-plugin-dev build",
+    "lint": "eslint ./src --ext js,ts,tsx,json",
+    "lint:fix": "eslint ./src --ext ts,tsx,json --fix",
+    "check": "tsc --noEmit --skipLibCheck",
     "publish": "npm run clean && tiddlywiki-plugin-dev publish",
     "reset": "rimraf ./**/node_modules",
     "clean": "rimraf dist",
     "prepare": "husky install",
-    "update": "npm-check-updates -u",
+    "update": "npm-check-updates -u && dprint config update",
     "new": "tiddlywiki-plugin-dev new",
     "build:library": "npm run clean && tiddlywiki-plugin-dev build --library --output dist/library",
     "publish:offline": "npm run clean && tiddlywiki-plugin-dev publish --offline"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "husky": {
     "hooks": {
@@ -34,23 +37,23 @@
     ]
   },
   "devDependencies": {
-    "@modern-js/tsconfig": "^2.60.4",
-    "@types/lodash": "^4.17.12",
-    "@types/node": "^22.7.8",
-    "dprint": "^0.47.4",
-    "eslint-config-tidgi": "1.2.3",
-    "husky": "^9.1.6",
-    "lint-staged": "^15.2.10",
-    "postcss": "^8.4.47",
-    "rimraf": "^6.0.1",
+    "@modern-js/tsconfig": "^2.68.19",
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^24.10.0",
+    "dprint": "^0.50.2",
+    "eslint-config-tidgi": "^2.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "postcss": "^8.5.6",
+    "rimraf": "^6.1.0",
     "ts-node": "^10.9.2",
     "tw-react": "^0.6.4",
-    "tw5-typed": "^0.5.14",
-    "typescript": "^5.6.3"
+    "tw5-typed": "^1.1.4",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "npm-check-updates": "^17.1.4",
-    "tiddlywiki": "^5.3.5",
-    "tiddlywiki-plugin-dev": "^0.3.1"
+    "npm-check-updates": "^19.1.2",
+    "tiddlywiki": "^5.3.8",
+    "tiddlywiki-plugin-dev": "^0.3.2"
   }
 }
