@@ -1,0 +1,66 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/docs/activitylogrecords-filter
+tags: $:/tags/Documentation
+caption: activitylogrecords[] Filter
+
+! `activitylogrecords[]` 筛选器
+
+!! 用途
+
+将一个 activity-log tiddler（`application/x-tiddler-dictionary` 类型，标有 `$:/Tags/ActivityLog`）转换为 JSON records 字符串，可直接用于 `$basic-table` 的 `records=` 参数，从而正确显示历史记录表格。
+
+!! 为什么需要这个筛选器
+
+`$basic-table` 的 `filter=` 参数只能处理 **tiddler 标题**作为行数据——它会对每个结果调用 `getTiddler()` 读取字段值。但 activity-log tiddler 是字典类型，其数据存储在 tiddler 文本中，`[<currentTiddler>indexes[]]` 返回的是键名字符串，不是 tiddler 标题，因此表格无法获取行数据。
+
+`activitylogrecords[]` 解析字典内容，将每一条记录展开为带有 `title`、`value`、`count`、`timestamp` 字段的对象，然后序列化为 JSON 字符串供 `records=` 使用。
+
+!! 输出字段
+
+每条记录包含：
+
+|!字段 |!含义 |
+|`title` |人类可读日期（YYYY-MM-DD 或 YYYY-MM-DD HH:MM） |
+|`key` |字典中的原始键名 |
+|`value` |人类可读值字符串 |
+|`count` |当日/本次的计数（数字） |
+|`timestamp` |ISO 日期字符串，用于排序 |
+
+!! 支持的三种日志格式
+
+!!! 1. daily-count（每日计数）
+
+* 键格式：`daily-count{unixMs}` — unix 毫秒时间戳
+* 值格式：`"n1,n2,n3"` — 逗号分隔的计数，最新在最后
+* 例：`daily-count1775025207188: 8,3,3`（表示最近 3 天分别记录 8、3、3 次）
+
+!!! 2. date（事件日期）
+
+* 键格式：`"0"`, `"1"`, `"2"`, ...（顺序索引）
+* 值格式：`"{unixMs}"` — 事件发生的时间戳
+* 用途：记录离散事件（如"今天做了某件事"）
+
+!!! 3. day-interval（天间隔）
+
+* 键格式：`day-interval{unixMs}` — 最后一次记录的时间戳
+* 值格式：`"d1,d2,..."` — 从键时间向前依次间隔的天数
+* 用途：记录周期性事件（如"每隔 N 天服药一次"）
+
+!! 用法示例
+
+```
+\procedure log-columns()
+[
+  {"field": "title", "title": "日期", "width": 200, "sort": true},
+  {"field": "value", "title": "数据", "width": "auto"},
+  {"field": "count", "title": "次数", "width": 80, "sort": "number"}
+]
+\end
+
+<$basic-table
+  records={{{ [<currentTiddler>activitylogrecords[]] }}}
+  columns=<<log-columns>>
+  width="100%"
+  height="420px"
+  search="search-bar-top"
+/>
+```

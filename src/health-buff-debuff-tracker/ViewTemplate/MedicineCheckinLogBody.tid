@@ -8,14 +8,20 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineChec
 [
   {
     "field": "title",
-    "title": "时间戳/键值",
-    "width": 250,
-    "sort": "number"
+    "title": "日期",
+    "width": 200,
+    "sort": true
   },
   {
     "field": "value",
-    "title": "日志数据（逗号分隔）",
+    "title": "数据",
     "width": "auto"
+  },
+  {
+    "field": "count",
+    "title": "次数",
+    "width": 80,
+    "sort": "number"
   }
 ]
 \end
@@ -39,12 +45,11 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineChec
 
 <div class="health-buff-debuff-tracker-dynamic-table">
 <$basic-table
-  filter="[<currentTiddler>indexes[]]"
+  records={{{ [<currentTiddler>activitylogrecords[]] }}}
   columns=<<activity-log-columns>>
   width="100%"
   height="420px"
   search="search-bar-top"
-  sort="-title"
 />
 </div>
 

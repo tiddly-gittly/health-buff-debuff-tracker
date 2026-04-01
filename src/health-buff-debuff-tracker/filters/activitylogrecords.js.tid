@@ -1,0 +1,159 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/filters/activitylogrecords.js
+type: application/javascript
+module-type: filteroperator
+
+/*\
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/filters/activitylogrecords.js
+type: application/javascript
+module-type: filteroperator
+
+Filter operator: activitylogrecords[]
+
+Converts an activity-log tiddler (application/x-tiddler-dictionary tagged with
+$:/Tags/ActivityLog) into a JSON string representing an array of record objects
+suitable for the $basic-table `records=` parameter.
+
+Each record object has:
+  - title: human-readable date string "YYYY-MM-DD" (or "YYYY-MM-DD HH:MM" for date type)
+  - key:   raw dictionary key (e.g. "daily-count1775025207188")
+  - value: human-readable value string
+  - count: numeric count (0 if not applicable)
+  - timestamp: ISO date string (used for sorting)
+
+Supports three activity-log-tools log formats (activity-log-type field):
+  1. daily-count  key="daily-count{unixMs}"  value="n1,n2,n3"  (comma-sep counts, newest last)
+  2. date         key="0","1",...             value="{unixMs}"  (event timestamp)
+  3. day-interval key="day-interval{unixMs}" value="d1,d2,..."  (interval days backwards)
+
+Usage in $basic-table:
+  <$basic-table
+    records={{{ [<currentTiddler>activitylogrecords[]] }}}
+    columns=<<my-columns>>
+  />
+
+\*/
+
+(function() {
+  "use strict";
+
+  var DAY_MS = 86400000;
+
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function formatDate(date) {
+    return date.getFullYear() + "-" + pad2(date.getMonth() + 1) + "-" + pad2(date.getDate());
+  }
+
+  function formatDateTime(date) {
+    return formatDate(date) + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
+  }
+
+  exports.activitylogrecords = function(source, operator, options) {
+    var results = [];
+
+    source(function(tiddler, title) {
+      if (!tiddler) return;
+
+      var logType = tiddler.fields["activity-log-type"];
+      var rawData = $tw.wiki.getTiddlerData(title);
+
+      if (!rawData || typeof rawData !== "object") {
+        results.push("[]");
+        return;
+      }
+
+      var records = [];
+
+      switch (logType) {
+
+        case "daily-count": {
+          Object.keys(rawData).forEach(function(key) {
+            if (key.indexOf("daily-count") !== 0) return;
+            var ts = Number(key.replace("daily-count", ""));
+            if (!isFinite(ts)) return;
+            var rowEnd = new Date(ts);
+            rowEnd.setHours(0, 0, 0, 0);
+            var counts = String(rawData[key]).split(",").map(Number);
+            counts.forEach(function(c, index) {
+              var day = new Date(rowEnd);
+              day.setDate(rowEnd.getDate() - (counts.length - 1 - index));
+              day.setHours(0, 0, 0, 0);
+              var count = Number.isFinite(c) ? c : 0;
+              if (count === 0) return;
+              records.push({
+                title: formatDate(day),
+                key: key,
+                value: String(count),
+                count: count,
+                timestamp: day.toISOString()
+              });
+            });
+          });
+          break;
+        }
+
+        case "date": {
+          Object.keys(rawData).forEach(function(key) {
+            var ts = Number(rawData[key]);
+            if (!isFinite(ts)) return;
+            var day = new Date(ts);
+            records.push({
+              title: formatDateTime(day),
+              key: key,
+              value: rawData[key],
+              count: 1,
+              timestamp: day.toISOString()
+            });
+          });
+          break;
+        }
+
+        case "day-interval": {
+          Object.keys(rawData).forEach(function(key) {
+            if (key.indexOf("day-interval") !== 0) return;
+            var ts = Number(key.replace("day-interval", ""));
+            if (!isFinite(ts)) return;
+            var intervals = String(rawData[key]).split(",").map(Number);
+            var current = new Date(ts);
+            // intervals are stored newest-last; reverse to walk backwards in time
+            var reversed = intervals.slice().reverse();
+            reversed.forEach(function(d, index) {
+              current = new Date(current.getTime() - d * DAY_MS);
+              records.push({
+                title: formatDate(current),
+                key: key + "_" + index,
+                value: String(d) + " days",
+                count: 1,
+                timestamp: current.toISOString()
+              });
+            });
+          });
+          break;
+        }
+
+        default: {
+          Object.keys(rawData).forEach(function(key) {
+            records.push({
+              title: key,
+              key: key,
+              value: String(rawData[key]),
+              count: 0,
+              timestamp: ""
+            });
+          });
+          break;
+        }
+      }
+
+      records.sort(function(a, b) {
+        return b.timestamp.localeCompare(a.timestamp);
+      });
+
+      results.push(JSON.stringify(records));
+    });
+
+    return results;
+  };
+})();
