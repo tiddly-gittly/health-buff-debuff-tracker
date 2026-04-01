@@ -1,57 +1,64 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineBodyChart
+echarts-refresh-trigger: [all[tiddlers]prefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]get[modified]]
 \whitespace trim
 
 (function() {
   var logTitle = "{{{ [<logTitle>] }}}";
   var rawData = $tw.wiki.getTiddlerData(logTitle);
 
-  var counts = new Array(28).fill(0);
+  var windowDays = 28;
+  var counts = new Array(windowDays).fill(0);
   var days = [];
   var now = new Date();
-  var dow = now.getDay() || 7;
-  var monday = new Date(now);
-  monday.setDate(now.getDate() - (dow - 1) - 21);
-  monday.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
 
-  for (var i = 0; i < 28; i++) {
-    var d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+  var windowStart = new Date(now);
+  windowStart.setDate(now.getDate() - (windowDays - 1));
+  windowStart.setHours(0, 0, 0, 0);
+
+  for (var i = 0; i < windowDays; i++) {
+    var d = new Date(windowStart);
+    d.setDate(windowStart.getDate() + i);
     days.push((d.getMonth() + 1) + '/' + d.getDate());
   }
 
-  if (rawData && typeof rawData === 'object') {
+  if (rawData && typeof rawData === "object") {
     Object.keys(rawData).forEach(function(key) {
-      if (key.indexOf('daily-count') !== 0) return;
-      var ts = Number(key.replace('daily-count', ''));
+      if (key.indexOf("daily-count") !== 0) return;
+      var ts = Number(key.replace("daily-count", ""));
       if (!isFinite(ts)) return;
-      var rowStart = new Date(ts);
-      rowStart.setHours(0, 0, 0, 0);
-      var rowCounts = String(rawData[key]).split(',').map(Number);
-      rowCounts.forEach(function(c, offset) {
-        var day = new Date(rowStart);
-        day.setDate(rowStart.getDate() + offset);
+      var rowEnd = new Date(ts);
+      rowEnd.setHours(0, 0, 0, 0);
+      var rowCounts = String(rawData[key]).split(",").map(Number);
+      rowCounts.forEach(function(c, index) {
+        var day = new Date(rowEnd);
+        day.setDate(rowEnd.getDate() - (rowCounts.length - 1 - index));
         day.setHours(0, 0, 0, 0);
-        var diff = Math.round((day - monday) / 86400000);
-        if (diff >= 0 && diff < 28) counts[diff] = (counts[diff] || 0) + c;
+        var diff = Math.round((day - windowStart) / 86400000);
+        if (diff >= 0 && diff < windowDays) counts[diff] = (counts[diff] || 0) + (Number.isFinite(c) ? c : 0);
       });
     });
   }
 
   return {
-    tooltip: { trigger: 'axis' },
-    grid: { left: '3%', right: '4%', bottom: '25px', top: '15px', containLabel: true },
+    tooltip: { trigger: "axis" },
+    grid: { left: "3%", right: "4%", bottom: "25px", top: "15px", containLabel: true },
     xAxis: {
-      type: 'category',
+      type: "category",
       data: days,
-      axisLabel: { fontSize: 10, interval: 6 }
+      axisLabel: { fontSize: 10, interval: 6 },
+      boundaryGap: false
     },
-    yAxis: { type: 'value', minInterval: 1, splitNumber: 3 },
+    yAxis: { type: "value", minInterval: 1, splitNumber: 3 },
     series: [{
-      type: 'line',
-      smooth: true,
+      type: "line",
+      smooth: false,
+      showSymbol: true,
+      symbol: "circle",
+      symbolSize: 8,
       data: counts,
-      areaStyle: { opacity: 0.3 },
-      lineStyle: { width: 2 }
+      areaStyle: { opacity: 0.3, color: "#3b82f6" },
+      lineStyle: { width: 2, color: "#3b82f6" }
     }]
   };
 })()

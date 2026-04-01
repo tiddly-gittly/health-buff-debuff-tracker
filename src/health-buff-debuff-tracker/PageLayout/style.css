@@ -17,62 +17,71 @@
 
 /* Checkin Panel Styles */
 .health-buff-debuff-tracker-checkin-container {
-  margin: 1.25em 0;
+  margin: 0.25em 0 0;
   padding: 0;
+}
+
+.health-buff-debuff-tracker-panel-subheading {
+  margin: 0.1em 0 0.4em;
+  font-size: 0.98em;
+  font-weight: 700;
+  opacity: 0.95;
 }
 
 .health-buff-debuff-tracker-checkin-buttons {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1em;
-  margin: 1.5em 0;
+  margin: 0;
 }
 
 .health-buff-debuff-tracker-checkin-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.health-buff-debuff-tracker-checkin-card .health-buff-debuff-tracker-checkin-btn {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom: none;
-}
-
-.health-buff-debuff-tracker-checkin-minichart {
-  border: 2px solid currentColor;
-  border-top: none;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  position: relative;
   overflow: hidden;
-  opacity: 0.7;
+  border: 2px solid;
+  border-radius: 8px;
+  background: transparent;
+  transition: all 0.3s ease;
+  min-height: 50px;
+  display: flex;
+}
+
+.health-buff-debuff-tracker-checkin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.health-buff-debuff-tracker-checkin-card:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .health-buff-debuff-tracker-checkin-btn {
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+  fill: currentColor;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
   padding: 1em;
-  border: 2px solid;
-  border-radius: 8px;
   font-size: 1em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5em;
   white-space: nowrap;
-  min-height: 50px;
 }
 
-.health-buff-debuff-tracker-checkin-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.health-buff-debuff-tracker-checkin-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.health-buff-debuff-tracker-checkin-minichart {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .health-buff-debuff-tracker-medicine-name {
@@ -136,7 +145,7 @@
 
 /* Checkin Details Section */
 .health-buff-debuff-tracker-checkin-details {
-  margin: 1em 0;
+  margin: 0;
   padding: 1em;
   border-radius: 6px;
   display: grid;
@@ -264,7 +273,18 @@
 .health-buff-debuff-tracker-medicine-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25em;
+  gap: 0.45em;
+}
+
+.health-buff-debuff-tracker-medicine-section .health-buff-debuff-tracker-dynamic-table {
+  margin-top: 0;
+}
+
+.health-buff-debuff-tracker-medicine-section .hyper-table-container,
+.health-buff-debuff-tracker-medicine-section .hyper-table-wrapper,
+.health-buff-debuff-tracker-medicine-section .vt-table-holder {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 .health-buff-debuff-tracker-simple-table {
@@ -323,10 +343,10 @@
 .health-buff-debuff-tracker-summary-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 0.35em;
 }
 .health-buff-debuff-tracker-summary-section h3 {
-  margin: 0;
+  margin: 0 0 0.1em;
 }
 .health-buff-debuff-tracker-empty-state {
   display: flex;

@@ -1,47 +1,52 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinMiniChart
+echarts-refresh-trigger: [all[tiddlers]prefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]get[modified]]
 \whitespace trim
 
 (function() {
   var logTitle = "{{{ [<logTitle>] }}}";
   var rawData = $tw.wiki.getTiddlerData(logTitle);
 
-  var counts = new Array(28).fill(0);
+  var windowDays = 28;
+  var counts = new Array(windowDays).fill(0);
   var now = new Date();
-  var dow = now.getDay() || 7;
-  var monday = new Date(now);
-  monday.setDate(now.getDate() - (dow - 1) - 21);
-  monday.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
 
-  if (rawData && typeof rawData === 'object') {
+  var windowStart = new Date(now);
+  windowStart.setDate(now.getDate() - (windowDays - 1));
+  windowStart.setHours(0, 0, 0, 0);
+
+  if (rawData && typeof rawData === "object") {
     Object.keys(rawData).forEach(function(key) {
-      if (key.indexOf('daily-count') !== 0) return;
-      var ts = Number(key.replace('daily-count', ''));
+      if (key.indexOf("daily-count") !== 0) return;
+      var ts = Number(key.replace("daily-count", ""));
       if (!isFinite(ts)) return;
-      var rowStart = new Date(ts);
-      rowStart.setHours(0, 0, 0, 0);
-      var rowCounts = String(rawData[key]).split(',').map(Number);
-      rowCounts.forEach(function(c, offset) {
-        var day = new Date(rowStart);
-        day.setDate(rowStart.getDate() + offset);
+      var rowEnd = new Date(ts);
+      rowEnd.setHours(0, 0, 0, 0);
+      var rowCounts = String(rawData[key]).split(",").map(Number);
+      rowCounts.forEach(function(c, index) {
+        var day = new Date(rowEnd);
+        day.setDate(rowEnd.getDate() - (rowCounts.length - 1 - index));
         day.setHours(0, 0, 0, 0);
-        var diff = Math.round((day - monday) / 86400000);
-        if (diff >= 0 && diff < 28) counts[diff] = (counts[diff] || 0) + c;
+        var diff = Math.round((day - windowStart) / 86400000);
+        if (diff >= 0 && diff < windowDays) counts[diff] = (counts[diff] || 0) + (Number.isFinite(c) ? c : 0);
       });
     });
   }
 
   return {
-    tooltip: { trigger: 'axis' },
-    grid: { left: '2px', right: '2px', bottom: '4px', top: '4px', containLabel: false },
-    xAxis: { type: 'category', show: false, data: counts.map(function(_, i) { return i; }) },
-    yAxis: { type: 'value', show: false, minInterval: 1 },
+    tooltip: { trigger: "axis" },
+    grid: { left: "2px", right: "2px", bottom: "4px", top: "4px", containLabel: false },
+    xAxis: { type: "category", show: false, data: counts.map(function(_, i) { return i; }), boundaryGap: false },
+    yAxis: { type: "value", show: false, minInterval: 1 },
     series: [{
-      type: 'line',
-      smooth: true,
-      symbol: 'none',
+      type: "line",
+      smooth: false,
+      showSymbol: true,
+      symbol: "circle",
+      symbolSize: 5,
       data: counts,
-      areaStyle: { opacity: 0.4 },
-      lineStyle: { width: 1.5 }
+      areaStyle: { opacity: 0.4, color: "#3b82f6" },
+      lineStyle: { width: 1.5, color: "#3b82f6" }
     }]
   };
 })()

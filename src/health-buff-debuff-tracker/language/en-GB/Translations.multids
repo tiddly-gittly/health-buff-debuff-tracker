@@ -35,3 +35,6 @@ EmptyDeBuff: No debuff records
 EmptyBuff: No buff records
 EmptyBodyCondition: No condition records
 EmptyMedicine: No medicine records
+MedicineLogKeyColumn: Timestamp/Key
+MedicineLogValueColumn: Log Data (comma-separated)
+MedicineCheckinTrend: 4-Week Check-in Trend

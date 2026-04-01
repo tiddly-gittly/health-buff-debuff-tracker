@@ -35,3 +35,6 @@ EmptyDeBuff: 暂无相关减益
 EmptyBuff: 暂无相关增益
 EmptyBodyCondition: 暂无身体状态
 EmptyMedicine: 暂无药物记录
+MedicineLogKeyColumn: 时间戳/键值
+MedicineLogValueColumn: 日志数据（逗号分隔）
+MedicineCheckinTrend: 近四周打卡趋势
