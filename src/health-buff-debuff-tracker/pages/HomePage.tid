@@ -16,6 +16,8 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/pages/HomePage
 
 </article>
 
+{{$:/plugins/linonetwo/health-buff-debuff-tracker/components/AggregateBodyMap}}
+
 <div class="health-buff-debuff-tracker-summary-tables">
 
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineSection}}

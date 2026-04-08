@@ -143,3 +143,7 @@ wiki/tiddlers/$__config_Navigation_openLinkFromInsideRiver.tid
 wiki/tiddlers/$__config_Navigation_openLinkFromOutsideRiver.tid
 wiki/tiddlers/$__layout.tid
 wiki/tiddlers/$__palette.tid
+
+# Playwright
+test-results/
+playwright-report/

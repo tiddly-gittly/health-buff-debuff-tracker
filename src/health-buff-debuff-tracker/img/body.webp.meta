@@ -1,0 +1,4 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp
+type: image/webp
+tags: $:/tags/Image
+body-regions: [{"id":"368328007","name":"Head","points":"45,2 55,2 58,10 55,18 45,18 42,10"},{"id":"45048000","name":"Neck","points":"46,18 54,18 54,22 46,22"},{"id":"51185008","name":"Chest","points":"38,22 62,22 62,38 38,38"},{"id":"113345001","name":"Abdomen","points":"40,38 60,38 62,55 38,55"},{"id":"362875003","name":"Left Arm (Viewer Right)","points":"62,22 70,25 75,45 72,55 64,28"},{"id":"362874004","name":"Right Arm (Viewer Left)","points":"38,22 30,25 25,45 28,55 36,28"},{"id":"74964007","name":"Left Leg (Viewer Right)","points":"50,55 62,55 60,75 62,95 52,95 50,75"},{"id":"361314001","name":"Right Leg (Viewer Left)","points":"38,55 50,55 50,75 48,95 38,95 40,75"}]

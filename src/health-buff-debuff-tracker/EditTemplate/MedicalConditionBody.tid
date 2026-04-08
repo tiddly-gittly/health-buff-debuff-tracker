@@ -13,4 +13,9 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/MedicalCondi
   </div>
 
   <$transclude $tiddler="$:/core/ui/EditTemplate/body/default"/>
+
+  <div class="health-buff-debuff-tracker-body-map-section">
+    <h3><<lingo BodyMapSectionTitle>></h3>
+    <$body-map interactive="true" />
+  </div>
 </div>

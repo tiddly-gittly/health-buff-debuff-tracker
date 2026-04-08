@@ -28,6 +28,9 @@ OpenHistory: 打开历史记录
 CloseHistory: 收起历史记录
 TotalCheckins: 总打卡次数
 ActiveDays: 活跃天数
+BodyMapSectionTitle: 影响的身体部位
+AggregateBodyMapTitle: 身体部位概览
+EmptyBodyMap: （暂无受影响的身体部位）
 LastCheckin: 最近一次打卡
 NoMedicineCheckinHistory: 还没有打卡历史记录
 ShowDetails: 显示详情

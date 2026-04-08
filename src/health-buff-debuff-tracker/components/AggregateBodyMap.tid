@@ -1,0 +1,23 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AggregateBodyMap
+
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+\function get-all-body-parts() [subfilter<get-all-debuff>] [subfilter<get-all-buff>] [subfilter<get-all-condition>] +[has[body-parts]] :map[get[body-parts]enlist-input[]] +[unique[]join[ ]]
+
+<div class="health-buff-debuff-tracker-summary-section health-buff-debuff-tracker-aggregate-body-map">
+
+!!! <<lingo AggregateBodyMapTitle>>
+
+<$let allParts={{{ [function[get-all-body-parts]] }}}>
+<$list filter="[<allParts>!is[blank]]" emptyMessage="""
+<div class="health-buff-debuff-tracker-empty-state">
+  <<lingo EmptyBodyMap>>
+</div>
+""">
+  <$body-map interactive="false" values=<<allParts>> />
+</$list>
+</$let>
+
+</div>

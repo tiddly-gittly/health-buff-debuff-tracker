@@ -1,5 +1,5 @@
 ﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/BodyFilter
 tags: $:/tags/EditTemplateBodyFilter
-list-before: $:/config/EditTemplateBodyFilters/default
+list-before:
 
-[[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff]] [[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff]] [[$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition]] :intersect[all[current]tags[]] +[limit[1]then[$:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/MedicalConditionBody]]
+[tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/debuff}then[$:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/MedicalConditionBody]] [tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/buff}then[$:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/MedicalConditionBody]] [tag{$:/plugins/linonetwo/health-buff-debuff-tracker/tags/condition}then[$:/plugins/linonetwo/health-buff-debuff-tracker/EditTemplate/MedicalConditionBody]] +[limit[1]]

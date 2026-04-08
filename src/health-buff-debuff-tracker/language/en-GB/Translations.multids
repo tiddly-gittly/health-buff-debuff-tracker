@@ -38,3 +38,6 @@ EmptyMedicine: No medicine records
 MedicineLogKeyColumn: Timestamp/Key
 MedicineLogValueColumn: Log Data (comma-separated)
 MedicineCheckinTrend: 4-Week Check-in Trend
+BodyMapSectionTitle: Affected Body Parts
+AggregateBodyMapTitle: Body Parts Overview
+EmptyBodyMap: (No affected body parts yet)

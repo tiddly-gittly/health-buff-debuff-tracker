@@ -8,7 +8,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 \procedure columns()
 [
 	{
-		field: 'title',
+		field: 'caption',
 		title: 'title',
 		width: 'auto',
 		sort: true,
