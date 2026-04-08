@@ -1,6 +1,6 @@
-body-parts: 51185008
+body-parts: 51185008 113345001
 created: 20260408133854260
-modified: 20260408153442807
+modified: 20260408185724820
 tags: 
 title: PlaywrightTestBodyMap
 type: text/vnd.tiddlywiki
@@ -13,4 +13,4 @@ This tiddler is used by Playwright E2E tests for the body-map widget.
 
 !! Read-Only Mode
 
-<$body-map interactive="false" values="368328007 51185008" />
+<$body-map interactive="false" values="69536005 51185008" />

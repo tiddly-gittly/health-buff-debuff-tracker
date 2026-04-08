@@ -8,10 +8,11 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/BuffTable
 \procedure columns()
 [
 	{
-		field: 'caption',
+		field: 'title',
 		title: 'title',
 		width: 'auto',
 		sort: true,
+		fieldFormat: ({ caption }) => caption ? $tw.wiki.renderText('text/plain', 'text/vnd.tiddlywiki', caption) : undefined,
 	},
 	{
 		field: 'startDate',

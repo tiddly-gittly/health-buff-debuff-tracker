@@ -43,7 +43,7 @@ class BodyMapWidget extends Widget {
     // Create SVG overlay
     const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;');
-    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('viewBox', '0 0 100 216');
     svg.setAttribute('preserveAspectRatio', 'none');
 
     // Parse regions from the meta field body-regions
