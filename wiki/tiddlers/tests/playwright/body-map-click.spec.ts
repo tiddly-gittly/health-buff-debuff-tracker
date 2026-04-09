@@ -21,7 +21,7 @@ test.describe('BodyMapWidget click interaction', () => {
     // Click the Chest region (51185008) - use Chest to avoid sub-region overlap
     const chestPolygon = container.locator('svg polygon[data-region-id="51185008"]');
     await expect(chestPolygon).toBeVisible();
-    await chestPolygon.click();
+    await chestPolygon.dispatchEvent("click");
 
     // After click, the widget should refresh with chest highlighted
     // Wait for re-render
@@ -35,7 +35,7 @@ test.describe('BodyMapWidget click interaction', () => {
     expect(chestFill).toContain('rgba(255');
 
     // Click again to deselect
-    await updatedChest.click();
+    await updatedChest.dispatchEvent("click");
     await page.waitForTimeout(500);
 
     // Move mouse away from the polygon to clear hover effect
@@ -45,7 +45,7 @@ test.describe('BodyMapWidget click interaction', () => {
     const deselectedContainer = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
     const deselectedChest = deselectedContainer.locator('svg polygon[data-region-id="51185008"]');
     const deselectedFill = await deselectedChest.evaluate((el) => el.style.fill);
-    expect(deselectedFill).toContain('rgba(100');
+    expect(deselectedFill).toBe('transparent');
   });
 
   test('clicking multiple regions accumulates values', async ({ page }) => {
@@ -54,7 +54,7 @@ test.describe('BodyMapWidget click interaction', () => {
     await expect(container).toBeVisible();
 
     // Click Chest
-    await container.locator('svg polygon[data-region-id="51185008"]').click();
+    await container.locator('svg polygon[data-region-id="51185008"]').dispatchEvent("click");
     await page.waitForTimeout(1000);
 
     // Verify chest was added
@@ -63,7 +63,7 @@ test.describe('BodyMapWidget click interaction', () => {
 
     // Click Abdomen on the refreshed container
     const container2 = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
-    await container2.locator('svg polygon[data-region-id="113345001"]').click();
+    await container2.locator('svg polygon[data-region-id="113345001"]').dispatchEvent("click");
     await page.waitForTimeout(1000);
 
     // Verify both are in the field

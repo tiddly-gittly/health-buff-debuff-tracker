@@ -1,0 +1,31 @@
+title: Developer_Guide_BodyMap
+tags: $:/tags/DeveloperGuide
+type: text/vnd.tiddlywiki
+
+! Body Map Developer Guide
+
+When generating or fine-tuning regions for the `body.webp` or testing a new background image, the interactive `BodyMapWidget` relies on the `viewBox` correctly matching the image aspect ratio, as well as multiple `body-region-xxx` fields to define the polygons.
+
+!! How to adjust regions
+
+1. **Meta Fields Instead of Single Array**:
+   Open `$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp.meta`
+   You will see multiple fields like:
+   ```json
+   body-region-head: {"id":"69536005","name":"Head","points":"38.0,0.5 48.0,0.0 ... "}
+   body-region-eye-right: {"id":"...","name":"Eye (Right)","points":"..."}
+   ```
+   Each field contains a JSON string with the `id` (corresponding to SNOMED codes or internal IDs), `name`, and `points` (coordinate map in the SVG viewBox coordinates).
+
+2. **Adjusting the Coordinates**:
+   - `points` are rendered inside SVG polygons.
+   - The viewBox spans 100 on the X-axis and proportional height on the Y-axis. For the default image, the viewBox is `0 0 100 216` scaling to the height of the figure.
+   - To make regions larger or match a different bodily outline: You can run a script to parse picture data or manually edit the `x,y` value strings.
+
+3. **Using Debug Mode**:
+   - The `body-map` widget supports a `debug="true"` parameter!
+   - In your own local wiki or test suite (like `PlaywrightTestBodyMap`), simply add `debug="true"` to see ALL defined polygon boxes faintly highlighted instead of entirely invisible out-of-the-box.
+   - Eg: `<$body-map interactive="true" debug="true" tiddler="Test" field="parts" />`
+
+4. **Regenerating Outlines**:
+   If the default picture changes, use the Playwright chrome inspector or a small node script with a canvas to scan non-transparent pixels row by row to formulate points for the polygons, then map the bounding box percentage coordinates into SVG points. Do not manually type huge arrays of numbers yourself unless it is a quick tweak to minor regions like the eyes or hands.
