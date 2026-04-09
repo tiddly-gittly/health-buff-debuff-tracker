@@ -41,3 +41,9 @@ EmptyMedicine: 暂无药物记录
 MedicineLogKeyColumn: 时间戳/键值
 MedicineLogValueColumn: 日志数据（逗号分隔）
 MedicineCheckinTrend: 近四周打卡趋势
+Configs/Caption: 状态追踪器
+Configs/Description: 自定义插件行为，让健康增减益追踪器为您提供最佳服务。
+Configs/BodyMap/Caption: 身体映射图 (Body Map)
+Configs/BodyMap/Debug/Caption: 开启调试模式
+Configs/BodyMap/Debug/Description: 会常驻灰底显示隐形的所有多边形区域，用于调试坐标。
+

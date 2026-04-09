@@ -11,12 +11,15 @@ class BodyMapWidget extends Widget {
   private editTiddler = '';
   private editField = '';
   private isInteractive = false;
+  private isDebug = false;
   private valuesOverride: string | undefined;
 
   execute() {
     this.editTiddler = this.getAttribute('tiddler', this.getVariable('currentTiddler')) ?? '';
     this.editField = this.getAttribute('field', 'body-parts') ?? 'body-parts';
     this.isInteractive = this.getAttribute('interactive', 'false') === 'true';
+    const configDebug = this.wiki.getTiddlerText('$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map') === 'yes';
+    this.isDebug = this.getAttribute('debug', configDebug ? 'true' : 'false') === 'true';
     this.valuesOverride = this.getAttribute('values');
   }
 
@@ -46,13 +49,20 @@ class BodyMapWidget extends Widget {
     svg.setAttribute('viewBox', '0 0 100 216');
     svg.setAttribute('preserveAspectRatio', 'none');
 
-    // Parse regions from the meta field body-regions
-    let regions: BodyRegion[] = [];
-    if (imgTiddler?.fields?.['body-regions']) {
-      try {
-        regions = JSON.parse(imgTiddler.fields['body-regions'] as string) as BodyRegion[];
-      } catch {
-        console.error('Failed to parse body-regions');
+    // Parse regions from the individual body-region-* fields
+    const regions: BodyRegion[] = [];
+    if (imgTiddler) {
+      for (const fieldName in imgTiddler.fields) {
+        if (fieldName.startsWith('body-region-')) {
+          try {
+            const regionData = JSON.parse(imgTiddler.fields[fieldName] as string);
+            if (regionData && regionData.id) {
+              regions.push(regionData);
+            }
+          } catch (e) {
+            console.error(`Failed to parse ${fieldName}`);
+          }
+        }
       }
     }
 
@@ -72,8 +82,8 @@ class BodyMapWidget extends Widget {
 
       const isActive = currentValues.includes(region.id);
       polygon.setAttribute('style', [
-        `fill:${isActive ? 'rgba(255,80,80,0.45)' : 'rgba(100,100,100,0.08)'}`,
-        `stroke:${isActive ? 'rgba(255,0,0,0.8)' : 'rgba(0,0,0,0.2)'}`,
+        `fill:${isActive ? 'rgba(255,80,80,0.45)' : (this.isDebug ? 'rgba(100,100,100,0.08)' : 'transparent')}`,
+        `stroke:${isActive ? 'rgba(255,0,0,0.8)' : (this.isDebug ? 'rgba(0,0,0,0.2)' : 'transparent')}`,
         'stroke-width:0.5',
         `cursor:${this.isInteractive ? 'pointer' : 'default'}`,
         'transition:fill 0.2s',
@@ -83,13 +93,20 @@ class BodyMapWidget extends Widget {
       polygon.addEventListener('mouseenter', () => {
         if (!isActive) {
           polygon.style.fill = 'rgba(255,165,0,0.3)';
+          // Add a temporary stroke on hover if it was transparent
+          if (!this.isDebug) {
+            polygon.style.stroke = 'rgba(255,165,0,0.8)';
+          }
         }
         tooltip.textContent = `${region.name} (${region.id})`;
         tooltip.style.display = 'block';
       });
       polygon.addEventListener('mouseleave', () => {
         if (!isActive) {
-          polygon.style.fill = 'rgba(100,100,100,0.08)';
+          polygon.style.fill = this.isDebug ? 'rgba(100,100,100,0.08)' : 'transparent';
+          if (!this.isDebug) {
+            polygon.style.stroke = 'transparent';
+          }
         }
         tooltip.style.display = 'none';
       });
@@ -118,7 +135,8 @@ class BodyMapWidget extends Widget {
     const changedAttributes = this.computeAttributes();
     if ($tw.utils.count(changedAttributes) > 0 ||
         (this.editTiddler && changedTiddlers[this.editTiddler]) ||
-        changedTiddlers['$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp']) {
+        changedTiddlers['$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp'] ||
+        changedTiddlers['$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map']) {
       this.refreshSelf();
       return true;
     }

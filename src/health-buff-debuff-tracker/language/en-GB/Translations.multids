@@ -41,3 +41,10 @@ MedicineCheckinTrend: 4-Week Check-in Trend
 BodyMapSectionTitle: Affected Body Parts
 AggregateBodyMapTitle: Body Parts Overview
 EmptyBodyMap: (No affected body parts yet)
+
+Configs/Caption: Health Tracker
+Configs/Description: These settings let you customize the plugin behaviour to best serve you.
+Configs/BodyMap/Caption: Body Map
+Configs/BodyMap/Debug/Caption: Enable Debug Mode
+Configs/BodyMap/Debug/Description: Shows all the invisible polygons with a grey background for coordinate debugging.
+

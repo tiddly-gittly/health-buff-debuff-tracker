@@ -1,0 +1,14 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/configs/config
+tags: $:/tags/ControlPanel/SettingsTab
+caption: <<lingo Configs/Caption $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+
+\procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
+
+<<lingo Configs/Description>>
+
+---
+
+!! <<lingo Configs/BodyMap/Caption>>
+
+;<<lingo Configs/BodyMap/Debug/Caption>>
+:<$checkbox tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map" field="text" checked="yes" unchecked="no"> <<lingo Configs/BodyMap/Debug/Description>></$checkbox>
