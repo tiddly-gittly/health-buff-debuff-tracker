@@ -1,37 +1,36 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp
 type: image/webp
 tags: $:/tags/Image
-
-body-region-head: {"id":"69536005","name":"Head","points":"42,2 50,0 58,2 60,8 59,14 56,20 50,23 44,20 41,14 40,8"}
-body-region-neck: {"id":"45048000","name":"Neck","points":"44,20 50,23 56,20 58,28 55,30 45,30 42,28"}
-body-region-right-shoulder: {"id":"16982005","name":"Right Shoulder","points":"30,28 45,30 43,36 26,34"}
-body-region-left-shoulder: {"id":"16982005L","name":"Left Shoulder","points":"55,30 70,28 74,34 57,36"}
-body-region-chest: {"id":"51185008","name":"Chest","points":"43,36 45,30 55,30 57,36 57,55 43,55"}
-body-region-right-upper-arm: {"id":"53120007","name":"Right Upper Arm","points":"26,34 43,36 42,48 37,58 24,52 20,42"}
-body-region-left-upper-arm: {"id":"53120007L","name":"Left Upper Arm","points":"57,36 74,34 80,42 76,52 63,58 58,48"}
-body-region-right-elbow: {"id":"76248009","name":"Right Elbow","points":"24,52 37,58 33,65 20,62"}
-body-region-left-elbow: {"id":"76248009L","name":"Left Elbow","points":"63,58 76,52 80,62 67,65"}
-body-region-right-forearm: {"id":"14975008","name":"Right Forearm","points":"20,62 33,65 27,85 14,80"}
-body-region-left-forearm: {"id":"14975008L","name":"Left Forearm","points":"67,65 80,62 86,80 73,85"}
-body-region-right-wrist: {"id":"8205005","name":"Right Wrist","points":"14,80 27,85 24,94 12,86"}
-body-region-left-wrist: {"id":"8205005L","name":"Left Wrist","points":"73,85 86,80 88,86 76,94"}
-body-region-right-hand: {"id":"85562004","name":"Right Hand","points":"12,86 24,94 20,110 8,102"}
-body-region-left-hand: {"id":"85562004L","name":"Left Hand","points":"76,94 88,86 92,102 80,110"}
-body-region-abdomen: {"id":"113345001","name":"Abdomen","points":"43,55 57,55 59,74 41,74"}
-body-region-pelvis: {"id":"12921003","name":"Pelvis","points":"41,74 59,74 62,82 56,86 50,88 44,86 38,82"}
-body-region-right-thigh: {"id":"11207009","name":"Right Thigh","points":"38,82 44,86 50,88 48,110 47,128 36,128 34,110"}
-body-region-left-thigh: {"id":"11207009L","name":"Left Thigh","points":"50,88 56,86 62,82 66,110 64,128 53,128 52,110"}
-body-region-right-knee: {"id":"72696002","name":"Right Knee","points":"36,128 47,128 47,138 36,138"}
-body-region-left-knee: {"id":"72696002L","name":"Left Knee","points":"53,128 64,128 64,138 53,138"}
-body-region-right-lower-leg: {"id":"30021000","name":"Right Lower Leg","points":"36,138 47,138 46,170 45,184 37,184 36,170"}
-body-region-left-lower-leg: {"id":"30021000L","name":"Left Lower Leg","points":"53,138 64,138 64,170 63,184 55,184 54,170"}
-body-region-right-ankle: {"id":"7569003","name":"Right Ankle","points":"37,184 45,184 45,192 37,192"}
-body-region-left-ankle: {"id":"7569003L","name":"Left Ankle","points":"55,184 63,184 63,192 55,192"}
-body-region-right-foot: {"id":"56459004","name":"Right Foot","points":"34,192 45,192 46,206 44,213 34,213 31,206"}
-body-region-left-foot: {"id":"56459004L","name":"Left Foot","points":"55,192 66,192 69,206 66,213 56,213 54,206"}
+body-region-head: {"id":"69536005","name":"Head","points":"42,1 50,0 58,1 60,7 59,14 56,19 50,22 44,19 41,14 40,7"}
 body-region-eye-right: {"id":"81745001","name":"Eye (Right)","points":"44,9 48,8 48,12 44,12"}
 body-region-eye-left: {"id":"81745001L","name":"Eye (Left)","points":"52,8 56,9 56,12 52,12"}
 body-region-nose: {"id":"45206002","name":"Nose","points":"48,11 52,11 51,16 49,16"}
 body-region-mouth: {"id":"123851003","name":"Mouth","points":"46,16 54,16 53,19 47,19"}
 body-region-ear-right: {"id":"117590005","name":"Ear (Right)","points":"40,8 42,7 42,15 40,15"}
 body-region-ear-left: {"id":"117590005L","name":"Ear (Left)","points":"58,7 60,8 60,15 58,15"}
+body-region-neck: {"id":"45048000","name":"Neck","points":"44,22 56,22 57,28 55,32 45,32 43,28"}
+body-region-right-shoulder: {"id":"16982005","name":"Right Shoulder","points":"30,28 45,32 44,38 26,34"}
+body-region-left-shoulder: {"id":"16982005L","name":"Left Shoulder","points":"55,32 70,28 74,34 56,38"}
+body-region-chest: {"id":"51185008","name":"Chest","points":"44,32 56,32 56,54 44,54"}
+body-region-right-upper-arm: {"id":"53120007","name":"Right Upper Arm","points":"26,34 44,38 42,50 38,60 24,52 20,42"}
+body-region-left-upper-arm: {"id":"53120007L","name":"Left Upper Arm","points":"56,38 74,34 80,42 76,52 62,60 58,50"}
+body-region-right-elbow: {"id":"76248009","name":"Right Elbow","points":"24,52 38,60 34,68 20,62"}
+body-region-left-elbow: {"id":"76248009L","name":"Left Elbow","points":"62,60 76,52 80,62 66,68"}
+body-region-right-forearm: {"id":"14975008","name":"Right Forearm","points":"20,62 34,68 28,86 14,80"}
+body-region-left-forearm: {"id":"14975008L","name":"Left Forearm","points":"66,68 80,62 86,80 72,86"}
+body-region-right-wrist: {"id":"8205005","name":"Right Wrist","points":"14,80 28,86 26,92 12,86"}
+body-region-left-wrist: {"id":"8205005L","name":"Left Wrist","points":"72,86 86,80 88,86 74,92"}
+body-region-right-hand: {"id":"85562004","name":"Right Hand","points":"12,86 26,92 22,108 8,102"}
+body-region-left-hand: {"id":"85562004L","name":"Left Hand","points":"74,92 88,86 92,102 78,108"}
+body-region-abdomen: {"id":"113345001","name":"Abdomen","points":"44,54 56,54 58,72 42,72"}
+body-region-pelvis: {"id":"12921003","name":"Pelvis","points":"42,72 58,72 61,82 56,86 50,88 44,86 39,82"}
+body-region-right-thigh: {"id":"11207009","name":"Right Thigh","points":"39,82 50,88 49,110 48,128 36,128 34,110"}
+body-region-left-thigh: {"id":"11207009L","name":"Left Thigh","points":"50,88 61,82 66,110 64,128 52,128 51,110"}
+body-region-right-knee: {"id":"72696002","name":"Right Knee","points":"36,128 48,128 48,138 36,138"}
+body-region-left-knee: {"id":"72696002L","name":"Left Knee","points":"52,128 64,128 64,138 52,138"}
+body-region-right-lower-leg: {"id":"30021000","name":"Right Lower Leg","points":"36,138 48,138 47,170 46,184 37,184 36,170"}
+body-region-left-lower-leg: {"id":"30021000L","name":"Left Lower Leg","points":"52,138 64,138 64,170 63,184 54,184 53,170"}
+body-region-right-ankle: {"id":"7569003","name":"Right Ankle","points":"37,184 46,184 46,192 37,192"}
+body-region-left-ankle: {"id":"7569003L","name":"Left Ankle","points":"54,184 63,184 63,192 54,192"}
+body-region-right-foot: {"id":"56459004","name":"Right Foot","points":"34,192 46,192 47,206 45,212 35,212 32,206"}
+body-region-left-foot: {"id":"56459004L","name":"Left Foot","points":"54,192 66,192 68,206 65,212 55,212 53,206"}
