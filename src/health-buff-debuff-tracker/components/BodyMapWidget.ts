@@ -45,7 +45,13 @@ class BodyMapWidget extends Widget {
 
     // Create SVG overlay
     const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;');
+    let svgStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;';
+    if (imgTiddler?.fields?.text) {
+      const b64 = imgTiddler.fields.text as string;
+      const maskUrl = `url("data:image/webp;base64,${b64}")`;
+      svgStyle += `-webkit-mask-image:${maskUrl};mask-image:${maskUrl};-webkit-mask-size:100% 100%;mask-size:100% 100%;`;
+    }
+    svg.setAttribute('style', svgStyle);
     svg.setAttribute('viewBox', '0 0 100 216');
     svg.setAttribute('preserveAspectRatio', 'none');
 
@@ -55,12 +61,14 @@ class BodyMapWidget extends Widget {
       for (const fieldName in imgTiddler.fields) {
         if (fieldName.startsWith('body-region-')) {
           try {
-            const regionData = JSON.parse(imgTiddler.fields[fieldName] as string);
+            const rawField = imgTiddler.fields[fieldName];
+            if (typeof rawField !== 'string' || !rawField.trim()) continue;
+            const regionData = JSON.parse(rawField);
             if (regionData && regionData.id) {
               regions.push(regionData);
             }
           } catch (e) {
-            console.error(`Failed to parse ${fieldName}`);
+            console.error(`Failed to parse ${fieldName}`, e);
           }
         }
       }
