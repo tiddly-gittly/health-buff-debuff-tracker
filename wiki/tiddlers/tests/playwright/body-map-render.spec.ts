@@ -6,6 +6,7 @@ test.describe('BodyMapWidget rendering', () => {
     // Switch to standard layout so PlaywrightTestBodyMap content renders in story river
     await page.evaluate(() => {
       ($tw as any).wiki.setText('$:/layout', 'text', undefined, '');
+      ($tw as any).wiki.setText('$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map', 'text', undefined, 'no');
       // Ensure test tiddler has correct content (dev server may not hot-reload .tid files)
       const tiddler = ($tw as any).wiki.getTiddler('PlaywrightTestBodyMap');
       if (tiddler) {

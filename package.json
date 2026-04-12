@@ -6,6 +6,7 @@
     "dev": "tiddlywiki-plugin-dev dev",
     "dev:lan": "tiddlywiki-plugin-dev dev --lan",
     "dev:wiki": "tiddlywiki-plugin-dev dev --write-wiki",
+    "body-map:generate": "node ./scripts/generate-body-regions.mjs",
     "test": "tiddlywiki-plugin-dev test",
     "test:playwright": "playwright test",
     "test:playwright:headed": "playwright test --headed",

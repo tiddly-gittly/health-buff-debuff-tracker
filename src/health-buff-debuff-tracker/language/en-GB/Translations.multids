@@ -3,7 +3,6 @@
 Name: Health Buff and Debuff Tracker
 ShortName: Health Record
 Description: Keep track of various health issues, medication usage and recovery process. Your personal health archive.
-Configs/Description: These settings allow you to customize the behavior of the "Health Buff and Debuff Tracker" plugin.
 SetEnded: Set as Ended
 Medicine: Medicine
 Medicine/Description: Medications you are taking, associated with a certain buff, debuff, or body condition. Can be linked by adding links in the body of the buff entry, etc.

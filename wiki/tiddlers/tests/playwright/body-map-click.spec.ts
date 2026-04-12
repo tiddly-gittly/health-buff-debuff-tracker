@@ -6,6 +6,7 @@ test.describe('BodyMapWidget click interaction', () => {
     // Switch to standard layout so PlaywrightTestBodyMap content renders in story river
     await page.evaluate(() => {
       ($tw as any).wiki.setText('$:/layout', 'text', undefined, '');
+      ($tw as any).wiki.setText('$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map', 'text', undefined, 'no');
       ($tw as any).wiki.setText('PlaywrightTestBodyMap', 'body-parts', undefined, '');
     });
     // Wait for layout switch and widget re-render
