@@ -21,7 +21,7 @@ function parseArgs(argv) {
     meta: defaultMetaPath,
     image: defaultImagePath,
     rasterWidth: 520,
-    rowStep: 4,
+    rowStep: 1,
     alphaThreshold: 16,
   };
   for (let index = 2; index < argv.length; index += 1) {
@@ -299,7 +299,7 @@ async function generateRegions({ imageBase64, regions, rasterWidth, rowStep, alp
               let minDist = Infinity;
               for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
                  const region = nonFaceRegions[regionIndex];
-                 if (y < region.bbox.minY - 30 || y > region.bbox.maxY + 30) continue;
+                 if (y < region.bbox.minY - 100 || y > region.bbox.maxY + 100) continue;
                  const dist = getDistanceToPolygon(x, y, region.points);
                  if (dist < minDist) {
                     minDist = dist;
@@ -315,9 +315,8 @@ const generated = [];
           const region = nonFaceRegions[regionIndex];
           const leftEdge = [];
           const rightEdge = [];
-          const startY = Math.max(0, Math.floor(region.bbox.minY) - 3);
-          const endY = Math.min(rasterHeight - 1, Math.ceil(region.bbox.maxY) + 3);
-          for (let y = startY; y <= endY; y += step) {
+          const assignedYs = [];
+          for (let y = 0; y < rasterHeight; y += step) {
             let firstX = -1;
             let lastX = -1;
             for (let x = 0; x < width; x += 1) {
@@ -325,10 +324,7 @@ const generated = [];
               if (firstX === -1) firstX = x;
               lastX = x;
             }
-            if (firstX !== -1) {
-              leftEdge.push({ x: firstX, y });
-              rightEdge.push({ x: lastX, y });
-            }
+            if (firstX !== -1) { leftEdge.push({ x: firstX - 0.5, y }); rightEdge.push({ x: lastX + 0.5, y }); }
           }
 
           if (leftEdge.length < 2) {
@@ -337,7 +333,7 @@ const generated = [];
           }
 
           const polygon = dedupePoints([...leftEdge, ...rightEdge.reverse()]);
-          const smoothed = simplifyClosed(chaikin(polygon, 1), 0.7);
+          const smoothed = simplifyClosed(polygon, 0.8);
           const viewBoxPoints = toViewBox(smoothed);
           generated.push({
             field: region.field,
