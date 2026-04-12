@@ -243,52 +243,74 @@ async function generateRegions({ imageBase64, regions, rasterWidth, rowStep, alp
           }
         }
 
+                const getDistanceToPolygon = (px, py, polygon) => {
+          let minDist = Infinity;
+          for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const p1 = polygon[i];
+            const p2 = polygon[j];
+            const l2 = (p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y);
+            if (l2 === 0) {
+              minDist = Math.min(minDist, (px - p1.x)**2 + (py - p1.y)**2);
+              continue;
+            }
+            let t = ((px - p1.x) * (p2.x - p1.x) + (py - p1.y) * (p2.y - p1.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            const projX = p1.x + t * (p2.x - p1.x);
+            const projY = p1.y + t * (p2.y - p1.y);
+            minDist = Math.min(minDist, (px - projX)**2 + (py - projY)**2);
+          }
+          return Math.sqrt(minDist);
+        };
+
         const labelMap = new Int16Array(width * rasterHeight);
         labelMap.fill(-1);
         for (let y = 0; y < rasterHeight; y += 1) {
           for (let x = 0; x < width; x += 1) {
             const pixelIndex = y * width + x;
             if (!bodyMask[pixelIndex]) continue;
-            let bestIndex = -1;
-            let bestScore = Number.POSITIVE_INFINITY;
+            
+            const inRegions = [];
             for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
               const region = nonFaceRegions[regionIndex];
               if (
-                x < region.bbox.minX - 6 ||
-                x > region.bbox.maxX + 6 ||
-                y < region.bbox.minY - 6 ||
-                y > region.bbox.maxY + 6
+                x >= region.bbox.minX - 4 && x <= region.bbox.maxX + 4 &&
+                y >= region.bbox.minY - 4 && y <= region.bbox.maxY + 4 &&
+                pointInPolygon(x, y, region.points)
               ) {
-                continue;
-              }
-              if (!pointInPolygon(x, y, region.points)) continue;
-              const dx = x - region.centroid.x;
-              const dy = y - region.centroid.y;
-              const norm = Math.max(region.bbox.maxX - region.bbox.minX, region.bbox.maxY - region.bbox.minY, 1);
-              const score = (dx * dx + dy * dy) / (norm * norm);
-              if (score < bestScore) {
-                bestScore = score;
-                bestIndex = regionIndex;
+                inRegions.push(regionIndex);
               }
             }
-            if (bestIndex === -1) {
+
+            if (inRegions.length === 1) {
+              labelMap[pixelIndex] = inRegions[0];
+            } else if (inRegions.length > 1) {
+              let bestIndex = -1;
+              let maxDepth = -Infinity;
+              for (const regionIndex of inRegions) {
+                 const depth = getDistanceToPolygon(x, y, nonFaceRegions[regionIndex].points);
+                 if (depth > maxDepth) {
+                    maxDepth = depth;
+                    bestIndex = regionIndex;
+                 }
+              }
+              labelMap[pixelIndex] = bestIndex;
+            } else {
+              let bestIndex = -1;
+              let minDist = Infinity;
               for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
-                const region = nonFaceRegions[regionIndex];
-                if (y < region.bbox.minY - 14 || y > region.bbox.maxY + 14) continue;
-                const dx = x - region.centroid.x;
-                const dy = y - region.centroid.y;
-                const score = dx * dx + dy * dy;
-                if (score < bestScore) {
-                  bestScore = score;
-                  bestIndex = regionIndex;
-                }
+                 const region = nonFaceRegions[regionIndex];
+                 if (y < region.bbox.minY - 30 || y > region.bbox.maxY + 30) continue;
+                 const dist = getDistanceToPolygon(x, y, region.points);
+                 if (dist < minDist) {
+                    minDist = dist;
+                    bestIndex = regionIndex;
+                 }
               }
+              labelMap[pixelIndex] = bestIndex;
             }
-            if (bestIndex !== -1) labelMap[pixelIndex] = bestIndex;
           }
         }
-
-        const generated = [];
+const generated = [];
         for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
           const region = nonFaceRegions[regionIndex];
           const leftEdge = [];
@@ -315,7 +337,7 @@ async function generateRegions({ imageBase64, regions, rasterWidth, rowStep, alp
           }
 
           const polygon = dedupePoints([...leftEdge, ...rightEdge.reverse()]);
-          const smoothed = simplifyClosed(chaikin(polygon, 2), 0.9);
+          const smoothed = simplifyClosed(chaikin(polygon, 1), 0.7);
           const viewBoxPoints = toViewBox(smoothed);
           generated.push({
             field: region.field,
