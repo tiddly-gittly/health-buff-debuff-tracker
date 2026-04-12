@@ -7,12 +7,12 @@ const defaultImagePath = path.resolve('src/health-buff-debuff-tracker/img/body.w
 const viewBoxWidth = 100;
 const viewBoxHeight = 216;
 const faceScaleByName = {
-  'Eye (Right)': 0.85,
-  'Eye (Left)': 0.85,
-  Nose: 0.88,
-  Mouth: 0.88,
-  'Ear (Right)': 0.9,
-  'Ear (Left)': 0.9,
+  'Eye (Right)': 2.0,
+  'Eye (Left)': 2.0,
+  Nose: 2.0,
+  Mouth: 2.0,
+  'Ear (Right)': 1.8,
+  'Ear (Left)': 1.8,
 };
 const faceNames = new Set(Object.keys(faceScaleByName));
 
