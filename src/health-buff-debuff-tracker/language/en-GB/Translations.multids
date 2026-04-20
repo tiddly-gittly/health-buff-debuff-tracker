@@ -46,4 +46,7 @@ Configs/Description: These settings let you customize the plugin behaviour to be
 Configs/BodyMap/Caption: Body Map
 Configs/BodyMap/Debug/Caption: Enable Debug Mode
 Configs/BodyMap/Debug/Description: Shows all the invisible polygons with a grey background for coordinate debugging.
+Configs/BodyMap/Editor/Caption: Body Map Node Editor
+Configs/BodyMap/Editor/OpenButton: Open Editor
+Configs/BodyMap/Editor/Description: Open the draggable editor to fine-tune body regions and export ready-to-paste meta fields.
 

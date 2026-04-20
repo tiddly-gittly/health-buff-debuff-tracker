@@ -1,52 +1,53 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { chromium } from '@playwright/test';
 
 const defaultMetaPath = path.resolve('src/health-buff-debuff-tracker/img/body.webp.meta');
 const defaultImagePath = path.resolve('src/health-buff-debuff-tracker/img/body.webp');
-const viewBoxWidth = 100;
-const viewBoxHeight = 216;
-const faceScaleByName = {
-  'Eye (Right)': 2.0,
-  'Eye (Left)': 2.0,
-  Nose: 2.0,
-  Mouth: 2.0,
-  'Ear (Right)': 1.8,
-  'Ear (Left)': 1.8,
-};
-const faceNames = new Set(Object.keys(faceScaleByName));
 
 function parseArgs(argv) {
   const options = {
     meta: defaultMetaPath,
     image: defaultImagePath,
-    rasterWidth: 520,
-    rowStep: 1,
-    alphaThreshold: 16,
+    rasterWidth: 700,
+    alphaThreshold: 12,
+    viewBoxWidth: 100,
+    viewBoxHeight: 0,
   };
+
   for (let index = 2; index < argv.length; index += 1) {
     const current = argv[index];
     const next = argv[index + 1];
-    if (current === '--meta' && next) {
+    if (!next) continue;
+
+    if (current === '--meta') {
       options.meta = path.resolve(next);
       index += 1;
-    } else if (current === '--image' && next) {
+    } else if (current === '--image') {
       options.image = path.resolve(next);
       index += 1;
-    } else if (current === '--raster-width' && next) {
+    } else if (current === '--raster-width') {
       options.rasterWidth = Number(next);
       index += 1;
-    } else if (current === '--row-step' && next) {
-      options.rowStep = Number(next);
+    } else if (current === '--alpha-threshold') {
+      options.alphaThreshold = Number(next);
+      index += 1;
+    } else if (current === '--viewbox-width') {
+      options.viewBoxWidth = Number(next);
+      index += 1;
+    } else if (current === '--viewbox-height') {
+      options.viewBoxHeight = Number(next);
       index += 1;
     }
   }
+
   return options;
 }
 
 function parseMeta(content) {
-  const headers = [];
+  const headerLines = [];
   const regions = [];
+
   for (const line of content.split(/\r?\n/)) {
     if (line.startsWith('body-region-')) {
       const separatorIndex = line.indexOf(': ');
@@ -55,311 +56,342 @@ function parseMeta(content) {
       const jsonText = line.slice(separatorIndex + 2).trim();
       if (!jsonText) continue;
       regions.push({ field, data: JSON.parse(jsonText) });
-    } else if (!line.startsWith('body-regions:')) {
-      headers.push(line);
+    } else {
+      headerLines.push(line);
     }
   }
-  return { headers, regions };
+
+  const readHeaderField = (fieldName) => {
+    const line = headerLines.find((item) => item.startsWith(`${fieldName}:`));
+    return line ? line.slice(fieldName.length + 1).trim() : '';
+  };
+
+  return {
+    headerLines,
+    regions,
+    viewBoxWidth: Number(readHeaderField('body-viewbox-width')) || 100,
+    viewBoxHeight: Number(readHeaderField('body-viewbox-height')) || 0,
+  };
 }
 
-function serializeMeta(headers, regions) {
-  const regionLines = regions.map(({ field, data }) => `${field}: ${JSON.stringify(data)}`);
-  return [...headers, ...regionLines].join('\n');
+function upsertField(lines, fieldName, value) {
+  const nextLines = [...lines];
+  const index = nextLines.findIndex((line) => line.startsWith(`${fieldName}:`));
+  const line = `${fieldName}: ${value}`;
+  if (index >= 0) {
+    nextLines[index] = line;
+    return nextLines;
+  }
+
+  const tagsIndex = nextLines.findIndex((item) => item.startsWith('tags:'));
+  if (tagsIndex >= 0) {
+    nextLines.splice(tagsIndex + 1, 0, line);
+  } else {
+    nextLines.push(line);
+  }
+  return nextLines;
 }
 
-async function generateRegions({ imageBase64, regions, rasterWidth, rowStep, alphaThreshold }) {
+function serializeMeta(parsed, generatedRegions, viewBox) {
+  let headerLines = [...parsed.headerLines];
+  headerLines = upsertField(headerLines, 'body-viewbox-width', String(Number(viewBox.width.toFixed(1))));
+  headerLines = upsertField(headerLines, 'body-viewbox-height', String(Number(viewBox.height.toFixed(1))));
+
+  const regionLines = generatedRegions.map(({ field, data }) => `${field}: ${JSON.stringify(data)}`);
+  return [...headerLines, ...regionLines].join('\n');
+}
+
+async function generateRegions({ imageBase64, regions, rasterWidth, alphaThreshold, viewBoxWidth, viewBoxHeight }) {
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage();
-    const result = await page.evaluate(
-      async ({ imageBase64: source, regions: seedRegions, rasterWidth: width, rowStep: step, alphaThreshold: alphaCutoff, viewBoxWidth: vbWidth, viewBoxHeight: vbHeight, faceScaleByName: faceScale }) => {
-        const loadImage = async () => new Promise((resolve, reject) => {
-          const image = new Image();
-          image.onload = () => resolve(image);
-          image.onerror = reject;
-          image.src = `data:image/webp;base64,${source}`;
-        });
+    const result = await page.evaluate(async (input) => {
+      const faceNames = new Set([
+        'Eye (Right)',
+        'Eye (Left)',
+        'Nose',
+        'Mouth',
+        'Ear (Right)',
+        'Ear (Left)',
+      ]);
 
-        const image = await loadImage();
-        const rasterHeight = Math.round(width * (image.height / image.width));
-        const scaleX = width / vbWidth;
-        const scaleY = rasterHeight / vbHeight;
-        const imageCanvas = document.createElement('canvas');
-        imageCanvas.width = width;
-        imageCanvas.height = rasterHeight;
-        const imageContext = imageCanvas.getContext('2d');
-        imageContext.drawImage(image, 0, 0, width, rasterHeight);
-        const alpha = imageContext.getImageData(0, 0, width, rasterHeight).data;
+      const loadImage = async () => new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = `data:image/webp;base64,${input.imageBase64}`;
+      });
 
-        const bodyMask = new Uint8Array(width * rasterHeight);
-        for (let y = 0; y < rasterHeight; y += 1) {
-          for (let x = 0; x < width; x += 1) {
-            const offset = (y * width + x) * 4 + 3;
-            bodyMask[y * width + x] = alpha[offset] >= alphaCutoff ? 1 : 0;
-          }
+      const image = await loadImage();
+      const vbWidth = input.viewBoxWidth || 100;
+      const vbHeight = input.viewBoxHeight > 0
+        ? input.viewBoxHeight
+        : Math.round(((vbWidth * image.height) / image.width) * 10) / 10;
+      const width = input.rasterWidth;
+      const height = Math.max(1, Math.round(width * (image.height / image.width)));
+      const scaleX = width / vbWidth;
+      const scaleY = height / vbHeight;
+      const imageCenterX = width / 2;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, width, height);
+      const alpha = context.getImageData(0, 0, width, height).data;
+
+      const mask = new Uint8Array(width * height);
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const offset = (y * width + x) * 4 + 3;
+          mask[y * width + x] = alpha[offset] >= input.alphaThreshold ? 1 : 0;
         }
+      }
 
-        const pointInPolygon = (pointX, pointY, polygon) => {
-          let inside = false;
-          for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-            const xi = polygon[i].x;
-            const yi = polygon[i].y;
-            const xj = polygon[j].x;
-            const yj = polygon[j].y;
-            const intersects = ((yi > pointY) !== (yj > pointY)) &&
-              (pointX < ((xj - xi) * (pointY - yi)) / ((yj - yi) || 1e-6) + xi);
-            if (intersects) inside = !inside;
-          }
-          return inside;
+      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+      const round = (value) => Math.round(value * 10) / 10;
+      const parsePointText = (pointsText) => pointsText.split(' ').filter(Boolean).map((pair) => {
+        const [x, y] = pair.split(',').map(Number);
+        return { x: x * scaleX, y: y * scaleY };
+      });
+      const centroidOf = (points) => {
+        const sum = points.reduce((accumulator, point) => ({
+          x: accumulator.x + point.x,
+          y: accumulator.y + point.y,
+        }), { x: 0, y: 0 });
+        return {
+          x: sum.x / Math.max(1, points.length),
+          y: sum.y / Math.max(1, points.length),
         };
-
-        const centroidOf = (points) => {
-          let x = 0;
-          let y = 0;
-          for (const point of points) {
-            x += point.x;
-            y += point.y;
-          }
-          return {
-            x: x / points.length,
-            y: y / points.length,
-          };
-        };
-
-        const scalePolygon = (points, scale) => {
-          const centroid = centroidOf(points);
-          return points.map((point) => ({
-            x: centroid.x + (point.x - centroid.x) * scale,
-            y: centroid.y + (point.y - centroid.y) * scale,
-          }));
-        };
-
-        const dedupePoints = (points) => {
-          const deduped = [];
-          for (const point of points) {
-            const previous = deduped[deduped.length - 1];
-            if (!previous || Math.hypot(previous.x - point.x, previous.y - point.y) > 0.35) {
-              deduped.push(point);
-            }
-          }
-          if (deduped.length > 1) {
-            const first = deduped[0];
-            const last = deduped[deduped.length - 1];
-            if (Math.hypot(first.x - last.x, first.y - last.y) <= 0.35) {
-              deduped.pop();
-            }
-          }
-          return deduped;
-        };
-
-        const chaikin = (points, passes) => {
-          let output = points;
-          for (let pass = 0; pass < passes; pass += 1) {
-            if (output.length < 3) return output;
-            const next = [];
-            for (let i = 0; i < output.length; i += 1) {
-              const current = output[i];
-              const following = output[(i + 1) % output.length];
-              next.push({
-                x: current.x * 0.75 + following.x * 0.25,
-                y: current.y * 0.75 + following.y * 0.25,
-              });
-              next.push({
-                x: current.x * 0.25 + following.x * 0.75,
-                y: current.y * 0.25 + following.y * 0.75,
-              });
-            }
-            output = next;
-          }
-          return output;
-        };
-
-        const perpendicularDistance = (point, lineStart, lineEnd) => {
-          const dx = lineEnd.x - lineStart.x;
-          const dy = lineEnd.y - lineStart.y;
-          if (dx === 0 && dy === 0) return Math.hypot(point.x - lineStart.x, point.y - lineStart.y);
-          return Math.abs(dy * point.x - dx * point.y + lineEnd.x * lineStart.y - lineEnd.y * lineStart.x) / Math.hypot(dx, dy);
-        };
-
-        const rdp = (points, epsilon) => {
-          if (points.length < 3) return points;
-          let maxDistance = 0;
-          let splitIndex = 0;
-          for (let i = 1; i < points.length - 1; i += 1) {
-            const distance = perpendicularDistance(points[i], points[0], points[points.length - 1]);
-            if (distance > maxDistance) {
-              maxDistance = distance;
-              splitIndex = i;
-            }
-          }
-          if (maxDistance <= epsilon) return [points[0], points[points.length - 1]];
-          const left = rdp(points.slice(0, splitIndex + 1), epsilon);
-          const right = rdp(points.slice(splitIndex), epsilon);
-          return [...left.slice(0, -1), ...right];
-        };
-
-        const simplifyClosed = (points, epsilon) => {
-          if (points.length < 4) return points;
-          const open = [...points, points[0]];
-          const simplified = rdp(open, epsilon);
-          return dedupePoints(simplified.slice(0, -1));
-        };
-
-        const toViewBox = (points) => points.map((point) => ({
-          x: Math.max(0, Math.min(vbWidth, point.x / scaleX)),
-          y: Math.max(0, Math.min(vbHeight, point.y / scaleY)),
+      };
+      const scaleAroundCenter = (points, scale) => {
+        const center = centroidOf(points);
+        return points.map((point) => ({
+          x: center.x + (point.x - center.x) * scale,
+          y: center.y + (point.y - center.y) * scale,
         }));
+      };
+      const formatPoints = (points) => points.map((point) => `${round(clamp(point.x / scaleX, 0, vbWidth))},${round(clamp(point.y / scaleY, 0, vbHeight))}`).join(' ');
 
-        const formattedPoints = (points) => points.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ');
+      const maskAt = (x, y) => {
+        const rx = Math.round(x);
+        const ry = Math.round(y);
+        if (rx < 0 || rx >= width || ry < 0 || ry >= height) return false;
+        return mask[ry * width + rx] === 1;
+      };
 
-        const nonFaceRegions = [];
-        const faceRegions = [];
-        for (const region of seedRegions) {
-          const rawPoints = region.data.points.split(' ').filter(Boolean).map((pair) => {
-            const [x, y] = pair.split(',').map(Number);
-            return { x, y };
-          });
-          if (faceScale[region.data.name]) {
-            const scaled = scalePolygon(rawPoints, faceScale[region.data.name]);
-            faceRegions.push({ ...region, points: scaled });
+      const rowStats = [];
+      let top = height - 1;
+      let bottom = 0;
+
+      for (let y = 0; y < height; y += 1) {
+        const segments = [];
+        let start = -1;
+        for (let x = 0; x < width; x += 1) {
+          const filled = mask[y * width + x] === 1;
+          if (filled && start === -1) start = x;
+          if ((!filled || x === width - 1) && start !== -1) {
+            const end = filled && x === width - 1 ? x : x - 1;
+            segments.push({ start, end, width: end - start + 1, cx: (start + end) / 2 });
+            start = -1;
+          }
+        }
+
+        const widest = segments.reduce((best, segment) => (!best || segment.width > best.width ? segment : best), null);
+        const center = segments.find((segment) => imageCenterX >= segment.start && imageCenterX <= segment.end) ?? widest;
+        const whole = segments.length > 0 ? {
+          start: segments[0].start,
+          end: segments[segments.length - 1].end,
+          width: segments[segments.length - 1].end - segments[0].start + 1,
+          cx: (segments[0].start + segments[segments.length - 1].end) / 2,
+        } : null;
+
+        if (whole) {
+          top = Math.min(top, y);
+          bottom = Math.max(bottom, y);
+        }
+
+        rowStats.push({ y, segments, center, whole });
+      }
+
+      const bodyHeight = Math.max(1, bottom - top);
+      const rowFromRatio = (ratio) => clamp(Math.round(top + bodyHeight * ratio), top, bottom);
+      const getSegment = (row, mode) => {
+        if (!row) return null;
+        if (mode === 'center') return row.center ?? row.whole;
+        if (mode === 'left-outer') return row.segments[0] ?? row.whole;
+        if (mode === 'right-outer') return row.segments[row.segments.length - 1] ?? row.whole;
+        if (mode === 'left-inner') {
+          const candidates = row.segments.filter((segment) => segment.cx < imageCenterX);
+          return candidates[candidates.length - 1] ?? row.center ?? row.whole;
+        }
+        if (mode === 'right-inner') {
+          const candidates = row.segments.filter((segment) => segment.cx > imageCenterX);
+          return candidates[0] ?? row.center ?? row.whole;
+        }
+        return row.whole;
+      };
+
+      const pickRow = (mode, startRatio, endRatio, kind) => {
+        let best = null;
+        const middleRatio = (startRatio + endRatio) / 2;
+        const middleY = rowFromRatio(middleRatio);
+        for (let y = rowFromRatio(startRatio); y <= rowFromRatio(endRatio); y += 1) {
+          const row = rowStats[y];
+          const segment = getSegment(row, mode);
+          if (!segment) continue;
+          const proximityPenalty = Math.abs(y - middleY) / Math.max(1, bodyHeight) * 24;
+          const score = (kind === 'max' ? -segment.width : segment.width) + proximityPenalty;
+          if (!best || score < best.score) {
+            best = { row, segment, score };
+          }
+        }
+        return best ?? { row: rowStats[middleY], segment: getSegment(rowStats[middleY], mode) };
+      };
+
+      const snapPointToMask = (point, center) => {
+        const dx = point.x - center.x;
+        const dy = point.y - center.y;
+        const length = Math.hypot(dx, dy) || 1;
+        const stepX = dx / length;
+        const stepY = dy / length;
+
+        if (!maskAt(point.x, point.y)) {
+          for (let distance = length; distance >= 0; distance -= 1) {
+            const candidate = { x: center.x + stepX * distance, y: center.y + stepY * distance };
+            if (maskAt(candidate.x, candidate.y)) return candidate;
+          }
+          return { ...center };
+        }
+
+        let best = { ...point };
+        for (let distance = length; distance <= length + 24; distance += 1) {
+          const candidate = { x: center.x + stepX * distance, y: center.y + stepY * distance };
+          if (maskAt(candidate.x, candidate.y)) {
+            best = candidate;
           } else {
-            const scaledPoints = rawPoints.map((point) => ({
-              x: point.x * scaleX,
-              y: point.y * scaleY,
-            }));
-            const centroid = centroidOf(scaledPoints);
-            const bbox = scaledPoints.reduce((accumulator, point) => ({
-              minX: Math.min(accumulator.minX, point.x),
-              maxX: Math.max(accumulator.maxX, point.x),
-              minY: Math.min(accumulator.minY, point.y),
-              maxY: Math.max(accumulator.maxY, point.y),
-            }), { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
-            nonFaceRegions.push({
-              ...region,
-              points: scaledPoints,
-              centroid,
-              bbox,
-            });
+            break;
           }
         }
+        return best;
+      };
 
-                const getDistanceToPolygon = (px, py, polygon) => {
-          let minDist = Infinity;
-          for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-            const p1 = polygon[i];
-            const p2 = polygon[j];
-            const l2 = (p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y);
-            if (l2 === 0) {
-              minDist = Math.min(minDist, (px - p1.x)**2 + (py - p1.y)**2);
-              continue;
-            }
-            let t = ((px - p1.x) * (p2.x - p1.x) + (py - p1.y) * (p2.y - p1.y)) / l2;
-            t = Math.max(0, Math.min(1, t));
-            const projX = p1.x + t * (p2.x - p1.x);
-            const projY = p1.y + t * (p2.y - p1.y);
-            minDist = Math.min(minDist, (px - projX)**2 + (py - projY)**2);
+      const cleanPoints = (points) => {
+        const deduped = [];
+        for (const point of points) {
+          const previous = deduped[deduped.length - 1];
+          if (!previous || Math.hypot(previous.x - point.x, previous.y - point.y) > 1.2) {
+            deduped.push(point);
           }
-          return Math.sqrt(minDist);
+        }
+        return deduped;
+      };
+
+      const ellipsePoints = (cx, cy, rx, ry, steps = 14) => {
+        const points = [];
+        for (let index = 0; index < steps; index += 1) {
+          const angle = (index / steps) * Math.PI * 2;
+          points.push({
+            x: cx + Math.cos(angle) * rx,
+            y: cy + Math.sin(angle) * ry,
+          });
+        }
+        return points;
+      };
+
+      const buildSeedRegion = (points, shrink = 1) => {
+        const scaled = shrink === 1 ? points : scaleAroundCenter(points, shrink);
+        const center = centroidOf(scaled);
+        return cleanPoints(scaled.map((point) => snapPointToMask(point, center)));
+      };
+
+      const buildJointRegion = (rowMatch, mode, widthScale, heightScale, minSize = 8) => {
+        const segment = rowMatch.segment ?? getSegment(rowMatch.row, mode);
+        if (!segment) return [];
+        const cx = segment.cx;
+        const cy = rowMatch.row.y;
+        const rx = Math.max(minSize, segment.width * widthScale * 0.5);
+        const ry = Math.max(minSize * 0.7, bodyHeight * heightScale);
+        const center = { x: cx, y: cy };
+        return cleanPoints(ellipsePoints(cx, cy, rx, ry).map((point) => snapPointToMask(point, center)));
+      };
+
+      const buildShoulderRegion = (screenSide) => {
+        const shoulderRow = pickRow('center', 0.16, 0.28, 'max');
+        const whole = shoulderRow.row.whole ?? shoulderRow.segment;
+        const center = shoulderRow.row.center ?? whole;
+        if (!whole || !center) return [];
+
+        const outer = screenSide === 'left' ? whole.start : center.end;
+        const inner = screenSide === 'left' ? center.start : whole.end;
+        const cx = (outer + inner) / 2;
+        const rx = Math.max(8, Math.abs(inner - outer) * 0.7);
+        const cy = shoulderRow.row.y;
+        const ellipseCenter = { x: cx, y: cy };
+        return cleanPoints(ellipsePoints(cx, cy, rx, bodyHeight * 0.025, 12).map((point) => snapPointToMask(point, ellipseCenter)));
+      };
+
+      const screenSideFor = (name) => {
+        if (name.startsWith('Right ')) return 'left';
+        if (name.startsWith('Left ')) return 'right';
+        return 'center';
+      };
+
+      const rows = {
+        neck: pickRow('center', 0.08, 0.19, 'min'),
+        elbowLeft: pickRow('left-outer', 0.22, 0.35, 'min'),
+        elbowRight: pickRow('right-outer', 0.22, 0.35, 'min'),
+        wristLeft: pickRow('left-outer', 0.36, 0.52, 'min'),
+        wristRight: pickRow('right-outer', 0.36, 0.52, 'min'),
+        kneeLeft: pickRow('left-inner', 0.58, 0.72, 'min'),
+        kneeRight: pickRow('right-inner', 0.58, 0.72, 'min'),
+        ankleLeft: pickRow('left-inner', 0.82, 0.95, 'min'),
+        ankleRight: pickRow('right-inner', 0.82, 0.95, 'min'),
+      };
+
+      const generated = input.regions.map((region) => {
+        const seedPoints = parsePointText(region.data.points);
+        const screenSide = screenSideFor(region.data.name);
+        const sideMode = screenSide === 'left' ? 'left-outer' : 'right-outer';
+        const legMode = screenSide === 'left' ? 'left-inner' : 'right-inner';
+        let outputPoints;
+
+        if (faceNames.has(region.data.name)) {
+          outputPoints = buildSeedRegion(seedPoints, 0.92);
+        } else if (region.data.name === 'Neck') {
+          outputPoints = buildJointRegion(rows.neck, 'center', 0.9, 0.022, 7);
+        } else if (region.data.name.includes('Shoulder')) {
+          outputPoints = buildShoulderRegion(screenSide);
+        } else if (region.data.name.includes('Elbow')) {
+          outputPoints = buildJointRegion(sideMode === 'left-outer' ? rows.elbowLeft : rows.elbowRight, sideMode, 1.15, 0.022, 7);
+        } else if (region.data.name.includes('Wrist')) {
+          outputPoints = buildJointRegion(sideMode === 'left-outer' ? rows.wristLeft : rows.wristRight, sideMode, 0.9, 0.018, 6);
+        } else if (region.data.name.includes('Knee')) {
+          outputPoints = buildJointRegion(legMode === 'left-inner' ? rows.kneeLeft : rows.kneeRight, legMode, 1.2, 0.024, 8);
+        } else if (region.data.name.includes('Ankle')) {
+          outputPoints = buildJointRegion(legMode === 'left-inner' ? rows.ankleLeft : rows.ankleRight, legMode, 0.9, 0.018, 6);
+        } else {
+          outputPoints = buildSeedRegion(seedPoints, 0.98);
+        }
+
+        return {
+          field: region.field,
+          data: {
+            ...region.data,
+            points: formatPoints(outputPoints),
+          },
         };
+      });
 
-        const labelMap = new Int16Array(width * rasterHeight);
-        labelMap.fill(-1);
-        for (let y = 0; y < rasterHeight; y += 1) {
-          for (let x = 0; x < width; x += 1) {
-            const pixelIndex = y * width + x;
-            if (!bodyMask[pixelIndex]) continue;
-            
-            const inRegions = [];
-            for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
-              const region = nonFaceRegions[regionIndex];
-              if (
-                x >= region.bbox.minX - 4 && x <= region.bbox.maxX + 4 &&
-                y >= region.bbox.minY - 4 && y <= region.bbox.maxY + 4 &&
-                pointInPolygon(x, y, region.points)
-              ) {
-                inRegions.push(regionIndex);
-              }
-            }
+      return {
+        regions: generated,
+        viewBox: {
+          width: vbWidth,
+          height: vbHeight,
+        },
+      };
+    }, { imageBase64, regions, rasterWidth, alphaThreshold, viewBoxWidth, viewBoxHeight });
 
-            if (inRegions.length === 1) {
-              labelMap[pixelIndex] = inRegions[0];
-            } else if (inRegions.length > 1) {
-              let bestIndex = -1;
-              let maxDepth = -Infinity;
-              for (const regionIndex of inRegions) {
-                 const depth = getDistanceToPolygon(x, y, nonFaceRegions[regionIndex].points);
-                 if (depth > maxDepth) {
-                    maxDepth = depth;
-                    bestIndex = regionIndex;
-                 }
-              }
-              labelMap[pixelIndex] = bestIndex;
-            } else {
-              let bestIndex = -1;
-              let minDist = Infinity;
-              for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
-                 const region = nonFaceRegions[regionIndex];
-                 if (y < region.bbox.minY - 100 || y > region.bbox.maxY + 100) continue;
-                 const dist = getDistanceToPolygon(x, y, region.points);
-                 if (dist < minDist) {
-                    minDist = dist;
-                    bestIndex = regionIndex;
-                 }
-              }
-              labelMap[pixelIndex] = bestIndex;
-            }
-          }
-        }
-const generated = [];
-        for (let regionIndex = 0; regionIndex < nonFaceRegions.length; regionIndex += 1) {
-          const region = nonFaceRegions[regionIndex];
-          const leftEdge = [];
-          const rightEdge = [];
-          const assignedYs = [];
-          for (let y = 0; y < rasterHeight; y += step) {
-            let firstX = -1;
-            let lastX = -1;
-            for (let x = 0; x < width; x += 1) {
-              if (labelMap[y * width + x] !== regionIndex) continue;
-              if (firstX === -1) firstX = x;
-              lastX = x;
-            }
-            if (firstX !== -1) { leftEdge.push({ x: firstX - 0.5, y }); rightEdge.push({ x: lastX + 0.5, y }); }
-          }
-
-          if (leftEdge.length < 2) {
-            generated.push(region);
-            continue;
-          }
-
-          const polygon = dedupePoints([...leftEdge, ...rightEdge.reverse()]);
-          const smoothed = simplifyClosed(polygon, 0.8);
-          const viewBoxPoints = toViewBox(smoothed);
-          generated.push({
-            field: region.field,
-            data: {
-              ...region.data,
-              points: formattedPoints(viewBoxPoints),
-            },
-          });
-        }
-
-        for (const region of faceRegions) {
-          generated.push({
-            field: region.field,
-            data: {
-              ...region.data,
-              points: formattedPoints(region.points),
-            },
-          });
-        }
-
-        const order = new Map(seedRegions.map((region, index) => [region.field, index]));
-        generated.sort((left, right) => (order.get(left.field) ?? 0) - (order.get(right.field) ?? 0));
-        return generated;
-      },
-      { imageBase64, regions, rasterWidth, rowStep, alphaThreshold, viewBoxWidth, viewBoxHeight, faceScaleByName },
-    );
     await page.close();
     return result;
   } finally {
@@ -373,16 +405,20 @@ async function main() {
     fs.readFile(options.meta, 'utf8'),
     fs.readFile(options.image),
   ]);
+
   const parsed = parseMeta(metaContent);
-  const generatedRegions = await generateRegions({
+  const result = await generateRegions({
     imageBase64: imageBuffer.toString('base64'),
     regions: parsed.regions,
     rasterWidth: options.rasterWidth,
-    rowStep: options.rowStep,
     alphaThreshold: options.alphaThreshold,
+    viewBoxWidth: options.viewBoxWidth || parsed.viewBoxWidth,
+    viewBoxHeight: options.viewBoxHeight || parsed.viewBoxHeight,
   });
-  await fs.writeFile(options.meta, serializeMeta(parsed.headers, generatedRegions));
-  console.log(`Updated ${generatedRegions.length} body regions in ${options.meta}`);
+
+  await fs.writeFile(options.meta, serializeMeta(parsed, result.regions, result.viewBox));
+  console.log(`Updated ${result.regions.length} body regions in ${options.meta}`);
+  console.log(`ViewBox: 0 0 ${result.viewBox.width} ${result.viewBox.height}`);
 }
 
 await main();

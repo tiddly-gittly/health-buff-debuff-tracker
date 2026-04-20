@@ -12,3 +12,6 @@ caption: <<lingo Configs/Caption $:/plugins/linonetwo/health-buff-debuff-tracker
 
 ;<<lingo Configs/BodyMap/Debug/Caption>>
 :<$checkbox tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map" field="text" checked="yes" unchecked="no"> <<lingo Configs/BodyMap/Debug/Description>></$checkbox>
+
+;<<lingo Configs/BodyMap/Editor/Caption>>
+:<$button class="tc-btn-invisible" actions="""<$action-navigate $to=\"$:/plugins/linonetwo/health-buff-debuff-tracker/pages/BodyMapEditor\"/>"""><<lingo Configs/BodyMap/Editor/OpenButton>></$button> — <<lingo Configs/BodyMap/Editor/Description>>

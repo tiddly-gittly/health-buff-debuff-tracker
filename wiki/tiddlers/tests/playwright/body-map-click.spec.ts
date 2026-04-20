@@ -1,21 +1,28 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('BodyMapWidget click interaction', () => {
+  const testTitle = 'PlaywrightClickBodyMapTmp';
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/#PlaywrightTestBodyMap', { waitUntil: 'networkidle' });
-    // Switch to standard layout so PlaywrightTestBodyMap content renders in story river
-    await page.evaluate(() => {
+    await page.evaluate((title) => {
       ($tw as any).wiki.setText('$:/layout', 'text', undefined, '');
       ($tw as any).wiki.setText('$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map', 'text', undefined, 'no');
-      ($tw as any).wiki.setText('PlaywrightTestBodyMap', 'body-parts', undefined, '');
-    });
-    // Wait for layout switch and widget re-render
-    await page.waitForTimeout(2000);
+      ($tw as any).wiki.addTiddler({
+        title,
+        type: 'text/vnd.tiddlywiki',
+        text: `This tiddler is used by Playwright click tests for the body-map widget.\n\n<$body-map interactive="true" tiddler="${title}" field="body-parts" />`,
+        'body-parts': '',
+      });
+    }, testTitle);
+    await page.goto(`/#${testTitle}`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1500);
+    await expect.poll(async () => await page.evaluate((title) => ($tw as any).wiki.getTiddler(title)?.fields?.['body-parts'] || '', testTitle)).toBe('');
   });
 
   test('clicking a body region toggles the body-parts field', async ({ page }) => {
-    // First interactive body map within PlaywrightTestBodyMap tiddler
-    const tiddlerFrame = page.locator('[data-tiddler-title="PlaywrightTestBodyMap"]');
+    // First interactive body map within the temporary click-test tiddler
+    const tiddlerFrame = page.locator('[data-tiddler-title="PlaywrightClickBodyMapTmp"]');
     const container = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
     await expect(container).toBeVisible();
 
@@ -24,52 +31,30 @@ test.describe('BodyMapWidget click interaction', () => {
     await expect(chestPolygon).toBeVisible();
     await chestPolygon.dispatchEvent("click");
 
-    // After click, the widget should refresh with chest highlighted
-    // Wait for re-render
-    await page.waitForTimeout(500);
-
-    // The field should now contain the SNOMED code
-    // We can verify by checking the polygon style changed to active
-    const updatedContainer = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
-    const updatedChest = updatedContainer.locator('svg polygon[data-region-id="51185008"]');
-    const chestFill = await updatedChest.evaluate((el) => el.style.fill);
-    expect(chestFill).toContain('rgba(255');
+    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('51185008');
 
     // Click again to deselect
+    const updatedContainer = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
+    const updatedChest = updatedContainer.locator('svg polygon[data-region-id="51185008"]');
     await updatedChest.dispatchEvent("click");
-    await page.waitForTimeout(500);
 
-    // Move mouse away from the polygon to clear hover effect
-    await page.mouse.move(0, 0);
-    await page.waitForTimeout(200);
-
-    const deselectedContainer = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
-    const deselectedChest = deselectedContainer.locator('svg polygon[data-region-id="51185008"]');
-    const deselectedFill = await deselectedChest.evaluate((el) => el.style.fill);
-    expect(deselectedFill).toBe('transparent');
+    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toBe('');
   });
 
   test('clicking multiple regions accumulates values', async ({ page }) => {
-    const tiddlerFrame = page.locator('[data-tiddler-title="PlaywrightTestBodyMap"]');
+    const tiddlerFrame = page.locator('[data-tiddler-title="PlaywrightClickBodyMapTmp"]');
     const container = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
     await expect(container).toBeVisible();
 
     // Click Chest
     await container.locator('svg polygon[data-region-id="51185008"]').dispatchEvent("click");
-    await page.waitForTimeout(1000);
-
-    // Verify chest was added
-    const afterFirstClick = await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightTestBodyMap')?.fields?.['body-parts']);
-    expect(afterFirstClick).toContain('51185008');
+    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('51185008');
 
     // Click Abdomen on the refreshed container
     const container2 = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
     await container2.locator('svg polygon[data-region-id="113345001"]').dispatchEvent("click");
-    await page.waitForTimeout(1000);
 
-    // Verify both are in the field
-    const afterSecondClick = await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightTestBodyMap')?.fields?.['body-parts']);
-    expect(afterSecondClick).toContain('51185008');
-    expect(afterSecondClick).toContain('113345001');
+    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('51185008');
+    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('113345001');
   });
 });

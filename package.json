@@ -6,6 +6,7 @@
     "dev": "tiddlywiki-plugin-dev dev",
     "dev:lan": "tiddlywiki-plugin-dev dev --lan",
     "dev:wiki": "tiddlywiki-plugin-dev dev --write-wiki",
+    "body-map:generate": "node scripts/generate-body-regions.mjs",
     "test": "tiddlywiki-plugin-dev test",
     "build": "npm run clean && tiddlywiki-plugin-dev build",
     "lint": "eslint ./src --ext js,ts,tsx,json",

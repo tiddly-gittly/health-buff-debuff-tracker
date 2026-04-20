@@ -2,9 +2,66 @@ import { widget as Widget } from '$:/core/modules/widgets/widget.js';
 import type { IChangedTiddlers } from 'tiddlywiki';
 
 interface BodyRegion {
+  field?: string;
   id: string;
   name: string;
   points: string;
+}
+
+interface BodyMapConfig {
+  imageSrc?: string;
+  viewBoxWidth: number;
+  viewBoxHeight: number;
+  regions: BodyRegion[];
+}
+
+function parsePoints(pointsText: string) {
+  return pointsText.split(' ').filter(Boolean).map((pair) => {
+    const [x, y] = pair.split(',').map(Number);
+    return { x, y };
+  });
+}
+
+function polygonArea(pointsText: string) {
+  const points = parsePoints(pointsText);
+  if (points.length < 3) return 0;
+  let area = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    area += current.x * next.y - next.x * current.y;
+  }
+  return Math.abs(area / 2);
+}
+
+function getBodyMapConfig(widget: Widget): BodyMapConfig {
+  const imgTiddler = widget.wiki.getTiddler('$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp');
+  const imageSrc = typeof imgTiddler?.fields?.text === 'string'
+    ? `data:image/webp;base64,${imgTiddler.fields.text as string}`
+    : undefined;
+  const viewBoxWidth = Number(imgTiddler?.fields?.['body-viewbox-width'] ?? '100') || 100;
+  const viewBoxHeight = Number(imgTiddler?.fields?.['body-viewbox-height'] ?? '216') || 216;
+  const regions: BodyRegion[] = [];
+
+  if (imgTiddler) {
+    for (const fieldName in imgTiddler.fields) {
+      if (!fieldName.startsWith('body-region-')) continue;
+      try {
+        const rawField = imgTiddler.fields[fieldName];
+        if (typeof rawField !== 'string' || !rawField.trim()) continue;
+        const regionData = JSON.parse(rawField);
+        if (regionData && regionData.id && regionData.points) {
+          regions.push({ ...regionData, field: fieldName });
+        }
+      } catch (error) {
+        console.error(`Failed to parse ${fieldName}`, error);
+      }
+    }
+  }
+
+  regions.sort((left, right) => polygonArea(right.points) - polygonArea(left.points));
+
+  return { imageSrc, viewBoxWidth, viewBoxHeight, regions };
 }
 
 class BodyMapWidget extends Widget {
@@ -29,97 +86,90 @@ class BodyMapWidget extends Widget {
     this.execute();
 
     const doc = this.document;
+    const { imageSrc, regions, viewBoxWidth, viewBoxHeight } = getBodyMapConfig(this);
 
     const container = doc.createElement('div');
     container.className = 'health-buff-debuff-body-map-container';
     container.setAttribute('style', 'position:relative;display:inline-block;width:100%;max-width:300px;');
 
-    // Create image element
-    const img = doc.createElement('img') as HTMLImageElement;
-    const imgTiddler = this.wiki.getTiddler('$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp');
-    if (imgTiddler?.fields?.text) {
-      img.src = `data:image/webp;base64,${imgTiddler.fields.text as string}`;
+    const img = doc.createElement('img') as unknown as HTMLImageElement;
+    if (imageSrc) {
+      img.src = imageSrc;
     }
     img.setAttribute('style', 'width:100%;height:auto;display:block;');
     container.appendChild(img);
 
-    // Create SVG overlay
     const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    let svgStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;';
-    if (imgTiddler?.fields?.text) {
-      const b64 = imgTiddler.fields.text as string;
-      const maskUrl = `url("data:image/webp;base64,${b64}")`;
+    let svgStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;';
+    if (imageSrc) {
+      const maskUrl = `url("${imageSrc}")`;
       svgStyle += `-webkit-mask-image:${maskUrl};mask-image:${maskUrl};-webkit-mask-size:100% 100%;mask-size:100% 100%;`;
     }
     svg.setAttribute('style', svgStyle);
-    svg.setAttribute('viewBox', '0 0 100 216');
+    svg.setAttribute('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
     svg.setAttribute('preserveAspectRatio', 'none');
 
-    // Parse regions from the individual body-region-* fields
-    const regions: BodyRegion[] = [];
-    if (imgTiddler) {
-      for (const fieldName in imgTiddler.fields) {
-        if (fieldName.startsWith('body-region-')) {
-          try {
-            const rawField = imgTiddler.fields[fieldName];
-            if (typeof rawField !== 'string' || !rawField.trim()) continue;
-            const regionData = JSON.parse(rawField);
-            if (regionData && regionData.id) {
-              regions.push(regionData);
-            }
-          } catch (e) {
-            console.error(`Failed to parse ${fieldName}`, e);
-          }
-        }
-      }
-    }
-
     const currentValues = this.getCurrentValues();
-
-    // Create tooltip element
     const tooltip = doc.createElement('div');
     tooltip.className = 'health-buff-debuff-body-map-tooltip';
     tooltip.setAttribute('style', 'position:absolute;background:rgba(0,0,0,0.8);color:#fff;padding:4px 8px;border-radius:4px;font-size:12px;pointer-events:none;display:none;z-index:10;white-space:nowrap;');
     container.appendChild(tooltip);
 
+    const applyPolygonStyle = (polygon: SVGPolygonElement, isActive: boolean, isHover = false) => {
+      polygon.style.fill = isActive
+        ? 'rgba(255,80,80,0.45)'
+        : (isHover ? 'rgba(255,165,0,0.3)' : (this.isDebug ? 'rgba(100,100,100,0.08)' : 'transparent'));
+      polygon.style.stroke = isActive
+        ? 'rgba(255,0,0,0.8)'
+        : (isHover || this.isDebug ? 'rgba(255,165,0,0.8)' : 'transparent');
+      if (!isHover && this.isDebug && !isActive) {
+        polygon.style.stroke = 'rgba(0,0,0,0.2)';
+      }
+      polygon.style.strokeWidth = '0.5';
+      polygon.style.cursor = this.isInteractive ? 'pointer' : 'default';
+      polygon.style.transition = 'fill 0.2s, stroke 0.2s';
+    };
+
     for (const region of regions) {
-      const polygon = doc.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      const polygon = doc.createElementNS('http://www.w3.org/2000/svg', 'polygon') as unknown as SVGPolygonElement;
+      polygon.setAttribute('class', 'health-buff-debuff-body-map-polygon');
       polygon.setAttribute('points', region.points);
       polygon.setAttribute('data-region-id', region.id);
       polygon.setAttribute('data-region-name', region.name);
+      polygon.setAttribute('aria-label', region.name);
+      polygon.setAttribute('role', this.isInteractive ? 'button' : 'img');
+      polygon.setAttribute('tabindex', this.isInteractive ? '0' : '-1');
+
+      const title = doc.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `${region.name} (${region.id})`;
+      polygon.appendChild(title);
 
       const isActive = currentValues.includes(region.id);
-      polygon.setAttribute('style', [
-        `fill:${isActive ? 'rgba(255,80,80,0.45)' : (this.isDebug ? 'rgba(100,100,100,0.08)' : 'transparent')}`,
-        `stroke:${isActive ? 'rgba(255,0,0,0.8)' : (this.isDebug ? 'rgba(0,0,0,0.2)' : 'transparent')}`,
-        'stroke-width:0.5',
-        `cursor:${this.isInteractive ? 'pointer' : 'default'}`,
-        'transition:fill 0.2s',
-      ].join(';'));
+      applyPolygonStyle(polygon, isActive, false);
 
-      // Hover effects
-      polygon.addEventListener('mouseenter', () => {
-        if (!isActive) {
-          polygon.style.fill = 'rgba(255,165,0,0.3)';
-          // Add a temporary stroke on hover if it was transparent
-          if (!this.isDebug) {
-            polygon.style.stroke = 'rgba(255,165,0,0.8)';
-          }
-        }
+      const showTooltip = () => {
         tooltip.textContent = `${region.name} (${region.id})`;
         tooltip.style.display = 'block';
+      };
+
+      polygon.addEventListener('mouseenter', () => {
+        applyPolygonStyle(polygon, isActive, !isActive);
+        showTooltip();
       });
       polygon.addEventListener('mouseleave', () => {
-        if (!isActive) {
-          polygon.style.fill = this.isDebug ? 'rgba(100,100,100,0.08)' : 'transparent';
-          if (!this.isDebug) {
-            polygon.style.stroke = 'transparent';
-          }
-        }
+        applyPolygonStyle(polygon, isActive, false);
         tooltip.style.display = 'none';
       });
-      polygon.addEventListener('mousemove', (e: Event) => {
-        const mouseEvent = e as MouseEvent;
+      polygon.addEventListener('focus', () => {
+        applyPolygonStyle(polygon, isActive, !isActive);
+        showTooltip();
+      });
+      polygon.addEventListener('blur', () => {
+        applyPolygonStyle(polygon, isActive, false);
+        tooltip.style.display = 'none';
+      });
+      polygon.addEventListener('mousemove', (event: Event) => {
+        const mouseEvent = event as MouseEvent;
         const rect = (container as HTMLElement).getBoundingClientRect();
         tooltip.style.left = `${mouseEvent.clientX - rect.left + 10}px`;
         tooltip.style.top = `${mouseEvent.clientY - rect.top - 25}px`;
@@ -128,6 +178,13 @@ class BodyMapWidget extends Widget {
       if (this.isInteractive) {
         polygon.addEventListener('click', () => {
           this.toggleValue(region.id);
+        });
+        polygon.addEventListener('keydown', (event: Event) => {
+          const keyboardEvent = event as KeyboardEvent;
+          if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+            keyboardEvent.preventDefault();
+            this.toggleValue(region.id);
+          }
         });
       }
 
