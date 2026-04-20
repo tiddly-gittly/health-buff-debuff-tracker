@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:3001';
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:8080';
 
 export default defineConfig({
   testDir: './wiki/tiddlers/tests/playwright',
@@ -8,8 +8,7 @@ export default defineConfig({
   expect: {
     timeout: 10 * 1000,
   },
-  fullyParallel: false,
-  workers: 1,
+  fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
