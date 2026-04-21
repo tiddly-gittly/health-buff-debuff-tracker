@@ -17,6 +17,7 @@ class BodyMapEditorWidget extends Widget {
   private imageTiddler = '$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp';
   private viewBoxWidth = 100;
   private viewBoxHeight = 216;
+  private handleSize = 14;
   private regions: EditableBodyRegion[] = [];
   private selectedField = '';
   private previewSurface?: HTMLDivElement;
@@ -24,6 +25,7 @@ class BodyMapEditorWidget extends Widget {
   private handleLayer?: HTMLDivElement;
   private outputArea?: HTMLTextAreaElement;
   private statusText?: HTMLDivElement;
+  private regionSelect?: HTMLSelectElement;
   private polygonElements = new Map<string, SVGPolygonElement>();
   private handleElements: HTMLButtonElement[] = [];
   private exportMode: 'selected' | 'all' = 'all';
@@ -83,11 +85,10 @@ class BodyMapEditorWidget extends Widget {
     }
     select.addEventListener('change', () => {
       this.selectedField = select.value;
-      this.renderHandles();
-      this.highlightPolygons();
-      this.renderOutput('selected');
+      this.refreshSelectionView('selected');
       this.setStatus('Region selected.');
     });
+    this.regionSelect = select;
     sidebar.appendChild(select);
 
     const buttonRow = doc.createElement('div');
@@ -121,9 +122,55 @@ class BodyMapEditorWidget extends Widget {
 
     sidebar.appendChild(buttonRow);
 
+    const sizeRow = doc.createElement('div');
+    sizeRow.setAttribute('style', 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;');
+
+    const sizeLabel = doc.createElement('label');
+    sizeLabel.textContent = 'Point size';
+    sizeLabel.setAttribute('style', 'font-weight:600;');
+    sizeRow.appendChild(sizeLabel);
+
+    const decreaseSizeButton = doc.createElement('button') as HTMLButtonElement;
+    decreaseSizeButton.type = 'button';
+    decreaseSizeButton.textContent = 'Smaller';
+    decreaseSizeButton.addEventListener('click', () => {
+      this.updateHandleSize(this.handleSize - 2);
+    });
+    sizeRow.appendChild(decreaseSizeButton);
+
+    const increaseSizeButton = doc.createElement('button') as HTMLButtonElement;
+    increaseSizeButton.type = 'button';
+    increaseSizeButton.textContent = 'Larger';
+    increaseSizeButton.addEventListener('click', () => {
+      this.updateHandleSize(this.handleSize + 2);
+    });
+    sizeRow.appendChild(increaseSizeButton);
+
+    const sizeValue = doc.createElement('span');
+    sizeValue.textContent = `${this.handleSize}px`;
+    sizeValue.setAttribute('style', 'font-size:12px;color:#666;min-width:40px;');
+    sizeRow.appendChild(sizeValue);
+
+    const sizeSlider = doc.createElement('input') as HTMLInputElement;
+    sizeSlider.type = 'range';
+    sizeSlider.min = '10';
+    sizeSlider.max = '28';
+    sizeSlider.step = '2';
+    sizeSlider.value = String(this.handleSize);
+    sizeSlider.addEventListener('input', () => {
+      sizeValue.textContent = `${sizeSlider.value}px`;
+      this.updateHandleSize(Number(sizeSlider.value));
+    });
+    sizeRow.appendChild(sizeSlider);
+
+    sidebar.appendChild(sizeRow);
+
     const outputArea = doc.createElement('textarea') as HTMLTextAreaElement;
-    outputArea.readOnly = true;
+    outputArea.readOnly = false;
     outputArea.setAttribute('style', 'width:100%;min-height:240px;font-family:monospace;font-size:12px;');
+    outputArea.addEventListener('input', () => {
+      this.applyOutputText(outputArea.value);
+    });
     this.outputArea = outputArea;
     sidebar.appendChild(outputArea);
 
@@ -197,8 +244,8 @@ class BodyMapEditorWidget extends Widget {
         const rawField = imageTiddler.fields[fieldName];
         if (typeof rawField !== 'string' || !rawField.trim()) continue;
         try {
-          const parsed = JSON.parse(rawField) as { id: string; name: string; points: string };
-          if (!parsed.id || !parsed.name || !parsed.points) continue;
+          const parsed = JSON.parse(rawField) as { id: string; name: string; points?: string };
+          if (!parsed.id || !parsed.name || typeof parsed.points !== 'string') continue;
           regions.push({
             field: fieldName,
             id: parsed.id,
@@ -219,8 +266,12 @@ class BodyMapEditorWidget extends Widget {
   }
 
   private parsePoints(pointsText: string) {
+    if (!pointsText.trim()) return [];
     return pointsText.split(' ').filter(Boolean).map((pair) => {
       const [x, y] = pair.split(',').map(Number);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        throw new Error(`Invalid point pair: ${pair}`);
+      }
       return { x, y };
     });
   }
@@ -246,9 +297,7 @@ class BodyMapEditorWidget extends Widget {
       polygon.setAttribute('style', 'fill:transparent;stroke:rgba(255,255,255,0.45);stroke-width:0.6;cursor:pointer;');
       polygon.addEventListener('click', () => {
         this.selectedField = region.field;
-        this.renderHandles();
-        this.highlightPolygons();
-        this.renderOutput('selected');
+        this.refreshSelectionView('selected');
         this.setStatus(`${region.name} selected.`);
       });
       this.polygonLayer.appendChild(polygon);
@@ -283,23 +332,7 @@ class BodyMapEditorWidget extends Widget {
       handle.className = 'health-buff-debuff-body-map-editor-handle';
       handle.textContent = String(index + 1);
       handle.setAttribute('aria-label', `${selectedRegion.name} point ${index + 1}`);
-      handle.setAttribute('style', [
-        'position:absolute',
-        'width:20px',
-        'height:20px',
-        'border-radius:999px',
-        'border:1px solid #fff',
-        'background:#c62828',
-        'color:#fff',
-        'font-size:10px',
-        'line-height:18px',
-        'text-align:center',
-        'cursor:grab',
-        'pointer-events:auto',
-        'user-select:none',
-        'touch-action:none',
-        'box-shadow:0 1px 4px rgba(0,0,0,0.35)',
-      ].join(';'));
+      handle.setAttribute('style', this.buildHandleStyle());
       this.positionHandle(handle, point);
       handle.addEventListener('pointerdown', (event) => {
         this.startDrag(selectedRegion.field, index, event);
@@ -310,8 +343,9 @@ class BodyMapEditorWidget extends Widget {
   }
 
   private positionHandle(handle: HTMLButtonElement, point: BodyMapPoint) {
-    handle.style.left = `calc(${(point.x / this.viewBoxWidth) * 100}% - 10px)`;
-    handle.style.top = `calc(${(point.y / this.viewBoxHeight) * 100}% - 10px)`;
+    const offset = this.handleSize / 2;
+    handle.style.left = `calc(${(point.x / this.viewBoxWidth) * 100}% - ${offset}px)`;
+    handle.style.top = `calc(${(point.y / this.viewBoxHeight) * 100}% - ${offset}px)`;
   }
 
   private startDrag(field: string, index: number, event: PointerEvent) {
@@ -338,7 +372,7 @@ class BodyMapEditorWidget extends Widget {
     this.polygonElements.get(region.field)?.setAttribute('points', this.stringifyPoints(region.pointsArray));
     const handle = this.handleElements[this.dragInfo.index];
     if (handle) this.positionHandle(handle, point);
-    this.renderOutput('selected');
+    this.renderOutput(this.exportMode);
   }
 
   private onPointerUp() {
@@ -352,6 +386,121 @@ class BodyMapEditorWidget extends Widget {
     this.exportMode = mode;
     if (!this.outputArea) return;
     this.outputArea.value = this.buildExportText(mode);
+  }
+
+  private buildHandleStyle() {
+    const fontSize = Math.max(9, Math.round(this.handleSize * 0.5));
+    const lineHeight = Math.max(this.handleSize - 2, 10);
+    return [
+      'position:absolute',
+      `width:${this.handleSize}px`,
+      `height:${this.handleSize}px`,
+      'border-radius:999px',
+      'border:1px solid #fff',
+      'background:#c62828',
+      'color:#fff',
+      `font-size:${fontSize}px`,
+      `line-height:${lineHeight}px`,
+      'padding:0',
+      'text-align:center',
+      'cursor:grab',
+      'pointer-events:auto',
+      'user-select:none',
+      'touch-action:none',
+      'box-shadow:0 1px 4px rgba(0,0,0,0.35)',
+    ].join(';');
+  }
+
+  private updateHandleSize(size: number) {
+    const nextSize = this.clamp(Math.round(size), 10, 28);
+    if (nextSize === this.handleSize) return;
+    this.handleSize = nextSize;
+    this.renderHandles();
+    this.setStatus(`Point size set to ${this.handleSize}px.`);
+  }
+
+  private refreshSelectionView(mode: 'selected' | 'all' = this.exportMode) {
+    this.renderRegionOptions();
+    this.renderHandles();
+    this.highlightPolygons();
+    this.renderOutput(mode);
+  }
+
+  private applyOutputText(text: string) {
+    try {
+      const updates = this.parseExportText(text);
+      for (const update of updates) {
+        const region = this.regions.find((item) => item.field === update.field);
+        if (!region) {
+          throw new Error(`Unknown region field: ${update.field}`);
+        }
+        region.id = update.id;
+        region.name = update.name;
+        region.pointsArray = update.pointsArray;
+      }
+
+      const selectedStillExists = this.regions.some((region) => region.field === this.selectedField);
+      if (!selectedStillExists) {
+        this.selectedField = this.regions[0]?.field ?? '';
+      }
+
+      this.renderPolygons();
+      this.renderRegionOptions();
+      this.renderHandles();
+      this.highlightPolygons();
+      this.setStatus('Text changes synced to points.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to parse editor text.';
+      this.setStatus(`Text not applied: ${message}`);
+    }
+  }
+
+  private renderRegionOptions() {
+    if (!this.regionSelect) return;
+    this.regionSelect.replaceChildren();
+    for (const region of this.regions) {
+      const option = this.document.createElement('option') as unknown as HTMLOptionElement;
+      option.value = region.field;
+      option.textContent = `${region.name} (${region.id})`;
+      option.selected = region.field === this.selectedField;
+      this.regionSelect.appendChild(option);
+    }
+    this.regionSelect.value = this.selectedField;
+  }
+
+  private parseExportText(text: string) {
+    const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    if (!lines.length) {
+      throw new Error('Editor text is empty.');
+    }
+
+    const updates: Array<{ field: string; id: string; name: string; pointsArray: BodyMapPoint[] }> = [];
+    for (const line of lines) {
+      const separatorIndex = line.indexOf(':');
+      if (separatorIndex <= 0) {
+        throw new Error(`Invalid export line: ${line}`);
+      }
+
+      const field = line.slice(0, separatorIndex).trim();
+      const rawJson = line.slice(separatorIndex + 1).trim();
+      const parsed = JSON.parse(rawJson) as { id?: string; name?: string; points?: string };
+      if (!parsed.id || !parsed.name || typeof parsed.points !== 'string') {
+        throw new Error(`Invalid region payload for ${field}`);
+      }
+
+      updates.push({
+        field,
+        id: parsed.id,
+        name: parsed.name,
+        pointsArray: this.parsePoints(parsed.points),
+      });
+    }
+
+    if (this.exportMode === 'selected' && updates.length !== 1) {
+      throw new Error('Selected export mode expects exactly one region line.');
+    }
+
+    return updates;
   }
 
   private buildExportText(mode: 'selected' | 'all') {
