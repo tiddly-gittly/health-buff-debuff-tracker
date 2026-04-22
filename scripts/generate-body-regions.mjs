@@ -249,6 +249,39 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
         return best ?? { row: rowStats[middleY], segment: getSegment(rowStats[middleY], mode) };
       };
 
+      const findLocalMinima = (mode, startRatio, endRatio, windowSize = 2) => {
+        const startY = rowFromRatio(startRatio);
+        const endY = rowFromRatio(endRatio);
+        const candidates = [];
+        for (let y = startY + windowSize; y <= endY - windowSize; y += 1) {
+          const row = rowStats[y];
+          const segment = getSegment(row, mode);
+          if (!segment || !segment.width) continue;
+          let isMin = true;
+          for (let w = 1; w <= windowSize; w += 1) {
+            const prev = getSegment(rowStats[y - w], mode);
+            const next = getSegment(rowStats[y + w], mode);
+            if ((prev && segment.width >= prev.width) || (next && segment.width >= next.width)) {
+              isMin = false;
+              break;
+            }
+          }
+          if (isMin) {
+            candidates.push({ row, segment, y: row.y, width: segment.width });
+          }
+        }
+        const merged = [];
+        for (const c of candidates) {
+          const last = merged[merged.length - 1];
+          if (last && Math.abs(c.y - last.y) <= 3) {
+            if (c.width < last.width) merged[merged.length - 1] = c;
+          } else {
+            merged.push(c);
+          }
+        }
+        return merged;
+      };
+
       const snapPointToMask = (point, center) => {
         const dx = point.x - center.x;
         const dy = point.y - center.y;
@@ -316,19 +349,111 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
         return cleanPoints(ellipsePoints(cx, cy, rx, ry).map((point) => snapPointToMask(point, center)));
       };
 
-      const buildShoulderRegion = (screenSide) => {
-        const shoulderRow = pickRow('center', 0.16, 0.28, 'max');
-        const whole = shoulderRow.row.whole ?? shoulderRow.segment;
-        const center = shoulderRow.row.center ?? whole;
-        if (!whole || !center) return [];
+      const boundsOf = (points) => {
+        if (!points || points.length === 0) {
+          return null;
+        }
+        let minX = Number.POSITIVE_INFINITY;
+        let maxX = Number.NEGATIVE_INFINITY;
+        let minY = Number.POSITIVE_INFINITY;
+        let maxY = Number.NEGATIVE_INFINITY;
+        for (const point of points) {
+          minX = Math.min(minX, point.x);
+          maxX = Math.max(maxX, point.x);
+          minY = Math.min(minY, point.y);
+          maxY = Math.max(maxY, point.y);
+        }
+        return { minX, maxX, minY, maxY };
+      };
 
-        const outer = screenSide === 'left' ? whole.start : center.end;
-        const inner = screenSide === 'left' ? center.start : whole.end;
-        const cx = (outer + inner) / 2;
-        const rx = Math.max(8, Math.abs(inner - outer) * 0.7);
-        const cy = shoulderRow.row.y;
-        const ellipseCenter = { x: cx, y: cy };
-        return cleanPoints(ellipsePoints(cx, cy, rx, bodyHeight * 0.025, 12).map((point) => snapPointToMask(point, ellipseCenter)));
+      const buildFaceRegion = (headBounds, name, screenSide) => {
+        const headH = headBounds.maxY - headBounds.minY;
+        const headW = headBounds.maxX - headBounds.minX;
+        const cx = (headBounds.minX + headBounds.maxX) / 2;
+        let pcx, pcy, rx, ry;
+        switch (name) {
+          case 'Eye (Right)':
+            pcx = cx - headW * 0.20;
+            pcy = headBounds.minY + headH * 0.38;
+            rx = headW * 0.10;
+            ry = headH * 0.07;
+            break;
+          case 'Eye (Left)':
+            pcx = cx + headW * 0.20;
+            pcy = headBounds.minY + headH * 0.38;
+            rx = headW * 0.10;
+            ry = headH * 0.07;
+            break;
+          case 'Nose':
+            pcx = cx;
+            pcy = headBounds.minY + headH * 0.55;
+            rx = headW * 0.07;
+            ry = headH * 0.09;
+            break;
+          case 'Mouth':
+            pcx = cx;
+            pcy = headBounds.minY + headH * 0.74;
+            rx = headW * 0.14;
+            ry = headH * 0.06;
+            break;
+          case 'Ear (Right)':
+            pcx = headBounds.minX + headW * 0.08;
+            pcy = headBounds.minY + headH * 0.44;
+            rx = headW * 0.05;
+            ry = headH * 0.09;
+            break;
+          case 'Ear (Left)':
+            pcx = headBounds.maxX - headW * 0.08;
+            pcy = headBounds.minY + headH * 0.44;
+            rx = headW * 0.05;
+            ry = headH * 0.09;
+            break;
+          default:
+            return [];
+        }
+        return ellipsePoints(pcx, pcy, rx, ry).map((p) => snapPointToMask(p, { x: pcx, y: pcy }));
+      };
+
+      const buildLimbRegion = (minY, maxY, mode, seedPoints) => {
+        if (minY >= maxY) return buildSeedRegion(seedPoints, 0.98);
+        const leftEdge = [];
+        const rightEdge = [];
+        const steps = 14;
+        for (let i = 0; i <= steps; i += 1) {
+          const y = Math.round(minY + (maxY - minY) * (i / steps));
+          const row = rowStats[y];
+          const segment = getSegment(row, mode);
+          if (segment) {
+            leftEdge.push({ x: segment.start, y });
+            rightEdge.push({ x: segment.end, y });
+          }
+        }
+        const points = [...leftEdge, ...rightEdge.reverse()];
+        return cleanPoints(points.length >= 3 ? points : buildSeedRegion(seedPoints, 0.98));
+      };
+
+      const buildShoulderRegion = (screenSide, neckRow) => {
+        const neckY = neckRow?.y ?? rowFromRatio(0.15);
+        const row = rowStats[Math.round(neckY)];
+        const mode = screenSide === 'left' ? 'left-outer' : 'right-outer';
+        const segment = getSegment(row, mode);
+        if (!segment) {
+          const fallbackRow = pickRow('center', 0.14, 0.24, 'max');
+          const fbWhole = fallbackRow.row.whole ?? fallbackRow.segment;
+          const fbCenter = fallbackRow.row.center ?? fbWhole;
+          if (!fbWhole || !fbCenter) return [];
+          const outer = screenSide === 'left' ? fbWhole.start : fbCenter.end;
+          const inner = screenSide === 'left' ? fbCenter.start : fbWhole.end;
+          const cx = (outer + inner) / 2;
+          const rx = Math.max(8, Math.abs(inner - outer) * 0.7);
+          const cy = fallbackRow.row.y;
+          return cleanPoints(ellipsePoints(cx, cy, rx, bodyHeight * 0.025, 12).map((p) => snapPointToMask(p, { x: cx, y: cy })));
+        }
+        const cx = segment.cx;
+        const rx = Math.max(8, segment.width * 0.5);
+        const cy = neckY;
+        const ry = bodyHeight * 0.02;
+        return cleanPoints(ellipsePoints(cx, cy, rx, ry, 12).map((p) => snapPointToMask(p, { x: cx, y: cy })));
       };
 
       const screenSideFor = (name) => {
@@ -337,41 +462,239 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
         return 'center';
       };
 
+      const findWrist = (mode, elbowRow) => {
+        const elbowY = elbowRow?.row?.y ?? rowFromRatio(0.28);
+        const mins = findLocalMinima(mode, 0.32, 0.52, 3);
+        const belowElbow = mins.filter((m) => m.y > elbowY + 12);
+        belowElbow.sort((a, b) => b.y - a.y);
+        return belowElbow[1] ?? belowElbow[0] ?? pickRow(mode, 0.40, 0.52, 'min');
+      };
+
       const rows = {
         neck: pickRow('center', 0.08, 0.19, 'min'),
         elbowLeft: pickRow('left-outer', 0.22, 0.35, 'min'),
         elbowRight: pickRow('right-outer', 0.22, 0.35, 'min'),
-        wristLeft: pickRow('left-outer', 0.36, 0.52, 'min'),
-        wristRight: pickRow('right-outer', 0.36, 0.52, 'min'),
+        wristLeft: findWrist('left-outer', pickRow('left-outer', 0.22, 0.35, 'min')),
+        wristRight: findWrist('right-outer', pickRow('right-outer', 0.22, 0.35, 'min')),
         kneeLeft: pickRow('left-inner', 0.58, 0.72, 'min'),
         kneeRight: pickRow('right-inner', 0.58, 0.72, 'min'),
         ankleLeft: pickRow('left-inner', 0.82, 0.95, 'min'),
         ankleRight: pickRow('right-inner', 0.82, 0.95, 'min'),
       };
 
+      const jointRegions = {
+        neck: buildJointRegion(rows.neck, 'center', 0.9, 0.022, 7),
+        elbowLeft: buildJointRegion(rows.elbowLeft, 'left-outer', 1.15, 0.022, 7),
+        elbowRight: buildJointRegion(rows.elbowRight, 'right-outer', 1.15, 0.022, 7),
+        wristLeft: buildJointRegion(rows.wristLeft, 'left-outer', 0.9, 0.018, 6),
+        wristRight: buildJointRegion(rows.wristRight, 'right-outer', 0.9, 0.018, 6),
+        kneeLeft: buildJointRegion(rows.kneeLeft, 'left-inner', 1.2, 0.024, 8),
+        kneeRight: buildJointRegion(rows.kneeRight, 'right-inner', 1.2, 0.024, 8),
+        ankleLeft: buildJointRegion(rows.ankleLeft, 'left-inner', 0.9, 0.018, 6),
+        ankleRight: buildJointRegion(rows.ankleRight, 'right-inner', 0.9, 0.018, 6),
+      };
+
+      const jointBounds = {
+        neck: boundsOf(jointRegions.neck),
+        elbowLeft: boundsOf(jointRegions.elbowLeft),
+        elbowRight: boundsOf(jointRegions.elbowRight),
+        wristLeft: boundsOf(jointRegions.wristLeft),
+        wristRight: boundsOf(jointRegions.wristRight),
+        kneeLeft: boundsOf(jointRegions.kneeLeft),
+        kneeRight: boundsOf(jointRegions.kneeRight),
+        ankleLeft: boundsOf(jointRegions.ankleLeft),
+        ankleRight: boundsOf(jointRegions.ankleRight),
+      };
+
+      // ===== 准备：确定躯干顺序和分界 =====
+      const torsoNames = ['Chest', 'Abdomen', 'Pelvis'];
+      const torsoSeeds = {};
+      for (const name of torsoNames) {
+        const region = input.regions.find((r) => r.data.name === name);
+        if (region) torsoSeeds[name] = boundsOf(parsePointText(region.data.points));
+      }
+      const torsoOrder = torsoNames
+        .filter((n) => torsoSeeds[n])
+        .map((name) => ({ name, centerY: (torsoSeeds[name].minY + torsoSeeds[name].maxY) / 2 }))
+        .sort((a, b) => a.centerY - b.centerY);
+
+      const neckMaxY = jointBounds.neck?.maxY ?? rowFromRatio(0.19);
+      const kneeMinY = Math.min(
+        jointBounds.kneeLeft?.minY ?? rowFromRatio(0.72),
+        jointBounds.kneeRight?.minY ?? rowFromRatio(0.72),
+      );
+
+      const torsoRanges = {};
+      if (torsoOrder.length > 0) {
+        const centers = torsoOrder.map((t) => t.centerY);
+        const minC = Math.min(...centers);
+        const maxC = Math.max(...centers);
+        const span = maxC - minC || 1;
+
+        const thighGap = bodyHeight * 0.08;
+        const pelvisBottom = Math.min(rowFromRatio(0.68), kneeMinY - thighGap);
+        const dividers = [neckMaxY];
+        for (let i = 0; i < torsoOrder.length - 1; i += 1) {
+          const c1 = (torsoOrder[i].centerY - minC) / span;
+          const c2 = (torsoOrder[i + 1].centerY - minC) / span;
+          const ratio = (c1 + c2) / 2;
+          dividers.push(neckMaxY + ratio * (pelvisBottom - neckMaxY));
+        }
+        dividers.push(pelvisBottom);
+
+        for (let i = 0; i < torsoOrder.length; i += 1) {
+          torsoRanges[torsoOrder[i].name] = {
+            minY: dividers[i],
+            maxY: dividers[i + 1],
+          };
+        }
+      }
+
+      // ===== 第一遍：生成所有区域的原始形状 =====
+      const rawRegions = {};
+      const rawBounds = {};
+
+      for (const region of input.regions) {
+        const seedPoints = parsePointText(region.data.points);
+        const screenSide = screenSideFor(region.data.name);
+        const sideMode = screenSide === 'left' ? 'left-outer' : 'right-outer';
+        const legMode = screenSide === 'left' ? 'left-inner' : 'right-inner';
+        let points;
+
+        if (faceNames.has(region.data.name)) {
+          points = null;
+        } else if (region.data.name === 'Head') {
+          points = buildSeedRegion(seedPoints, 0.98);
+          const neckMinY = jointBounds.neck?.minY ?? rowFromRatio(0.08);
+          points = points.filter((p) => p.y >= top && p.y <= neckMinY);
+          if (points.length < 3) {
+            const cx = imageCenterX;
+            const cy = (top + neckMinY) / 2;
+            const rx = width * 0.15;
+            const ry = (neckMinY - top) / 2;
+            points = ellipsePoints(cx, cy, rx, ry).map((p) => snapPointToMask(p, { x: cx, y: cy }));
+          }
+        } else if (region.data.name === 'Neck') {
+          points = jointRegions.neck;
+        } else if (region.data.name.includes('Shoulder')) {
+          points = buildShoulderRegion(screenSide, rows.neck?.row);
+        } else if (region.data.name.includes('Elbow')) {
+          points = screenSide === 'left' ? jointRegions.elbowLeft : jointRegions.elbowRight;
+        } else if (region.data.name.includes('Wrist')) {
+          points = screenSide === 'left' ? jointRegions.wristLeft : jointRegions.wristRight;
+        } else if (region.data.name.includes('Knee')) {
+          points = screenSide === 'left' ? jointRegions.kneeLeft : jointRegions.kneeRight;
+        } else if (region.data.name.includes('Ankle')) {
+          points = screenSide === 'left' ? jointRegions.ankleLeft : jointRegions.ankleRight;
+        } else {
+          points = buildSeedRegion(seedPoints, 0.98);
+        }
+
+        rawRegions[region.data.name] = points;
+        rawBounds[region.data.name] = boundsOf(points);
+      }
+
+      // 生成五官（在 Head 内启发式）
+      const headBounds = rawBounds['Head'];
+      if (headBounds) {
+        for (const faceName of faceNames) {
+          const points = buildFaceRegion(headBounds, faceName, screenSideFor(faceName));
+          rawRegions[faceName] = cleanPoints(points);
+          rawBounds[faceName] = boundsOf(rawRegions[faceName]);
+        }
+      }
+
+      // ===== 第二遍：应用链式约束 =====
       const generated = input.regions.map((region) => {
         const seedPoints = parsePointText(region.data.points);
         const screenSide = screenSideFor(region.data.name);
         const sideMode = screenSide === 'left' ? 'left-outer' : 'right-outer';
         const legMode = screenSide === 'left' ? 'left-inner' : 'right-inner';
-        let outputPoints;
+        let outputPoints = rawRegions[region.data.name] ?? [];
 
-        if (faceNames.has(region.data.name)) {
-          outputPoints = buildSeedRegion(seedPoints, 0.92);
-        } else if (region.data.name === 'Neck') {
-          outputPoints = buildJointRegion(rows.neck, 'center', 0.9, 0.022, 7);
-        } else if (region.data.name.includes('Shoulder')) {
-          outputPoints = buildShoulderRegion(screenSide);
-        } else if (region.data.name.includes('Elbow')) {
-          outputPoints = buildJointRegion(sideMode === 'left-outer' ? rows.elbowLeft : rows.elbowRight, sideMode, 1.15, 0.022, 7);
-        } else if (region.data.name.includes('Wrist')) {
-          outputPoints = buildJointRegion(sideMode === 'left-outer' ? rows.wristLeft : rows.wristRight, sideMode, 0.9, 0.018, 6);
-        } else if (region.data.name.includes('Knee')) {
-          outputPoints = buildJointRegion(legMode === 'left-inner' ? rows.kneeLeft : rows.kneeRight, legMode, 1.2, 0.024, 8);
-        } else if (region.data.name.includes('Ankle')) {
-          outputPoints = buildJointRegion(legMode === 'left-inner' ? rows.ankleLeft : rows.ankleRight, legMode, 0.9, 0.018, 6);
-        } else {
-          outputPoints = buildSeedRegion(seedPoints, 0.98);
+        // 躯干区域：链式裁切
+        if (region.data.name.includes('Chest') || region.data.name.includes('Abdomen') || region.data.name.includes('Pelvis')) {
+          const range = torsoRanges[region.data.name];
+          if (range && outputPoints.length > 0) {
+            const rawB = boundsOf(outputPoints);
+            const cx = (rawB.minX + rawB.maxX) / 2;
+            const halfW = (rawB.maxX - rawB.minX) / 2;
+            const leftEdge = [];
+            const rightEdge = [];
+            const steps = 14;
+            for (let i = 0; i <= steps; i += 1) {
+              const y = Math.round(range.minY + (range.maxY - range.minY) * (i / steps));
+              const row = rowStats[y];
+              const segment = getSegment(row, 'center');
+              if (segment) {
+                leftEdge.push({ x: Math.max(segment.start, cx - halfW), y });
+                rightEdge.push({ x: Math.min(segment.end, cx + halfW), y });
+              }
+            }
+            const pts = [...leftEdge, ...rightEdge.reverse()];
+            outputPoints = cleanPoints(pts.length >= 3 ? pts : outputPoints);
+          }
+        }
+
+        // 上臂：shoulder 到 elbow
+        if (region.data.name.includes('Upper Arm')) {
+          const shoulderName = screenSide === 'left' ? 'Right Shoulder' : 'Left Shoulder';
+          const elbowName = screenSide === 'left' ? 'Right Elbow' : 'Left Elbow';
+          const shoulderB = rawBounds[shoulderName];
+          const elbowB = rawBounds[elbowName];
+          const minY = shoulderB?.maxY ?? rowFromRatio(0.25);
+          const maxY = elbowB?.minY ?? rowFromRatio(0.30);
+          outputPoints = buildLimbRegion(minY, maxY, sideMode, seedPoints);
+        }
+
+        // 前臂：elbow 到 wrist
+        if (region.data.name.includes('Forearm')) {
+          const elbowName = screenSide === 'left' ? 'Right Elbow' : 'Left Elbow';
+          const wristName = screenSide === 'left' ? 'Right Wrist' : 'Left Wrist';
+          const elbowB = rawBounds[elbowName];
+          const wristB = rawBounds[wristName];
+          const minY = elbowB?.maxY ?? rowFromRatio(0.35);
+          const maxY = wristB?.minY ?? rowFromRatio(0.45);
+          outputPoints = buildLimbRegion(minY, maxY, sideMode, seedPoints);
+        }
+
+        // 手：wrist 到 bottom
+        if (region.data.name.includes('Hand')) {
+          const wristName = screenSide === 'left' ? 'Right Wrist' : 'Left Wrist';
+          const wristB = rawBounds[wristName];
+          const minY = wristB?.maxY ?? rowFromRatio(0.45);
+          const maxY = bottom;
+          outputPoints = buildLimbRegion(minY, maxY, sideMode, seedPoints);
+        }
+
+        // 大腿：pelvis 到 knee
+        if (region.data.name.includes('Thigh')) {
+          const pelvisB = rawBounds['Pelvis'];
+          const kneeName = screenSide === 'left' ? 'Right Knee' : 'Left Knee';
+          const kneeB = rawBounds[kneeName];
+          const minY = pelvisB?.maxY ?? rowFromRatio(0.65);
+          const maxY = kneeB?.minY ?? rowFromRatio(0.72);
+          outputPoints = buildLimbRegion(minY, maxY, legMode, seedPoints);
+        }
+
+        // 小腿：knee 到 ankle
+        if (region.data.name.includes('Lower Leg')) {
+          const kneeName = screenSide === 'left' ? 'Right Knee' : 'Left Knee';
+          const ankleName = screenSide === 'left' ? 'Right Ankle' : 'Left Ankle';
+          const kneeB = rawBounds[kneeName];
+          const ankleB = rawBounds[ankleName];
+          const minY = kneeB?.maxY ?? rowFromRatio(0.75);
+          const maxY = ankleB?.minY ?? rowFromRatio(0.85);
+          outputPoints = buildLimbRegion(minY, maxY, legMode, seedPoints);
+        }
+
+        // 脚：ankle 到 bottom
+        if (region.data.name.includes('Foot')) {
+          const ankleName = screenSide === 'left' ? 'Right Ankle' : 'Left Ankle';
+          const ankleB = rawBounds[ankleName];
+          const minY = ankleB?.maxY ?? rowFromRatio(0.85);
+          const maxY = bottom;
+          outputPoints = buildLimbRegion(minY, maxY, legMode, seedPoints);
         }
 
         return {
@@ -388,6 +711,16 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
         viewBox: {
           width: vbWidth,
           height: vbHeight,
+        },
+        debug: {
+          elbowRightY: rows.elbowRight?.row?.y,
+          elbowLeftY: rows.elbowLeft?.row?.y,
+          wristRightY: rows.wristRight?.row?.y,
+          wristLeftY: rows.wristLeft?.row?.y,
+          kneeRightY: rows.kneeRight?.row?.y,
+          kneeLeftY: rows.kneeLeft?.row?.y,
+          ankleRightY: rows.ankleRight?.row?.y,
+          ankleLeftY: rows.ankleLeft?.row?.y,
         },
       };
     }, { imageBase64, regions, rasterWidth, alphaThreshold, viewBoxWidth, viewBoxHeight });
@@ -419,6 +752,9 @@ async function main() {
   await fs.writeFile(options.meta, serializeMeta(parsed, result.regions, result.viewBox));
   console.log(`Updated ${result.regions.length} body regions in ${options.meta}`);
   console.log(`ViewBox: 0 0 ${result.viewBox.width} ${result.viewBox.height}`);
+  if (result.debug) {
+    console.log('Debug:', JSON.stringify(result.debug, null, 2));
+  }
 }
 
 await main();

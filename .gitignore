@@ -147,3 +147,4 @@ wiki/**/$__config_Navigation_openLinkFromOutsideRiver.tid
 # Playwright outputs
 playwright-report/
 test-results/
+/.playwright-mcp
