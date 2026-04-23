@@ -414,7 +414,7 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
         return ellipsePoints(pcx, pcy, rx, ry).map((p) => snapPointToMask(p, { x: pcx, y: pcy }));
       };
 
-      const buildLimbRegion = (minY, maxY, mode, seedPoints) => {
+      const buildLimbRegion = (minY, maxY, mode, seedPoints, innerLimit) => {
         if (minY >= maxY) return buildSeedRegion(seedPoints, 0.98);
         const leftEdge = [];
         const rightEdge = [];
@@ -424,36 +424,62 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
           const row = rowStats[y];
           const segment = getSegment(row, mode);
           if (segment) {
-            leftEdge.push({ x: segment.start, y });
-            rightEdge.push({ x: segment.end, y });
+            let start = segment.start;
+            let end = segment.end;
+            const width = end - start;
+            if (innerLimit !== undefined) {
+              if (mode === 'left-outer') {
+                end = Math.min(end, innerLimit);
+                // 手臂通常比相连躯干窄，只取外侧约 40% 宽度避免横跨躯干
+                const maxWidth = width * 0.42;
+                if (end - start > maxWidth) {
+                  start = end - maxWidth;
+                }
+              } else if (mode === 'right-outer') {
+                start = Math.max(start, innerLimit);
+                const maxWidth = width * 0.42;
+                if (end - start > maxWidth) {
+                  end = start + maxWidth;
+                }
+              }
+            }
+            if (end > start) {
+              leftEdge.push({ x: start, y });
+              rightEdge.push({ x: end, y });
+            }
           }
         }
         const points = [...leftEdge, ...rightEdge.reverse()];
         return cleanPoints(points.length >= 3 ? points : buildSeedRegion(seedPoints, 0.98));
       };
 
-      const buildShoulderRegion = (screenSide, neckRow) => {
-        const neckY = neckRow?.y ?? rowFromRatio(0.15);
-        const row = rowStats[Math.round(neckY)];
+      const buildShoulderRegion = (screenSide, neckRow, neckBottomY) => {
+        const shoulderTopY = neckBottomY ?? neckRow?.y ?? rowFromRatio(0.19);
+        const shoulderBottomY = shoulderTopY + bodyHeight * 0.035;
         const mode = screenSide === 'left' ? 'left-outer' : 'right-outer';
-        const segment = getSegment(row, mode);
-        if (!segment) {
-          const fallbackRow = pickRow('center', 0.14, 0.24, 'max');
-          const fbWhole = fallbackRow.row.whole ?? fallbackRow.segment;
-          const fbCenter = fallbackRow.row.center ?? fbWhole;
-          if (!fbWhole || !fbCenter) return [];
-          const outer = screenSide === 'left' ? fbWhole.start : fbCenter.end;
-          const inner = screenSide === 'left' ? fbCenter.start : fbWhole.end;
-          const cx = (outer + inner) / 2;
-          const rx = Math.max(8, Math.abs(inner - outer) * 0.7);
-          const cy = fallbackRow.row.y;
-          return cleanPoints(ellipsePoints(cx, cy, rx, bodyHeight * 0.025, 12).map((p) => snapPointToMask(p, { x: cx, y: cy })));
+
+        const leftEdge = [];
+        const rightEdge = [];
+        const steps = 8;
+        for (let i = 0; i <= steps; i += 1) {
+          const y = Math.round(shoulderTopY + (shoulderBottomY - shoulderTopY) * (i / steps));
+          const row = rowStats[y];
+          const segment = getSegment(row, mode);
+          if (segment) {
+            // 只取外侧约 30% 宽度，让 shoulder 贴紧图像边缘
+            const segWidth = segment.end - segment.start;
+            const shoulderWidth = Math.max(6, segWidth * 0.30);
+            if (screenSide === 'left') {
+              leftEdge.push({ x: segment.start, y });
+              rightEdge.push({ x: segment.start + shoulderWidth, y });
+            } else {
+              leftEdge.push({ x: segment.end - shoulderWidth, y });
+              rightEdge.push({ x: segment.end, y });
+            }
+          }
         }
-        const cx = segment.cx;
-        const rx = Math.max(8, segment.width * 0.5);
-        const cy = neckY;
-        const ry = bodyHeight * 0.02;
-        return cleanPoints(ellipsePoints(cx, cy, rx, ry, 12).map((p) => snapPointToMask(p, { x: cx, y: cy })));
+        const points = [...leftEdge, ...rightEdge.reverse()];
+        return cleanPoints(points.length >= 3 ? points : []);
       };
 
       const screenSideFor = (name) => {
@@ -464,10 +490,23 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
 
       const findWrist = (mode, elbowRow) => {
         const elbowY = elbowRow?.row?.y ?? rowFromRatio(0.28);
-        const mins = findLocalMinima(mode, 0.32, 0.52, 3);
-        const belowElbow = mins.filter((m) => m.y > elbowY + 12);
-        belowElbow.sort((a, b) => b.y - a.y);
-        return belowElbow[1] ?? belowElbow[0] ?? pickRow(mode, 0.40, 0.52, 'min');
+        // 扩大范围以找到更多 minima，包括前臂 narrowing、wrist 和 palm
+        const mins = findLocalMinima(mode, 0.28, 0.65, 2);
+        // 确保 wrist 在 elbow 下方足够远，避免 wrist 的椭圆顶部与 elbow 重叠
+        const minGap = bodyHeight * 0.04;
+        const belowElbow = mins.filter((m) => m.y > elbowY + minGap);
+        // 从 elbow 往下排序（y 从小到大）
+        belowElbow.sort((a, b) => a.y - b.y);
+        // 跳过第一个 minima（通常是前臂 narrowing），取 wrist
+        // 3+ 个时取第 2 个（跳过前臂 narrowing）
+        // 2 个时取第 1 个（wrist，第 2 个是 palm）
+        if (belowElbow.length >= 3) {
+          return belowElbow[1];
+        }
+        if (belowElbow.length === 2) {
+          return belowElbow[0];
+        }
+        return belowElbow[0] ?? pickRow(mode, 0.45, 0.55, 'min');
       };
 
       const rows = {
@@ -484,10 +523,10 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
 
       const jointRegions = {
         neck: buildJointRegion(rows.neck, 'center', 0.9, 0.022, 7),
-        elbowLeft: buildJointRegion(rows.elbowLeft, 'left-outer', 1.15, 0.022, 7),
-        elbowRight: buildJointRegion(rows.elbowRight, 'right-outer', 1.15, 0.022, 7),
-        wristLeft: buildJointRegion(rows.wristLeft, 'left-outer', 0.9, 0.018, 6),
-        wristRight: buildJointRegion(rows.wristRight, 'right-outer', 0.9, 0.018, 6),
+        elbowLeft: buildJointRegion(rows.elbowLeft, 'left-outer', 0.70, 0.015, 5),
+        elbowRight: buildJointRegion(rows.elbowRight, 'right-outer', 0.70, 0.015, 5),
+        wristLeft: buildJointRegion(rows.wristLeft, 'left-outer', 0.75, 0.012, 5),
+        wristRight: buildJointRegion(rows.wristRight, 'right-outer', 0.75, 0.012, 5),
         kneeLeft: buildJointRegion(rows.kneeLeft, 'left-inner', 1.2, 0.024, 8),
         kneeRight: buildJointRegion(rows.kneeRight, 'right-inner', 1.2, 0.024, 8),
         ankleLeft: buildJointRegion(rows.ankleLeft, 'left-inner', 0.9, 0.018, 6),
@@ -533,12 +572,15 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
 
         const thighGap = bodyHeight * 0.08;
         const pelvisBottom = Math.min(rowFromRatio(0.68), kneeMinY - thighGap);
-        const dividers = [neckMaxY];
+        // 给 shoulder 留出空间，chest 从 shoulder 底部开始
+        const shoulderSpace = bodyHeight * 0.035;
+        const chestTop = neckMaxY + shoulderSpace;
+        const dividers = [chestTop];
         for (let i = 0; i < torsoOrder.length - 1; i += 1) {
           const c1 = (torsoOrder[i].centerY - minC) / span;
           const c2 = (torsoOrder[i + 1].centerY - minC) / span;
           const ratio = (c1 + c2) / 2;
-          dividers.push(neckMaxY + ratio * (pelvisBottom - neckMaxY));
+          dividers.push(chestTop + ratio * (pelvisBottom - chestTop));
         }
         dividers.push(pelvisBottom);
 
@@ -577,7 +619,7 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
         } else if (region.data.name === 'Neck') {
           points = jointRegions.neck;
         } else if (region.data.name.includes('Shoulder')) {
-          points = buildShoulderRegion(screenSide, rows.neck?.row);
+          points = buildShoulderRegion(screenSide, rows.neck?.row, jointBounds.neck?.maxY);
         } else if (region.data.name.includes('Elbow')) {
           points = screenSide === 'left' ? jointRegions.elbowLeft : jointRegions.elbowRight;
         } else if (region.data.name.includes('Wrist')) {
@@ -622,13 +664,27 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
             const leftEdge = [];
             const rightEdge = [];
             const steps = 14;
+            const isChest = region.data.name.includes('Chest');
             for (let i = 0; i <= steps; i += 1) {
               const y = Math.round(range.minY + (range.maxY - range.minY) * (i / steps));
               const row = rowStats[y];
               const segment = getSegment(row, 'center');
-              if (segment) {
-                leftEdge.push({ x: Math.max(segment.start, cx - halfW), y });
-                rightEdge.push({ x: Math.min(segment.end, cx + halfW), y });
+              if (isChest) {
+                // chest 延伸到手臂与躯干交叉处，使用 left-inner/right-inner
+                const leftSeg = getSegment(row, 'left-inner');
+                const rightSeg = getSegment(row, 'right-inner');
+                const leftX = leftSeg ? leftSeg.start : (segment ? segment.start : cx - halfW);
+                const rightX = rightSeg ? rightSeg.end : (segment ? segment.end : cx + halfW);
+                if (segment || leftSeg || rightSeg) {
+                  leftEdge.push({ x: leftX, y });
+                  rightEdge.push({ x: rightX, y });
+                }
+              } else {
+                // abdomen/pelvis 只取躯干中心，避免溢出到手臂
+                if (segment) {
+                  leftEdge.push({ x: Math.max(segment.start, cx - halfW), y });
+                  rightEdge.push({ x: Math.min(segment.end, cx + halfW), y });
+                }
               }
             }
             const pts = [...leftEdge, ...rightEdge.reverse()];
@@ -644,7 +700,10 @@ async function generateRegions({ imageBase64, regions, rasterWidth, alphaThresho
           const elbowB = rawBounds[elbowName];
           const minY = shoulderB?.maxY ?? rowFromRatio(0.25);
           const maxY = elbowB?.minY ?? rowFromRatio(0.30);
-          outputPoints = buildLimbRegion(minY, maxY, sideMode, seedPoints);
+          const innerLimit = shoulderB
+            ? (screenSide === 'left' ? shoulderB.maxX : shoulderB.minX)
+            : undefined;
+          outputPoints = buildLimbRegion(minY, maxY, sideMode, seedPoints, innerLimit);
         }
 
         // 前臂：elbow 到 wrist

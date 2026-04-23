@@ -8,9 +8,7 @@ test.describe('BodyMapWidget rendering', () => {
       ($tw as any).wiki.setText('$:/layout', 'text', undefined, '');
       ($tw as any).wiki.setText('$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map', 'text', undefined, 'no');
       // Ensure test tiddler has correct content (dev server may not hot-reload .tid files)
-      const tiddler = ($tw as any).wiki.getTiddler('PlaywrightTestBodyMap');
-      if (tiddler) {
-        const text = `This tiddler is used by Playwright E2E tests for the body-map widget.
+      const text = `This tiddler is used by Playwright E2E tests for the body-map widget.
 
 !! Interactive Mode
 
@@ -20,8 +18,11 @@ test.describe('BodyMapWidget rendering', () => {
 
 <$body-map interactive="false" values="69536005 51185008" />
 `;
-        ($tw as any).wiki.addTiddler({ ...tiddler.fields, text });
-      }
+      ($tw as any).wiki.addTiddler({
+        title: 'PlaywrightTestBodyMap',
+        text,
+        'body-parts': '51185008 113345001',
+      });
     });
     await page.waitForTimeout(2000);
   });
