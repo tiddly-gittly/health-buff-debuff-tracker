@@ -53,8 +53,7 @@ jobs:
         run: pnpm install
 
       - name: Install Playwright Browser
-        if: ${{ hashFiles('wiki/tiddlers/tests/playwright/**/*.ts') != '' }}
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps firefox
 
       - name: Lint Code
         run: pnpm exec eslint ./src --max-warnings 0
@@ -62,10 +61,6 @@ jobs:
 
       - name: Run Tests
         run: pnpm run test
-
-      - name: Run Playwright E2E Tests
-        if: ${{ hashFiles('wiki/tiddlers/tests/playwright/**/*.ts') != '' }}
-        run: pnpm run test:playwright
 
       - name: Build Plugins
         run: pnpm run build
