@@ -5,6 +5,10 @@ export async function gotoWithRetry(page: Page, url: string, attempts = 5) {
   for (let index = 0; index < attempts; index += 1) {
     try {
       await page.goto(url, { waitUntil: 'load' });
+      await page.waitForFunction(() => {
+        const globalWindow = window as Window & { $tw?: { wiki?: unknown } };
+        return Boolean(globalWindow.$tw?.wiki);
+      });
       return;
     } catch (error) {
       lastError = error;

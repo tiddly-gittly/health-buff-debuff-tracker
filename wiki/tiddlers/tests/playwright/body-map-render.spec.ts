@@ -63,16 +63,21 @@ test.describe('BodyMapWidget rendering', () => {
 
     await expect(containers.nth(1)).toBeVisible();
 
+    const readRegionFill = async (regionId: string) => await page.evaluate((targetRegionId) => {
+      const tiddler = document.querySelector('[data-tiddler-title="PlaywrightTestBodyMap"]');
+      const bodyMapContainers = tiddler?.querySelectorAll('.health-buff-debuff-body-map-container');
+      if (!bodyMapContainers || bodyMapContainers.length < 2) {
+        return '';
+      }
+
+      const polygon = bodyMapContainers[1].querySelector(`svg polygon[data-region-id="${targetRegionId}"]`) as SVGPolygonElement | null;
+      return polygon?.style.fill ?? '';
+    }, regionId);
+
     // Check that Head (69536005) polygon has active fill
-    const headPolygon = containers.nth(1).locator('svg polygon[data-region-id="69536005"]');
-    await expect(headPolygon).toBeVisible();
-    const headFill = await headPolygon.evaluate((el) => el.style.fill);
-    expect(headFill).toContain('rgba(255');
+    await expect.poll(async () => await readRegionFill('69536005')).toContain('rgba(255');
 
     // Check that Chest (51185008) polygon has active fill
-    const chestPolygon = containers.nth(1).locator('svg polygon[data-region-id="51185008"]');
-    await expect(chestPolygon).toBeVisible();
-    const chestFill = await chestPolygon.evaluate((el) => el.style.fill);
-    expect(chestFill).toContain('rgba(255');
+    await expect.poll(async () => await readRegionFill('51185008')).toContain('rgba(255');
   });
 });
