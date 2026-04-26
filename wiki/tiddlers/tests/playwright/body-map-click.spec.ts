@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { gotoWithRetry } from './helpers';
+import { gotoWithRetry, readWikiField } from './helpers';
 
 test.describe('BodyMapWidget click interaction', () => {
   const testTitle = 'PlaywrightClickBodyMapTmp';
@@ -19,7 +19,7 @@ test.describe('BodyMapWidget click interaction', () => {
 
     await gotoWithRetry(page, `/#${testTitle}`);
     await page.waitForTimeout(1500);
-    await expect.poll(async () => await page.evaluate((title) => ($tw as any).wiki.getTiddler(title)?.fields?.['body-parts'] || '', testTitle)).toBe('');
+    await expect.poll(async () => await readWikiField(page, testTitle, 'body-parts')).toBe('');
   });
 
   test('clicking a body region toggles the body-parts field', async ({ page }) => {
@@ -33,14 +33,14 @@ test.describe('BodyMapWidget click interaction', () => {
     await expect(chestPolygon).toBeVisible();
     await chestPolygon.dispatchEvent("click");
 
-    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('51185008');
+    await expect.poll(async () => await readWikiField(page, 'PlaywrightClickBodyMapTmp', 'body-parts')).toContain('51185008');
 
     // Click again to deselect
     const updatedContainer = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
     const updatedChest = updatedContainer.locator('svg polygon[data-region-id="51185008"]');
     await updatedChest.dispatchEvent("click");
 
-    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toBe('');
+    await expect.poll(async () => await readWikiField(page, 'PlaywrightClickBodyMapTmp', 'body-parts')).toBe('');
   });
 
   test('clicking multiple regions accumulates values', async ({ page }) => {
@@ -50,13 +50,13 @@ test.describe('BodyMapWidget click interaction', () => {
 
     // Click Chest
     await container.locator('svg polygon[data-region-id="51185008"]').dispatchEvent("click");
-    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('51185008');
+    await expect.poll(async () => await readWikiField(page, 'PlaywrightClickBodyMapTmp', 'body-parts')).toContain('51185008');
 
     // Click Abdomen on the refreshed container
     const container2 = tiddlerFrame.locator('.health-buff-debuff-body-map-container').first();
     await container2.locator('svg polygon[data-region-id="113345001"]').dispatchEvent("click");
 
-    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('51185008');
-    await expect.poll(async () => await page.evaluate(() => ($tw as any).wiki.getTiddler('PlaywrightClickBodyMapTmp')?.fields?.['body-parts'] || '')).toContain('113345001');
+    await expect.poll(async () => await readWikiField(page, 'PlaywrightClickBodyMapTmp', 'body-parts')).toContain('51185008');
+    await expect.poll(async () => await readWikiField(page, 'PlaywrightClickBodyMapTmp', 'body-parts')).toContain('113345001');
   });
 });

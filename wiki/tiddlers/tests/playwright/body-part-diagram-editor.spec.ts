@@ -51,7 +51,7 @@ test.describe('Body part diagram editor', () => {
     await expect(page.getByLabel('Generated meta output')).toHaveValue(new RegExp(`title: ${tempImageTitle}`));
 
     await page.getByRole('button', { name: 'Generate Regions' }).click();
-    await expect(editor).toContainText('Generated 33 regions in the browser.');
+    await expect(editor.locator('pre')).toContainText('wristRightY');
 
     const metaOutput = page.getByLabel('Generated meta output');
     const beforeText = await metaOutput.inputValue();

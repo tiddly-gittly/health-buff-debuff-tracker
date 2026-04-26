@@ -20,3 +20,16 @@ export async function gotoWithRetry(page: Page, url: string, attempts = 5) {
   }
   throw lastError instanceof Error ? lastError : new Error('Navigation failed.');
 }
+
+export async function readWikiField(page: Page, title: string, field: string) {
+  return page.evaluate(({ targetTitle, targetField }) => {
+    const globalWindow = window as Window & {
+      $tw?: {
+        wiki?: {
+          getTiddler: (title: string) => { fields?: Record<string, string> } | undefined;
+        };
+      };
+    };
+    return globalWindow.$tw?.wiki?.getTiddler(targetTitle)?.fields?.[targetField] ?? '';
+  }, { targetTitle: title, targetField: field });
+}
