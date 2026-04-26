@@ -47,6 +47,7 @@ test.describe('Body part diagram editor', () => {
     await expect(editor).toBeVisible();
 
     await page.getByLabel('Image tiddler').selectOption(tempImageTitle);
+    await page.getByLabel('Selected region').selectOption('body-region-abdomen');
     await expect(editor).toContainText(tempImageTitle);
     await expect(page.getByLabel('Generated meta output')).toHaveValue(new RegExp(`title: ${tempImageTitle}`));
 
@@ -71,10 +72,12 @@ test.describe('Body part diagram editor', () => {
 
     const afterText = await metaOutput.inputValue();
     expect(afterText).not.toBe(beforeText);
+    const expectedSavedField = afterText.match(/^body-region-abdomen:\s*(.+)$/m)?.[1] ?? '';
+    expect(expectedSavedField).not.toBe('');
 
     await page.getByRole('button', { name: 'Save To Image Meta' }).click();
 
-    await expect.poll(async () => await page.evaluate((title) => ($tw as any).wiki.getTiddler(title)?.fields?.['body-region-abdomen'] || '', tempImageTitle)).not.toBe(beforeSavedField);
+    await expect.poll(async () => await page.evaluate((title) => ($tw as any).wiki.getTiddler(title)?.fields?.['body-region-abdomen'] || '', tempImageTitle)).toBe(expectedSavedField);
     await expect(metaOutput).toHaveValue(new RegExp(`title: ${tempImageTitle}`));
   });
 });

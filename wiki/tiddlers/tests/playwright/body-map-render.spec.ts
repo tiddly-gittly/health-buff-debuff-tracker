@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { gotoWithRetry } from './helpers';
+import { gotoWithRetry, openTiddlerWithRetry } from './helpers';
 
 test.describe('BodyMapWidget rendering', () => {
   test.beforeEach(async ({ page }) => {
@@ -25,9 +25,7 @@ test.describe('BodyMapWidget rendering', () => {
         'body-parts': '51185008 113345001',
       });
     });
-
-    await gotoWithRetry(page, '/#PlaywrightTestBodyMap');
-    await expect(page.locator('[data-tiddler-title="PlaywrightTestBodyMap"]')).toBeVisible();
+    await openTiddlerWithRetry(page, 'PlaywrightTestBodyMap');
   });
 
   test('renders interactive body map with SVG polygons', async ({ page }) => {

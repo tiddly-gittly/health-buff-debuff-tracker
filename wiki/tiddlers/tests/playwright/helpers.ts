@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export async function gotoWithRetry(page: Page, url: string, attempts = 5) {
   let lastError: unknown;
@@ -32,4 +32,21 @@ export async function readWikiField(page: Page, title: string, field: string) {
     };
     return globalWindow.$tw?.wiki?.getTiddler(targetTitle)?.fields?.[targetField] ?? '';
   }, { targetTitle: title, targetField: field });
+}
+
+export async function openTiddlerWithRetry(page: Page, title: string, attempts = 4) {
+  let lastError: unknown;
+  for (let index = 0; index < attempts; index += 1) {
+    try {
+      await gotoWithRetry(page, `/#${encodeURIComponent(title)}`);
+      await expect(page.locator(`[data-tiddler-title="${title}"]`)).toBeVisible({ timeout: 5000 });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (index === attempts - 1) {
+        throw error;
+      }
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error(`Failed to open tiddler ${title}.`);
 }
