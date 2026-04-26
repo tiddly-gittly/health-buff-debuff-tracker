@@ -4,8 +4,8 @@
   "description": "Record your life issues, medication usage, and the process of recovery, in TiddlyWiki",
   "core-version": ">=5.1.22",
   "plugin-type": "plugin",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "stability": "STABILITY_2_STABLE",
   "dependents": ["$:/plugins/linonetwo/body-part-diagram-editor", "$:/plugins/linonetwo/hyper-table", "$:/plugins/linonetwo/super-tag", "$:/plugins/kixam/datepicker", "$:/plugins/linonetwo/title-caption"],
-  "list": "readme usage tree"
+  "list": "readme usage tree changelog"
 }

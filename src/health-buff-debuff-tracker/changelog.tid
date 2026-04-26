@@ -1,0 +1,11 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/changelog
+
+! 更新日志
+
+!! 1.7.0
+* 移除旧的 Body Map Editor，并将控制面板入口切换到新的 Body Part Diagram Editor
+* 新的开发者编辑器支持一体化流程：选择图片条目、在浏览器中生成区域点位、拖点微调并保存回图片条目
+* 更新 body map 的 Playwright 测试，覆盖选图、生成、编辑和保存流程
+
+!! 1.6.1
+* 现有发布版本

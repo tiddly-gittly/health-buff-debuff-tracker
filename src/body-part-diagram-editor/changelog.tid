@@ -1,0 +1,9 @@
+title: $:/plugins/linonetwo/body-part-diagram-editor/changelog
+
+! 更新日志
+
+!! 0.1.0
+* 初次发布 Body Part Diagram Editor
+* 支持选择图片条目并读取 body-region 元数据
+* 支持在浏览器中根据图像 alpha mask 自动生成区域点位
+* 支持拖动节点微调区域并保存回图片条目

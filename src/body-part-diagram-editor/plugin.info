@@ -4,6 +4,6 @@
   "author": "linonetwo",
   "description": "Developer-facing body part diagram generator and editor for anatomical image meta fields.",
   "plugin-type": "plugin",
-  "version": "0.0.1",
-  "list": "readme tree"
+  "version": "0.1.0",
+  "list": "readme tree changelog"
 }
