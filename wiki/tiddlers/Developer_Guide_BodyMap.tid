@@ -22,7 +22,7 @@ body-region-eye-right: {"id":"...","name":"Eye (Right)","points":"..."}
 2. ViewBox and Coordinates:
    - points are rendered directly as SVG polygons.
    - The default body image uses viewBox 0 0 100 216.
-   - If a new source image uses a different aspect ratio, update both the script output target height and the widget viewBox together.
+   - If a new source image uses a different aspect ratio, the developer editor will recompute the output viewBox height during generation.
 
 3. Debug Mode:
    - The main switch is stored in $:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map.
@@ -30,32 +30,29 @@ body-region-eye-right: {"id":"...","name":"Eye (Right)","points":"..."}
    - In normal mode, regions are invisible until hover or selection.
 
 4. Joint Placement by Constriction Detection:
-   The script places joints (wrist, elbow, ankle, knee, neck) by scanning the image silhouette for constricted (narrowed) regions:
+   The browser editor places joints (wrist, elbow, ankle, knee, neck) by scanning the image silhouette for constricted (narrowed) regions:
    - The body height is divided into vertical ratio bands (e.g., ~0.36–0.52 for wrists, ~0.58–0.72 for knees).
-   - Within each band the script examines the outer or inner segments of the alpha mask.
+   - Within each band the generator examines the outer or inner segments of the alpha mask.
    - It picks the row with the smallest width in that band, which corresponds to the anatomical constriction.
    - The joint polygon is then built around that narrowest row.
    This means seed polygons for joints are mainly used as hints for which side of the body to scan; the actual position is determined by the image shape.
 
 5. Regenerating Outlines:
-   Run:
+   Open $:/plugins/linonetwo/body-part-diagram-editor/pages/BodyPartDiagramEditor.
 
-```bash
-pnpm body-map:generate
-```
-
-   This executes scripts/generate-body-regions.mjs. The script:
+   The editor:
    - reads the source image and existing body-region-* fields as seed polygons
-   - clips each seed polygon against the real image alpha mask
+   - clips each seed polygon against the real image alpha mask in the browser
    - detects anatomical constrictions to place joint regions (neck, elbows, wrists, knees, ankles)
    - rebuilds smoother polygons for internal and external edges
    - ensures hands and feet do not overlap with their adjacent wrist/ankle regions by clipping them to the joint boundary
    - slightly shrinks facial click targets so they remain usable without becoming oversized
+   - exports the full .meta text and can save it back into the image tiddler directly
 
 6. Workflow For A New Image:
    - replace the image file under src/health-buff-debuff-tracker/img/
    - create rough seed polygons in the meta file for all required regions
-   - update the widget viewBox if the image ratio changed
-   - run pnpm body-map:generate
-   - enable Debug Mode in the control panel and visually inspect the result
-   - make small seed adjustments only where the generated borders still need nudging
+   - open the Body Part Diagram Editor page
+   - click Generate Regions to rebuild the polygons from the new silhouette
+   - inspect the debug panel and drag a few points only where the generated borders still need nudging
+   - save the generated meta back into the source image tiddler

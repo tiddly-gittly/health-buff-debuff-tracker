@@ -1,0 +1,10 @@
+title: $:/plugins/linonetwo/body-part-diagram-editor/readme
+type: text/vnd.tiddlywiki
+
+! Body Part Diagram Editor
+
+Developer tool for generating and refining body-region-* meta fields from an anatomical source image.
+
+1. Open <$link to="$:/plugins/linonetwo/body-part-diagram-editor/pages/BodyPartDiagramEditor">the editor page</$link>.
+2. Click Generate Regions to rebuild polygons from the source image alpha mask.
+3. Drag handles for local fixes, then save the result back into the image meta tiddler.

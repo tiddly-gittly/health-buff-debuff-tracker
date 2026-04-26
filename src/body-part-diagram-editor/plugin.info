@@ -1,0 +1,10 @@
+{
+  "title": "$:/plugins/linonetwo/body-part-diagram-editor",
+  "name": "body-part-diagram-editor",
+  "author": "linonetwo",
+  "description": "Developer-facing body part diagram generator and editor for anatomical image meta fields.",
+  "plugin-type": "plugin",
+  "version": "0.0.1",
+  "list": "readme tree",
+  "dependents": ["$:/plugins/linonetwo/health-buff-debuff-tracker"]
+}

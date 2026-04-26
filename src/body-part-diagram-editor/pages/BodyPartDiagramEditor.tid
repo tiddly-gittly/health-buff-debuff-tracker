@@ -1,0 +1,9 @@
+title: $:/plugins/linonetwo/body-part-diagram-editor/pages/BodyPartDiagramEditor
+caption: Body Part Diagram Editor
+type: text/vnd.tiddlywiki
+
+! Body Part Diagram Editor
+
+Generate body-region-* fields in-browser from the source image, then fine-tune the polygons by dragging their points.
+
+<$body-part-diagram-editor />
