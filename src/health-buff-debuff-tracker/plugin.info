@@ -6,6 +6,6 @@
   "plugin-type": "plugin",
   "version": "1.6.1",
   "stability": "STABILITY_2_STABLE",
-  "dependents": ["$:/plugins/linonetwo/hyper-table", "$:/plugins/linonetwo/super-tag", "$:/plugins/kixam/datepicker", "$:/plugins/linonetwo/title-caption"],
+  "dependents": ["$:/plugins/linonetwo/body-part-diagram-editor", "$:/plugins/linonetwo/hyper-table", "$:/plugins/linonetwo/super-tag", "$:/plugins/kixam/datepicker", "$:/plugins/linonetwo/title-caption"],
   "list": "readme usage tree"
 }

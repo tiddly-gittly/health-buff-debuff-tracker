@@ -1,9 +1,0 @@
-title: $:/plugins/linonetwo/health-buff-debuff-tracker/pages/BodyMapEditor
-caption: Body Map Editor
-type: text/vnd.tiddlywiki
-
-! Body Map Node Editor
-
-Use the draggable handles below to fine-tune polygons around joints and export meta fields for the source image.
-
-<$body-map-editor />

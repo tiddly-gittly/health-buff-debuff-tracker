@@ -5,6 +5,5 @@
   "description": "Developer-facing body part diagram generator and editor for anatomical image meta fields.",
   "plugin-type": "plugin",
   "version": "0.0.1",
-  "list": "readme tree",
-  "dependents": ["$:/plugins/linonetwo/health-buff-debuff-tracker"]
+  "list": "readme tree"
 }

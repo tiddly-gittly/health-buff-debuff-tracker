@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { gotoWithRetry } from './helpers';
 
 test.describe('BodyMapWidget click interaction', () => {
   const testTitle = 'PlaywrightClickBodyMapTmp';
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#PlaywrightTestBodyMap', { waitUntil: 'networkidle' });
+    await gotoWithRetry(page, '/#PlaywrightTestBodyMap');
     await page.evaluate((title) => {
       ($tw as any).wiki.setText('$:/layout', 'text', undefined, '');
       ($tw as any).wiki.setText('$:/plugins/linonetwo/health-buff-debuff-tracker/configs/debug-body-map', 'text', undefined, 'no');
@@ -15,7 +16,7 @@ test.describe('BodyMapWidget click interaction', () => {
         'body-parts': '',
       });
     }, testTitle);
-    await page.goto(`/#${testTitle}`, { waitUntil: 'networkidle' });
+    await gotoWithRetry(page, `/#${testTitle}`);
     await page.waitForTimeout(1500);
     await expect.poll(async () => await page.evaluate((title) => ($tw as any).wiki.getTiddler(title)?.fields?.['body-parts'] || '', testTitle)).toBe('');
   });

@@ -57,6 +57,26 @@ export function loadBodyMapSource(wiki: any, imageTiddlerTitle: string): ParsedB
   };
 }
 
+export function listBodyMapImageTiddlers(wiki: any, currentTitle = '') {
+  const titles = new Set<string>();
+  if (currentTitle) {
+    titles.add(currentTitle);
+  }
+
+  if (typeof wiki?.each === 'function') {
+    wiki.each((tiddler: any, title: string) => {
+      const fields = tiddler?.fields ?? {};
+      const type = typeof fields.type === 'string' ? fields.type : '';
+      const hasBodyRegionField = Object.keys(fields).some((fieldName) => fieldName.startsWith('body-region-'));
+      if (type.startsWith('image/') || hasBodyRegionField) {
+        titles.add(title);
+      }
+    });
+  }
+
+  return Array.from(titles).sort((left, right) => left.localeCompare(right));
+}
+
 export function snapshotRegions(regions: EditableBodyRegion[]): GeneratedBodyRegionField[] {
   return regions.map((region) => ({
     field: region.field,
@@ -97,6 +117,11 @@ function orderFields(fields: Record<string, unknown>) {
 
 export function buildUpdatedFields(sourceFields: Record<string, unknown>, regions: EditableBodyRegion[], viewBox: ViewBoxSize) {
   const nextFields: Record<string, unknown> = { ...sourceFields };
+  for (const fieldName of Object.keys(nextFields)) {
+    if (fieldName.startsWith('body-region-')) {
+      delete nextFields[fieldName];
+    }
+  }
   nextFields['body-viewbox-width'] = String(Number(viewBox.width.toFixed(1)));
   nextFields['body-viewbox-height'] = String(Number(viewBox.height.toFixed(1)));
 

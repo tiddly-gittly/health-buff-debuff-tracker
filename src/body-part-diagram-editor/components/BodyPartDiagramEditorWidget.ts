@@ -1,12 +1,13 @@
 import { widget as Widget } from '$:/core/modules/widgets/widget.js';
 import type { IChangedTiddlers } from 'tiddlywiki';
-import { buildMetaText, buildUpdatedFields, editableRegionsFromGenerated, loadBodyMapSource } from '../lib/meta.js';
+import { buildMetaText, buildUpdatedFields, editableRegionsFromGenerated, listBodyMapImageTiddlers, loadBodyMapSource } from '../lib/meta.js';
 import { generateBodyRegions } from '../lib/generateBodyRegions.js';
 import type { EditableBodyRegion } from '../lib/types.js';
 import { describeEditorTarget } from '../lib/status.js';
 
 class BodyPartDiagramEditorWidget extends Widget {
   private imageTiddler = '$:/plugins/linonetwo/health-buff-debuff-tracker/img/body.webp';
+  private availableImageTiddlers: string[] = [];
   private imageBase64 = '';
   private sourceFields: Record<string, unknown> = {};
   private viewBoxWidth = 100;
@@ -26,6 +27,7 @@ class BodyPartDiagramEditorWidget extends Widget {
   private debugOutputArea?: HTMLPreElement;
   private statusText?: HTMLDivElement;
   private sourceSummary?: HTMLDivElement;
+  private imageTiddlerSelect?: HTMLSelectElement;
   private regionSelect?: HTMLSelectElement;
   private polygonElements = new Map<string, SVGPolygonElement>();
   private handleElements: HTMLButtonElement[] = [];
@@ -83,6 +85,23 @@ class BodyPartDiagramEditorWidget extends Widget {
     intro.textContent = 'Generate body-region polygons directly in the browser, then drag points to fine-tune the result before saving it back into the image meta tiddler.';
     intro.setAttribute('style', 'margin:0;line-height:1.5;');
     sidebar.appendChild(intro);
+
+    const imageTiddlerLabel = doc.createElement('label');
+    imageTiddlerLabel.textContent = 'Image tiddler';
+    imageTiddlerLabel.setAttribute('style', 'font-weight:600;');
+    sidebar.appendChild(imageTiddlerLabel);
+
+    const imageTiddlerSelect = doc.createElement('select') as HTMLSelectElement;
+    imageTiddlerSelect.setAttribute('style', 'padding:6px 8px;');
+    imageTiddlerSelect.setAttribute('aria-label', 'Image tiddler');
+    imageTiddlerSelect.addEventListener('change', () => {
+      this.imageTiddler = imageTiddlerSelect.value;
+      this.loadFromWiki();
+      this.debugInfo = null;
+      this.refreshDomFromState(`Loaded ${this.imageTiddler}.`);
+    });
+    this.imageTiddlerSelect = imageTiddlerSelect;
+    sidebar.appendChild(imageTiddlerSelect);
 
     const sourceSummary = doc.createElement('div') as HTMLDivElement;
     sourceSummary.setAttribute('style', 'font-size:12px;color:#555;line-height:1.5;');
@@ -163,6 +182,7 @@ class BodyPartDiagramEditorWidget extends Widget {
 
     const select = doc.createElement('select') as HTMLSelectElement;
     select.setAttribute('style', 'padding:6px 8px;');
+    select.setAttribute('aria-label', 'Selected region');
     select.addEventListener('change', () => {
       this.selectedField = select.value;
       this.refreshSelectionView('Region selected.');
@@ -220,6 +240,7 @@ class BodyPartDiagramEditorWidget extends Widget {
 
     const metaOutputArea = doc.createElement('textarea') as HTMLTextAreaElement;
     metaOutputArea.readOnly = true;
+    metaOutputArea.setAttribute('aria-label', 'Generated meta output');
     metaOutputArea.setAttribute('style', 'width:100%;min-height:260px;font-family:monospace;font-size:12px;');
     this.metaOutputArea = metaOutputArea;
     sidebar.appendChild(metaOutputArea);
@@ -292,6 +313,7 @@ class BodyPartDiagramEditorWidget extends Widget {
   }
 
   private loadFromWiki() {
+    this.availableImageTiddlers = listBodyMapImageTiddlers(this.wiki, this.imageTiddler);
     const source = loadBodyMapSource(this.wiki, this.imageTiddler);
     this.sourceFields = source.fields;
     this.imageBase64 = source.imageBase64;
@@ -313,6 +335,7 @@ class BodyPartDiagramEditorWidget extends Widget {
     if (this.sourceSummary) {
       this.sourceSummary.textContent = `${describeEditorTarget(this.imageTiddler)} | ViewBox: 0 0 ${this.viewBoxWidth} ${this.viewBoxHeight} | Regions: ${this.regions.length}`;
     }
+    this.renderImageTiddlerOptions();
     this.renderRegionOptions();
     this.renderPolygons();
     this.renderHandles();
@@ -321,6 +344,19 @@ class BodyPartDiagramEditorWidget extends Widget {
     if (status) {
       this.setStatus(status);
     }
+  }
+
+  private renderImageTiddlerOptions() {
+    if (!this.imageTiddlerSelect) return;
+    this.imageTiddlerSelect.replaceChildren();
+    for (const title of this.availableImageTiddlers) {
+      const option = this.document.createElement('option') as unknown as HTMLOptionElement;
+      option.value = title;
+      option.textContent = title;
+      option.selected = title === this.imageTiddler;
+      this.imageTiddlerSelect.appendChild(option);
+    }
+    this.imageTiddlerSelect.value = this.imageTiddler;
   }
 
   private renderRegionOptions() {
