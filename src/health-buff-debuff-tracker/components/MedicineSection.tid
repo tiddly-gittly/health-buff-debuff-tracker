@@ -29,7 +29,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineSectio
 <$list filter="[<count>!match[0]]" variable="ignore">
 <div class="health-buff-debuff-tracker-medicine-section">
 <div class="health-buff-debuff-tracker-dynamic-table">
-<$basic-table filter=<<get-all-medicine>> columns=<<medicine-columns>> width="100%" height="110px" search="search-bar-top" sort="title" />
+<$basic-table filter=<<get-all-medicine>> columns=<<medicine-columns>> width="100%" height="300px" search="search-bar-top" sort="title" />
 </div>
 {{$:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel}}
 </div>

@@ -4,7 +4,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/AggregateBodyM
 
 \procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
 
-\function get-all-body-parts() [subfilter<get-all-debuff>] [subfilter<get-all-buff>] [subfilter<get-all-condition>] +[has[body-parts]] :map[get[body-parts]enlist-input[]] +[unique[]join[ ]]
+\function get-all-body-parts() [subfilter<get-all-debuff>] [subfilter<get-all-buff>] [subfilter<get-all-condition>] +[has[body-parts]] +[get[body-parts]enlist-input[]] +[unique[]join[ ]]
 
 <div class="health-buff-debuff-tracker-summary-section health-buff-debuff-tracker-aggregate-body-map">
 

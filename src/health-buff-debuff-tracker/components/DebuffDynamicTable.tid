@@ -15,6 +15,11 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 		fieldFormat: ({ caption }) => caption ? $tw.wiki.renderText('text/plain', 'text/vnd.tiddlywiki', caption) : undefined,
 	},
 	{
+		field: 'body-parts',
+		title: 'body-parts',
+		width: 'auto',
+	},
+	{
 		field: 'startDate',
 		title: 'startDate',
 		width: 180,
@@ -39,7 +44,7 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/DebuffDynamicT
 	filter=<<get-all-debuff>>
 	columns=<<columns>>
 	width="100%"
-	height="110px"
+	height="300px"
 	search="search-bar-top"
 	sort="startDate title"
 />
