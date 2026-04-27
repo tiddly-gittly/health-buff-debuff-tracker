@@ -2,6 +2,10 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/changelog
 
 ! 更新日志
 
+!! 1.7.1-1
+* 修复 GitHub Actions 中的 Playwright 浏览器安装与测试启动问题
+* 稳定 body map 与 body part diagram editor 的端到端测试流程
+
 !! 1.7.0
 * 移除旧的 Body Map Editor，并将控制面板入口切换到新的 Body Part Diagram Editor
 * 新的开发者编辑器支持一体化流程：选择图片条目、在浏览器中生成区域点位、拖点微调并保存回图片条目
