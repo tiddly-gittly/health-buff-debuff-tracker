@@ -2,6 +2,10 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/changelog
 
 ! 更新日志
 
+!! 1.7.4
+* 修复健康摘要里的 hyper-table 列定义渲染链，恢复减益、增益、身体状态三张表的正常显示
+* 为身体部位列补上共享的格式化逻辑与本地化表头，避免 Wikitext 变量直接进入 columns 解析导致表格失效
+
 !! 1.7.1-1
 * 修复 GitHub Actions 中的 Playwright 浏览器安装与测试启动问题
 * 稳定 body map 与 body part diagram editor 的端到端测试流程

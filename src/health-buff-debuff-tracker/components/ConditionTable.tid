@@ -1,6 +1,7 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/ConditionTable
 
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
+\import [[$:/plugins/linonetwo/health-buff-debuff-tracker/components/TableFieldFormats]]
 \whitespace trim
 
 \procedure lingo-base() $:/plugins/linonetwo/health-buff-debuff-tracker/language/
@@ -12,12 +13,13 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/ConditionTable
 		title: 'title',
 		width: 'auto',
 		sort: true,
-		fieldFormat: ({ caption }) => caption ? $tw.wiki.renderText('text/plain', 'text/vnd.tiddlywiki', caption) : undefined,
+		fieldFormat: <<titleFieldFormat>>,
 	},
 	{
 		field: 'body-parts',
-		title: 'body-parts',
+		title: '<<bodyPartsColumnTitle>>',
 		width: 'auto',
+		fieldFormat: <<bodyPartsFieldFormat>>,
 	},
 	{
 		field: 'startDate',
@@ -40,14 +42,22 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/ConditionTable
 </$list>
 <$list filter="[<count>!match[0]]" variable="ignore">
 <div class="health-buff-debuff-tracker-dynamic-table">
+<$let bodyPartsColumnTitle={{{ [[$:/language]get[text]removeprefix[$:/languages/]else[en-GB]addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/language/]addsuffix[/Columns/BodyParts]get[text]] }}}>
+<$wikify name="titleFieldFormat" text=<<title-field-format>> output="text">
+<$wikify name="bodyPartsFieldFormat" text=<<body-parts-field-format>> output="text">
+<$wikify name="tableColumns" text=<<columns>> output="text">
 <$basic-table
 	filter=<<get-all-condition>>
-	columns=<<columns>>
+	columns=<<tableColumns>>
 	width="100%"
 	height="300px"
 	search="search-bar-top"
 	sort="startDate title"
 />
+</$wikify>
+</$wikify>
+</$wikify>
+</$let>
 </div>
 </$list>
 </$let>

@@ -1,0 +1,23 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/TableFieldFormats
+
+\whitespace trim
+
+\procedure title-field-format()
+({ caption }) => caption ? $tw.wiki.renderText("text/plain", "text/vnd.tiddlywiki", caption) : undefined
+\end
+
+\procedure body-parts-field-format()
+(value) => {
+	const bodyParts = typeof value === "string" ? value : ((value && typeof value === "object") ? String(value["body-parts"] ?? "") : "");
+	if (!bodyParts) return "";
+	const currentLanguage = $tw.wiki.getTiddlerText("$:/language") || "$:/languages/en-GB";
+	const languageCode = currentLanguage.replace("$:/languages/", "") || "en-GB";
+	const languageBase = "$:/plugins/linonetwo/health-buff-debuff-tracker/language/" + languageCode + "/";
+	const separator = $tw.wiki.getTiddlerText(languageBase + "BodyPartSeparator") || (languageCode === "en-GB" ? ", " : "、");
+	return bodyParts
+		.split(" ")
+		.filter(Boolean)
+		.map((part) => $tw.wiki.getTiddlerText(languageBase + "BodyPart/" + part) || part)
+		.join(separator);
+}
+\end

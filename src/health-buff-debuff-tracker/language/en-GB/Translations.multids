@@ -50,3 +50,39 @@ Configs/BodyMap/Editor/Caption: Body Map Node Editor
 Configs/BodyMap/Editor/OpenButton: Open Editor
 Configs/BodyMap/Editor/Description: Open the draggable editor to fine-tune body regions and export ready-to-paste meta fields.
 
+BodyPart/69536005: Head
+BodyPart/81745001: Eye (Right)
+BodyPart/81745001L: Eye (Left)
+BodyPart/45206002: Nose
+BodyPart/123851003: Mouth
+BodyPart/117590005: Ear (Right)
+BodyPart/117590005L: Ear (Left)
+BodyPart/45048000: Neck
+BodyPart/16982005: Right Shoulder
+BodyPart/16982005L: Left Shoulder
+BodyPart/51185008: Chest
+BodyPart/53120007: Right Upper Arm
+BodyPart/53120007L: Left Upper Arm
+BodyPart/76248009: Right Elbow
+BodyPart/76248009L: Left Elbow
+BodyPart/14975008: Right Forearm
+BodyPart/14975008L: Left Forearm
+BodyPart/8205005: Right Wrist
+BodyPart/8205005L: Left Wrist
+BodyPart/85562004: Right Hand
+BodyPart/85562004L: Left Hand
+BodyPart/113345001: Abdomen
+BodyPart/12921003: Pelvis
+BodyPart/11207009: Right Thigh
+BodyPart/11207009L: Left Thigh
+BodyPart/72696002: Right Knee
+BodyPart/72696002L: Left Knee
+BodyPart/30021000: Right Lower Leg
+BodyPart/30021000L: Left Lower Leg
+BodyPart/7569003: Right Ankle
+BodyPart/7569003L: Left Ankle
+BodyPart/56459004: Right Foot
+BodyPart/56459004L: Left Foot
+BodyPartSeparator: , 
+BodyParts: Body Parts
+Columns/BodyParts: Affected Body Parts
