@@ -1,0 +1,5 @@
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/calendar/MedicineCheckins
+tags: $:/tags/Calendar/EventSource
+caption: <<lingo CalendarSource/Caption $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+description: <<lingo CalendarSource/Description $:/plugins/linonetwo/health-buff-debuff-tracker/language/>>
+filter: [tag[$:/tags/HealthTracker/Medicine]medicinecheckinevents<calendarStart>,<calendarEnd>]

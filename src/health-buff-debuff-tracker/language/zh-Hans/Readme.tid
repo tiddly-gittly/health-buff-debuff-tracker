@@ -7,3 +7,17 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/zh-Hans/Readme
 <<lingo Description>>
 
 用户数据将以本地优先的方式保存，以保护隐私，界面也将非常友好，未来还可能增加数据分析功能，以进一步提高用户对自身健康状况的了解。
+
+!! 日历中的药物打卡
+
+安装日历插件和活动日志工具后，药物打卡会自动出现在日历中。在控制面板 → 设置 → 日历 → 日历数据源中，可以勾选或关闭“药物打卡”。
+
+数据源条目使用 `$:/tags/Calendar/EventSource` 标签注册，筛选器为：
+
+```wikitext
+[tag[$:/tags/HealthTracker/Medicine]medicinecheckinevents<calendarStart>,<calendarEnd>]
+```
+
+如需只显示药物 M，将[[数据源条目|$:/plugins/linonetwo/health-buff-debuff-tracker/calendar/MedicineCheckins]]的 `filter` 字段改为 `[[M]medicinecheckinevents<calendarStart>,<calendarEnd>]`。筛选器使用药物 caption 作为日历名称，点击事件打开其打卡日志。支持 `:titles` 和 `:timestamps` 后缀读取日志标题或时间戳。
+
+一日视图中，时间戳及时间间隔打卡出现在对应时刻，每日次数及只有日期的历史记录出现在全天栏。转换后的新打卡保留具体时刻。日志的 `activity-log-type` 字段标明当前存储格式。

@@ -9,3 +9,17 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/language/en-GB/Readme
 This Health Status Recording App aims to provide a simple and convenient tool for users to document various health issues, medication usage, and the process of recovery, addressing the growing demand for personal health monitoring.
 
 User data will be saved in the local-first way for privacy, the interface will be user-friendly, and potential future additions include data analysis features to further enhance users' understanding of their health conditions.
+
+!! Medicine check-ins on the calendar
+
+With Calendar and Activity Log Tools installed, medicine check-ins appear on the calendar automatically. Select or clear Medicine check-ins in Control Panel → Settings → Calendar → Calendar data sources.
+
+The source is registered with the `$:/tags/Calendar/EventSource` tag and uses this filter:
+
+```wikitext
+[tag[$:/tags/HealthTracker/Medicine]medicinecheckinevents<calendarStart>,<calendarEnd>]
+```
+
+To display only medicine M, change the [[source tiddler|$:/plugins/linonetwo/health-buff-debuff-tracker/calendar/MedicineCheckins]]'s `filter` field to `[[M]medicinecheckinevents<calendarStart>,<calendarEnd>]`. Events use medicine captions and open the corresponding check-in log when clicked. The `:titles` and `:timestamps` suffixes return log titles or check-in timestamps.
+
+In the day view, timestamp and interval check-ins appear at their recorded times. Daily counts and date-only history appear in the all-day section. New check-ins retain their times after conversion. The log's `activity-log-type` field identifies the storage format.

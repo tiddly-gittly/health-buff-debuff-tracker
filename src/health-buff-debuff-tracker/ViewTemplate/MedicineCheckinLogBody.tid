@@ -36,12 +36,12 @@ title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineChec
   </div>
 </div>
 
-<$list filter="[<currentTiddler>get[activity-log-type]match[daily-count]]" variable="ignore">
+<$transclude $tiddler="$:/plugins/linonetwo/activity-log-tools/ViewTemplate/ActivityLogToolbar"/>
+
 <div class="health-buff-debuff-tracker-panel-subheading"><<lingo MedicineCheckinTrend>></div>
 <div class="health-buff-debuff-tracker-heatmap-chart">
 <$echarts $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineBodyChart" logTitle=<<currentTiddler>> $height="200px" $width="100%"/>
 </div>
-</$list>
 
 <div class="health-buff-debuff-tracker-dynamic-table">
 <$basic-table

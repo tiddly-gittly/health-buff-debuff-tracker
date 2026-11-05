@@ -86,3 +86,5 @@ BodyPart/56459004L: Left Foot
 BodyPartSeparator: , 
 BodyParts: Body Parts
 Columns/BodyParts: Affected Body Parts
+CalendarSource/Caption: Medicine check-ins
+CalendarSource/Description: Show medicine check-in times and daily counts. Click an event to open its log.
