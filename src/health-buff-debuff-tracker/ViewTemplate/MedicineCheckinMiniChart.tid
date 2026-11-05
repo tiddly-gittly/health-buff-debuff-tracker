@@ -1,52 +1,10 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinMiniChart
-echarts-refresh-trigger: [all[tiddlers]prefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]get[modified]]
-\whitespace trim
+type: application/javascript
+module-type: library
 
-(function() {
-  var logTitle = "{{{ [<logTitle>] }}}";
-  var rawData = $tw.wiki.getTiddlerData(logTitle);
-
-  var windowDays = 28;
-  var counts = new Array(windowDays).fill(0);
-  var now = new Date();
-  now.setHours(0, 0, 0, 0);
-
-  var windowStart = new Date(now);
-  windowStart.setDate(now.getDate() - (windowDays - 1));
-  windowStart.setHours(0, 0, 0, 0);
-
-  if (rawData && typeof rawData === "object") {
-    Object.keys(rawData).forEach(function(key) {
-      if (key.indexOf("daily-count") !== 0) return;
-      var ts = Number(key.replace("daily-count", ""));
-      if (!isFinite(ts)) return;
-      var rowEnd = new Date(ts);
-      rowEnd.setHours(0, 0, 0, 0);
-      var rowCounts = String(rawData[key]).split(",").map(Number);
-      rowCounts.forEach(function(c, index) {
-        var day = new Date(rowEnd);
-        day.setDate(rowEnd.getDate() - (rowCounts.length - 1 - index));
-        day.setHours(0, 0, 0, 0);
-        var diff = Math.round((day - windowStart) / 86400000);
-        if (diff >= 0 && diff < windowDays) counts[diff] = (counts[diff] || 0) + (Number.isFinite(c) ? c : 0);
-      });
-    });
-  }
-
-  return {
-    tooltip: { trigger: "axis" },
-    grid: { left: "2px", right: "2px", bottom: "4px", top: "4px", containLabel: false },
-    xAxis: { type: "category", show: false, data: counts.map(function(_, i) { return i; }), boundaryGap: false },
-    yAxis: { type: "value", show: false, minInterval: 1 },
-    series: [{
-      type: "line",
-      smooth: false,
-      showSymbol: true,
-      symbol: "circle",
-      symbolSize: 5,
-      data: counts,
-      areaStyle: { opacity: 0.4, color: "#3b82f6" },
-      lineStyle: { width: 1.5, color: "#3b82f6" }
-    }]
-  };
-})()
+"use strict";
+const trend = require("$:/plugins/linonetwo/activity-log-tools/charts/ActivityTrend");
+exports.shouldUpdate = trend.shouldUpdate;
+exports.onUpdate = function(chart, state, attributes) {
+  trend.onUpdate(chart, state, Object.assign({}, attributes, {mini: "yes"}));
+};

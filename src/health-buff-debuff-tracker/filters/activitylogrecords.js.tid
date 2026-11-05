@@ -20,10 +20,12 @@ Each record object has:
   - count: numeric count (0 if not applicable)
   - timestamp: ISO date string (used for sorting)
 
-Supports three activity-log-tools log formats (activity-log-type field):
+Supports four activity-log-tools log formats (activity-log-type field):
   1. daily-count  key="daily-count{unixMs}"  value="n1,n2,n3"  (comma-sep counts, newest last)
   2. date         key="0","1",...             value="{unixMs}"  (event timestamp)
   3. day-interval key="day-interval{unixMs}" value="d1,d2,..."  (interval days backwards)
+
+  4. daily-count-rle key="daily-count-rle{unixMs}" value="count*days,..."
 
 Usage in $basic-table:
   <$basic-table
@@ -65,87 +67,20 @@ Usage in $basic-table:
       }
 
       var records = [];
-
-      switch (logType) {
-
-        case "daily-count": {
-          Object.keys(rawData).forEach(function(key) {
-            if (key.indexOf("daily-count") !== 0) return;
-            var ts = Number(key.replace("daily-count", ""));
-            if (!isFinite(ts)) return;
-            var rowEnd = new Date(ts);
-            rowEnd.setHours(0, 0, 0, 0);
-            var counts = String(rawData[key]).split(",").map(Number);
-            counts.forEach(function(c, index) {
-              var day = new Date(rowEnd);
-              day.setDate(rowEnd.getDate() - (counts.length - 1 - index));
-              day.setHours(0, 0, 0, 0);
-              var count = Number.isFinite(c) ? c : 0;
-              if (count === 0) return;
-              records.push({
-                title: formatDate(day),
-                key: key,
-                value: String(count),
-                count: count,
-                timestamp: day.toISOString()
-              });
-            });
-          });
-          break;
+      var codec = require("$:/plugins/linonetwo/activity-log-tools/log-file-tools/activityLogCodec");
+      var counts = {};
+      codec.decode(rawData, logType).forEach(function(time, index) {
+        var date = new Date(time);
+        if (logType === "date" || logType === "day-interval") {
+          records.push({title: formatDateTime(date), key: String(index), value: String(time), count: 1, timestamp: date.toISOString()});
+        } else {
+          var key = codec.dayKey(time);
+          counts[key] = (counts[key] || 0) + 1;
         }
-
-        case "date": {
-          Object.keys(rawData).forEach(function(key) {
-            var ts = Number(rawData[key]);
-            if (!isFinite(ts)) return;
-            var day = new Date(ts);
-            records.push({
-              title: formatDateTime(day),
-              key: key,
-              value: rawData[key],
-              count: 1,
-              timestamp: day.toISOString()
-            });
-          });
-          break;
-        }
-
-        case "day-interval": {
-          Object.keys(rawData).forEach(function(key) {
-            if (key.indexOf("day-interval") !== 0) return;
-            var ts = Number(key.replace("day-interval", ""));
-            if (!isFinite(ts)) return;
-            var intervals = String(rawData[key]).split(",").map(Number);
-            var current = new Date(ts);
-            // intervals are stored newest-last; reverse to walk backwards in time
-            var reversed = intervals.slice().reverse();
-            reversed.forEach(function(d, index) {
-              current = new Date(current.getTime() - d * DAY_MS);
-              records.push({
-                title: formatDate(current),
-                key: key + "_" + index,
-                value: String(d) + " days",
-                count: 1,
-                timestamp: current.toISOString()
-              });
-            });
-          });
-          break;
-        }
-
-        default: {
-          Object.keys(rawData).forEach(function(key) {
-            records.push({
-              title: key,
-              key: key,
-              value: String(rawData[key]),
-              count: 0,
-              timestamp: ""
-            });
-          });
-          break;
-        }
-      }
+      });
+      Object.keys(counts).forEach(function(key) {
+        records.push({title: key, key: key, value: String(counts[key]), count: counts[key], timestamp: codec.localDate(key).toISOString()});
+      });
 
       records.sort(function(a, b) {
         return b.timestamp.localeCompare(a.timestamp);

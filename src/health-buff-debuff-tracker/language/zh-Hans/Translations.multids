@@ -85,3 +85,5 @@ BodyPart/56459004L: 左脚
 BodyPartSeparator: 、
 BodyParts: 身体部位
 Columns/BodyParts: 影响部位
+CalendarSource/Caption: 药物打卡
+CalendarSource/Description: 显示药物的打卡时间和每日次数，点击打开打卡日志。

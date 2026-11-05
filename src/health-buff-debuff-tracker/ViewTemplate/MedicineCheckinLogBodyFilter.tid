@@ -1,5 +1,5 @@
 title: $:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinLogBodyFilter
 tags: $:/tags/ViewTemplateBodyFilter
-list-before: $:/config/ViewTemplateBodyFilters/hide-body
+list-before: $:/plugins/linonetwo/activity-log-tools/ViewTemplate/ActivityLogBodyFilter
 
 [prefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]then[$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinLogBody]]

@@ -1,4 +1,4 @@
-﻿title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
+title: $:/plugins/linonetwo/health-buff-debuff-tracker/components/MedicineCheckinPanel
 
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/medicine-checkin]]
 \import [[$:/plugins/linonetwo/health-buff-debuff-tracker/filters/health]]
@@ -12,13 +12,18 @@
 <div class="health-buff-debuff-tracker-checkin-buttons">
   <$list filter=<<get-all-medicine>> variable="currentMedicine">
     <$let logTitle={{{ [<currentMedicine>addprefix[$:/plugins/linonetwo/health-buff-debuff-tracker/medicine-checkin-log/]] }}}>
-      <div class="health-buff-debuff-tracker-checkin-card">
-        <$button class="health-buff-debuff-tracker-checkin-btn">
-          <$action-add-activity-to-log $logTitle=<<logTitle>> $logType="daily-count" />
+      <div>
+        <$link to=<<logTitle>> tooltip=<<lingo OpenHistory>>>
           <$transclude $tiddler={{{ [<currentMedicine>get[icon]] }}} $mode="inline"/> <$text text={{{ [<currentMedicine>get[caption]] :else[<currentMedicine>] }}}/>
-        </$button>
-        <div class="health-buff-debuff-tracker-checkin-minichart">
-          <$echarts $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinMiniChart" logTitle=<<logTitle>> $height="100%" $width="100%"/>
+        </$link>
+        <div class="health-buff-debuff-tracker-checkin-card">
+          <$button class="health-buff-debuff-tracker-checkin-btn">
+            <$action-add-activity-to-log $logTitle=<<logTitle>> $logType="daily-count" />
+            {{$:/core/images/add}} <<lingo MedicineCheckin>>
+          </$button>
+          <div class="health-buff-debuff-tracker-checkin-minichart">
+            <$echarts $tiddler="$:/plugins/linonetwo/health-buff-debuff-tracker/ViewTemplate/MedicineCheckinMiniChart" logTitle=<<logTitle>> $height="80px" $width="100%"/>
+          </div>
         </div>
       </div>
     </$let>
